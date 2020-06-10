@@ -1,0 +1,26 @@
+extends layout
+
+block content
+  h1 Title: #{book.title}
+  
+  p #[strong Author:] 
+    a(href=book.author.url) #{book.author.name}
+  p #[strong Date of Read:] #{book.date_of_read_formatted}
+  p #[strong ISBN:] #{book.isbn}
+  p #[strong Genre:]&nbsp;
+    each val, index in book.genre
+      a(href=val.url) #{val.name}
+      if index < book.genre.length - 1
+        |, 
+  p #[strong Available:] 
+    if book.status=='No'
+      span.text-danger #{book.status}
+    else
+      span.text-success #{book.status} 
+  p #[strong Summary:] #{book.summary}
+
+  hr
+  p
+    a(href=book.url+'/delete') Delete Book
+  p
+    a(href=book.url+'/update') Update Book
