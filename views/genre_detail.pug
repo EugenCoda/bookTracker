@@ -8,18 +8,21 @@ block content
 
     h4 Books
     
-    dl
+    ul
+      - genre_books.sort(function(a, b) {let textA = a.title.toUpperCase(); let textB = b.title.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
       each book in genre_books
-        dt 
-          a(href=book.url) #{book.title}
-        dd #{book.summary}
+        li 
+          a(href=book.url) #{book.title} 
+          |  
+          a(href=book.author.url) (#{book.author.name})
 
       else
         p This genre has no books
 
   hr
-  p
-    a(href=genre.url+'/delete') Delete genre
+  if user
+    p
+      a(href=genre.url+'/delete') Delete genre
 
-  p
-    a(href=genre.url+'/update') Update genre
+    p
+      a(href=genre.url+'/update') Update genre

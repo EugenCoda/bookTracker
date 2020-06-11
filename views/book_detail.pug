@@ -20,7 +20,8 @@ block content
   p #[strong Summary:] #{book.summary}
 
   hr
-  p
-    a(href=book.url+'/delete') Delete Book
-  p
-    a(href=book.url+'/update') Update Book
+  if user
+    p
+      a(href=book.url+'/delete') Delete Book
+    p
+      a(href=book.url+'/update') Update Book

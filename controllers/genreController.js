@@ -3,6 +3,7 @@ var Book = require("../models/book");
 var async = require("async");
 const validator = require("express-validator");
 const { body, validationResult } = require("express-validator");
+const author = require("../models/author");
 
 // Display list of all Genre.
 exports.genre_list = function (req, res, next) {
@@ -30,7 +31,7 @@ exports.genre_detail = function (req, res, next) {
       },
 
       genre_books: function (callback) {
-        Book.find({ genre: req.params.id }).exec(callback);
+        Book.find({ genre: req.params.id }).populate("author").exec(callback);
       },
     },
     function (err, results) {

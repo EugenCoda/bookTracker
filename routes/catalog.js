@@ -12,19 +12,31 @@ var genre_controller = require("../controllers/genreController");
 router.get("/", book_controller.index);
 
 // GET request for creating a Book. NOTE This must come before routes that display Book (uses id).
-router.get("/book/create", book_controller.book_create_get);
+router.get(
+  "/book/create",
+  ensureAuthenticated,
+  book_controller.book_create_get
+);
 
 // POST request for creating Book.
 router.post("/book/create", book_controller.book_create_post);
 
 // GET request to delete Book.
-router.get("/book/:id/delete", book_controller.book_delete_get);
+router.get(
+  "/book/:id/delete",
+  ensureAuthenticated,
+  book_controller.book_delete_get
+);
 
 // POST request to delete Book.
 router.post("/book/:id/delete", book_controller.book_delete_post);
 
 // GET request to update Book.
-router.get("/book/:id/update", book_controller.book_update_get);
+router.get(
+  "/book/:id/update",
+  ensureAuthenticated,
+  book_controller.book_update_get
+);
 
 // POST request to update Book.
 router.post("/book/:id/update", book_controller.book_update_post);
@@ -38,19 +50,31 @@ router.get("/books", book_controller.book_list);
 /// AUTHOR ROUTES ///
 
 // GET request for creating Author. NOTE This must come before route for id (i.e. display author).
-router.get("/author/create", author_controller.author_create_get);
+router.get(
+  "/author/create",
+  ensureAuthenticated,
+  author_controller.author_create_get
+);
 
 // POST request for creating Author.
 router.post("/author/create", author_controller.author_create_post);
 
 // GET request to delete Author.
-router.get("/author/:id/delete", author_controller.author_delete_get);
+router.get(
+  "/author/:id/delete",
+  ensureAuthenticated,
+  author_controller.author_delete_get
+);
 
 // POST request to delete Author.
 router.post("/author/:id/delete", author_controller.author_delete_post);
 
 // GET request to update Author.
-router.get("/author/:id/update", author_controller.author_update_get);
+router.get(
+  "/author/:id/update",
+  ensureAuthenticated,
+  author_controller.author_update_get
+);
 
 // POST request to update Author.
 router.post("/author/:id/update", author_controller.author_update_post);
@@ -64,19 +88,31 @@ router.get("/authors", author_controller.author_list);
 /// GENRE ROUTES ///
 
 // GET request for creating a Genre. NOTE This must come before route that displays Genre (uses id).
-router.get("/genre/create", genre_controller.genre_create_get);
+router.get(
+  "/genre/create",
+  ensureAuthenticated,
+  genre_controller.genre_create_get
+);
 
 //POST request for creating Genre.
 router.post("/genre/create", genre_controller.genre_create_post);
 
 // GET request to delete Genre.
-router.get("/genre/:id/delete", genre_controller.genre_delete_get);
+router.get(
+  "/genre/:id/delete",
+  ensureAuthenticated,
+  genre_controller.genre_delete_get
+);
 
 // POST request to delete Genre.
 router.post("/genre/:id/delete", genre_controller.genre_delete_post);
 
 // GET request to update Genre.
-router.get("/genre/:id/update", genre_controller.genre_update_get);
+router.get(
+  "/genre/:id/update",
+  ensureAuthenticated,
+  genre_controller.genre_update_get
+);
 
 // POST request to update Genre.
 router.post("/genre/:id/update", genre_controller.genre_update_post);
@@ -86,5 +122,15 @@ router.get("/genre/:id", genre_controller.genre_detail);
 
 // GET request for list of all Genre.
 router.get("/genres", genre_controller.genre_list);
+
+//Access Control
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  } else {
+    req.flash("danger", "Please login");
+    res.redirect("/users/login");
+  }
+}
 
 module.exports = router;
