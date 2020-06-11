@@ -4,6 +4,9 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 require("dotenv/config");
+const flash = require("connect-flash");
+const session = require("express-session");
+const passport = require("passport");
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
@@ -36,6 +39,34 @@ app.use(cookieParser());
 
 //Set Public Folder
 app.use(express.static(path.join(__dirname, "public")));
+
+//Express Session Middleware
+app.use(
+  session({
+    secret: "keyboard cat",
+    resave: true,
+    saveUninitialized: true,
+  })
+);
+
+//Express Messages Middleware
+app.use(require("connect-flash")());
+app.use((req, res, next) => {
+  res.locals.messages = require("express-messages")(req, res);
+  next();
+});
+
+//Passport Config
+require("./config/passport")(passport);
+//Passport Middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+//Set up a global variable for user
+app.get("*", (req, res, next) => {
+  res.locals.user = req.user || null;
+  next();
+});
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
