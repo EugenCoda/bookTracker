@@ -15,10 +15,15 @@ html(lang='en')
       button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarsExampleDefault', aria-controls='navbarsExampleDefault', aria-expanded='false', aria-label='Toggle navigation')
         span.navbar-toggler-icon
       #navbarsExampleDefault.collapse.navbar-collapse
-        ul.navbar-nav.mr-auto
+        ul.navbar-nav.mr-left
           li.nav-item
             a.nav-link(href='/catalog')
               | Home 
+              span.sr-only (current)
+        ul.navbar-nav.mr-auto
+          li.nav-item
+            a.nav-link(href='/booklists/mylist')
+              | My Books 
               span.sr-only (current)
         ul.nav.navbar-nav.navbar-right
           if user

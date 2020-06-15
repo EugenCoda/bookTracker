@@ -111,15 +111,10 @@ exports.book_create_post = [
   body("title", "Title must not be empty.").trim().isLength({ min: 1 }),
   body("author", "Author must not be empty.").trim().isLength({ min: 1 }),
   body("summary", "Summary must not be empty.").trim().isLength({ min: 1 }),
-  body("date_of_read", "Invalid date of read")
-    .optional({ checkFalsy: true })
-    .isISO8601(),
   body("isbn", "ISBN must not be empty").trim().isLength({ min: 1 }),
 
   // Sanitize fields (using wildcard).
   body("*").escape(),
-  body("date_of_read").toDate(),
-  body("status").trim().escape(),
 
   // Process request after validation and sanitization.
   (req, res, next) => {
@@ -131,10 +126,10 @@ exports.book_create_post = [
       title: req.body.title,
       author: req.body.author,
       summary: req.body.summary,
-      date_of_read: req.body.date_of_read,
       isbn: req.body.isbn,
       genre: req.body.genre,
-      status: req.body.status,
+      rating: req.body.rating,
+      reviews: req.body.reviews,
     });
 
     if (!errors.isEmpty()) {
@@ -308,19 +303,10 @@ exports.book_update_post = [
   body("title", "Title must not be empty.").trim().isLength({ min: 1 }),
   body("author", "Author must not be empty.").trim().isLength({ min: 1 }),
   body("summary", "Summary must not be empty.").trim().isLength({ min: 1 }),
-  body("date_of_read", "Invalid date of read")
-    .optional({ checkFalsy: true })
-    .isISO8601(),
   body("isbn", "ISBN must not be empty").trim().isLength({ min: 1 }),
 
   // Sanitize fields.
-  body("title").escape(),
-  body("author").escape(),
-  body("summary").escape(),
-  body("date_of_read").toDate(),
-  body("isbn").escape(),
-  body("genre.*").escape(),
-  body("status").escape(),
+  body("*").escape(),
 
   // Process request after validation and sanitization.
   (req, res, next) => {
@@ -332,10 +318,10 @@ exports.book_update_post = [
       title: req.body.title,
       author: req.body.author,
       summary: req.body.summary,
-      date_of_read: req.body.date_of_read,
       isbn: req.body.isbn,
       genre: typeof req.body.genre === "undefined" ? [] : req.body.genre,
-      status: req.body.status,
+      rating: req.body.rating,
+      reviews: req.body.reviews,
       _id: req.params.id, //This is required, or a new ID will be assigned!
     });
 

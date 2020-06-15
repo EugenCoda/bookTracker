@@ -7,4 +7,9 @@ Branch 1: Removed code related to book instances
 
 Branch 2: Implemented user register, login and logout
 
-TODO: create userController and rearrange the code from users.js and app.js
+Branch 3: Created userController and rearranged the code from users.js
+
+TODO:
+
+- create schema for booklists for individual user - in progress (or maybe on user schema?)
+- search bar

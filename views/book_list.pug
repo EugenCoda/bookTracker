@@ -6,10 +6,17 @@ block content
   ul
     - book_list.sort(function(a, b) {let textA = a.title.toUpperCase(); let textB = b.title.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
     each book in book_list
-      li 
-        a(href=book.url) #{book.title} 
-        |  
-        a(href=book.author.url) (#{book.author.name})
-
+      if user
+        li 
+          a(href=book.url) [Add to list] 
+          |
+          a(href=book.url) #{book.title} 
+          |  
+          a(href=book.author.url) (#{book.author.name})
+      else
+        li 
+          a(href=book.url) #{book.title} 
+          |  
+          a(href=book.author.url) (#{book.author.name})
     else
       li There are no books.

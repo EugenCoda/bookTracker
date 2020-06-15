@@ -10,6 +10,7 @@ const passport = require("passport");
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
+var booklistsRouter = require("./routes/booklists");
 var catalogRouter = require("./routes/catalog"); //Import routes for "catalog" area of site
 
 var app = express();
@@ -70,6 +71,7 @@ app.get("*", (req, res, next) => {
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
+app.use("/booklists", booklistsRouter);
 app.use("/catalog", catalogRouter); // Add catalog routes to middleware chain.
 
 // catch 404 and forward to error handler
