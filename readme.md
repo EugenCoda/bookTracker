@@ -11,5 +11,5 @@ Branch 3: Created userController and rearranged the code from users.js
 
 TODO:
 
-- create schema for booklists for individual user - in progress (or maybe on user schema?)
+- create schema for booklists for individual user - in progress
 - search bar

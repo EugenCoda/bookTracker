@@ -6,15 +6,18 @@ var booklist_controller = require("../controllers/booklistController");
 
 /// Book Lists Routes ///
 
-// Get personal list of books
+// Get user list of books
 router.get("/mylist", ensureAuthenticated, booklist_controller.booklist_list);
 
-// Add book to booklist
+// Add book to user list of books on GET
 router.get(
-  "/mylist/add",
+  "/addtolist/:id",
   ensureAuthenticated,
-  booklist_controller.booklist_create_post
+  booklist_controller.booklist_add_get
 );
+
+// Add book to user list of books on POST
+router.post("/addtolist/:id", booklist_controller.booklist_add_post);
 
 //Access Control
 function ensureAuthenticated(req, res, next) {

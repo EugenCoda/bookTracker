@@ -17,5 +17,10 @@ BookSchema.virtual("url").get(function () {
   return "/catalog/book/" + this._id;
 });
 
+// Virtual for book's booklist URL
+BookSchema.virtual("booklisturl").get(function () {
+  return "/booklists/addtolist/" + this._id;
+});
+
 //Export model
 module.exports = mongoose.model("Book", BookSchema);

@@ -1,0 +1,18 @@
+extends layout
+
+block content
+  h1= title
+
+  form(method='POST' action='')
+    div.form-group
+      label(for='title') Title:
+      input#title.form-control(type='text', placeholder='Name of book' name='title' required='true' value=(undefined===book ? '' : book.title) readonly='')
+    div.form-group
+      label(for='author') Author:
+      input#author.form-control(type='text' placeholder='Author' name='author' required='true' value=(undefined===book ? '' : book.author.name) readonly='')
+    button.btn.btn-primary(type='submit') Add
+
+  if errors 
+    ul
+      for error in errors
+        li!= error.msg
