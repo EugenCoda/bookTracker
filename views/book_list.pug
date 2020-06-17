@@ -8,8 +8,6 @@ block content
     each book in book_list
       if user
         li 
-          a(href=book.booklisturl) [Add to list] 
-          |
           a(href=book.url) #{book.title} 
           |  
           a(href=book.author.url) (#{book.author.name})

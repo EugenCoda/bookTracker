@@ -3,6 +3,12 @@ extends layout
 block content
   h1= title
 
-  p= results
-
-  li There are no books yet.
+  ul
+    - personal_list.sort(function(a, b) {let textA = a.book.title.toUpperCase(); let textB = b.book.title.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
+    each val, index in personal_list
+      li
+        a(href=personal_list[index].book.url) #{personal_list[index].book.title} 
+        |
+        a(href=personal_list[index].book.author.url) (#{personal_list[index].book.author.name})
+    else
+      li There are no books.

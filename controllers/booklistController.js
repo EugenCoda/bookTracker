@@ -5,6 +5,22 @@ var Genre = require("../models/genre");
 const { body, validationResult } = require("express-validator");
 
 var async = require("async");
+const { populate } = require("../models/booklist");
+
+// Create User Booklist (right after user register)
+exports.booklist_create = (req, res, next) => {
+  var booklist = new Booklist({
+    user: req.user._id,
+    personal_list: [],
+  });
+
+  // Save booklist.
+  booklist.save(function (err) {
+    if (err) {
+      return next(err);
+    }
+  });
+};
 
 // Display User booklist.
 exports.booklist_list = (req, res, next) => {
@@ -13,7 +29,11 @@ exports.booklist_list = (req, res, next) => {
       booklist: function (callback) {
         Booklist.findOne({ user: req.user._id })
           .populate("user")
-          .populate("personal_list")
+          .populate({
+            path: "personal_list.book",
+            populate: { path: "genre" },
+            populate: { path: "author" },
+          })
           .exec(callback);
       },
     },
@@ -21,25 +41,11 @@ exports.booklist_list = (req, res, next) => {
       if (err) {
         return next(err);
       }
-      if (results.booklist == null) {
-        //If booklist does not exists, create it
 
-        var booklist = new Booklist({
-          user: req.user._id,
-          personal_list: [],
-        });
-
-        // Save booklist.
-        booklist.save(function (err) {
-          if (err) {
-            return next(err);
-          }
-        });
-      }
       // Successful, so render.
       res.render("booklist_list", {
         title: "My Books List",
-        results: results.booklist,
+        personal_list: results.booklist.personal_list,
       });
     }
   );
@@ -91,8 +97,6 @@ exports.booklist_add_post = (req, res, next) => {
       if (err) {
         return next(err);
       }
-      console.log("User found:" + req.user._id);
-      console.log(booklist);
     }
   );
   res.redirect("/catalog/books");

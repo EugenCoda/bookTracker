@@ -6,19 +6,19 @@ var Schema = mongoose.Schema;
 var BooklistSchema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: "User", required: true },
   personal_list: [
-    { book: { type: Schema.Types.ObjectId, ref: "Book", required: true } },
-    { date_added: { type: Date } },
-    { date_started: { type: Date } },
-    { date_of_read: { type: Date } },
     {
+      book: { type: Schema.Types.ObjectId, ref: "Book", required: true },
+      date_added: { type: Date },
+      date_started: { type: Date },
+      date_of_read: { type: Date },
+
       status: {
         type: String,
         required: true,
         enum: ["Not read", "In progress", "Read"],
         default: "Not read",
       },
-    },
-    {
+
       availability: {
         type: String,
         required: true,

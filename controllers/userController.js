@@ -1,4 +1,5 @@
 var User = require("../models/user");
+var Booklist = require("../models/booklist");
 const { check, validationResult } = require("express-validator");
 const flash = require("connect-flash");
 const bcrypt = require("bcryptjs");
@@ -53,6 +54,19 @@ exports.user_create_post = [
             }
           });
         });
+      });
+
+      // Create user booklist
+      var booklist = new Booklist({
+        user: user._id,
+        personal_list: [],
+      });
+
+      // Save user booklist.
+      booklist.save(function (err) {
+        if (err) {
+          return next(err);
+        }
       });
     }
   },
