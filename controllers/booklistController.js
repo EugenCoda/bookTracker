@@ -5,7 +5,6 @@ var Genre = require("../models/genre");
 const { body, validationResult } = require("express-validator");
 
 var async = require("async");
-const { populate } = require("../models/booklist");
 
 // Create User Booklist (right after user register)
 exports.booklist_create = (req, res, next) => {
@@ -59,8 +58,15 @@ exports.booklist_add_get = (req, res, next) => {
       book: function (callback) {
         Book.findById(req.params.id).populate("author").exec(callback);
       },
-      authors: function (callback) {
-        Author.find(callback);
+      booklist: function (callback) {
+        Booklist.findOne({ user: req.user._id })
+          .populate("user")
+          .populate({
+            path: "personal_list.book",
+            populate: { path: "genre" },
+            populate: { path: "author" },
+          })
+          .exec(callback);
       },
     },
     function (err, results) {
@@ -76,8 +82,8 @@ exports.booklist_add_get = (req, res, next) => {
       // Success.
       res.render("booklist_form", {
         title: "Add Book to My List",
-        authors: results.authors,
         book: results.book,
+        personal_list: results.booklist.personal_list,
       });
     }
   );
@@ -89,7 +95,16 @@ exports.booklist_add_post = (req, res, next) => {
     { user: req.user._id },
     {
       $push: {
-        personal_list: [{ book: req.params.id }],
+        personal_list: [
+          {
+            book: req.params.id,
+            status: req.body.status,
+            availability: req.body.availability,
+            date_added: req.body.date_added,
+            date_started: req.body.date_started,
+            date_finished: req.body.date_finished,
+          },
+        ],
       },
     },
     { new: true },
@@ -99,5 +114,115 @@ exports.booklist_add_post = (req, res, next) => {
       }
     }
   );
-  res.redirect("/catalog/books");
+  res.redirect("/booklists/mylist");
+};
+
+// Handle Book edit from booklist on GET.
+exports.booklist_edit_get = (req, res, next) => {
+  async.parallel(
+    {
+      book: function (callback) {
+        Book.findById(req.params.id).populate("author").exec(callback);
+      },
+      booklist: function (callback) {
+        Booklist.findOne({ user: req.user._id })
+          .populate("user")
+          .populate({
+            path: "personal_list.book",
+            populate: { path: "genre" },
+            populate: { path: "author" },
+          })
+          .exec(callback);
+      },
+    },
+    function (err, results) {
+      if (err) {
+        return next(err);
+      }
+      if (results.book == null) {
+        // No results.
+        res.redirect("/booklists/mylist");
+      }
+      // Successful, so render.
+      res.render("booklist_form", {
+        title: "Edit Book Entry",
+        book: results.book,
+        personal_list: results.booklist.personal_list,
+      });
+    }
+  );
+};
+
+// Handle Book edit from booklist on POST
+exports.booklist_edit_post = (req, res, next) => {
+  Booklist.findOneAndUpdate(
+    { user: req.user._id, "personal_list.book": req.params.id },
+    {
+      $set: {
+        "personal_list.$": [
+          {
+            book: req.params.id,
+            status: req.body.status,
+            availability: req.body.availability,
+            date_added: req.body.date_added,
+            date_started: req.body.date_started,
+            date_finished: req.body.date_finished,
+          },
+        ],
+      },
+    },
+    { new: true },
+    (err, booklist) => {
+      if (err) {
+        return next(err);
+      }
+    }
+  );
+  res.redirect("/booklists/mylist");
+};
+
+// Handle Book remove from booklist on GET.
+exports.booklist_remove_get = (req, res, next) => {
+  async.parallel(
+    {
+      book: function (callback) {
+        Book.findById(req.params.id).populate("author").exec(callback);
+      },
+    },
+    function (err, results) {
+      if (err) {
+        return next(err);
+      }
+      if (results.book == null) {
+        // No results.
+        res.redirect("/booklists/mylist");
+      }
+      // Successful, so render.
+      res.render("booklist_remove", {
+        title: "Remove Book from List",
+        book: results.book,
+      });
+    }
+  );
+};
+
+// Handle Book remove from booklist on POST
+exports.booklist_remove_post = (req, res, next) => {
+  Booklist.update(
+    { user: req.user._id, "personal_list.book": req.params.id },
+    {
+      $pull: {
+        personal_list: {
+          book: req.params.id,
+        },
+      },
+    },
+    { safe: true, multi: true },
+    (err, booklist) => {
+      if (err) {
+        return next(err);
+      }
+    }
+  );
+  res.redirect("/booklists/mylist");
 };

@@ -4,11 +4,19 @@ block content
   h1= title
 
   ul
+    p Title | Author | Status | Availability | Date Added | Date Started | Date Finished
     - personal_list.sort(function(a, b) {let textA = a.book.title.toUpperCase(); let textB = b.book.title.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
     each val, index in personal_list
       li
         a(href=personal_list[index].book.url) #{personal_list[index].book.title} 
         |
-        a(href=personal_list[index].book.author.url) (#{personal_list[index].book.author.name})
+        a(href=personal_list[index].book.author.url) (#{personal_list[index].book.author.name}) 
+        | #{personal_list[index].status} |
+        | #{personal_list[index].availability} |
+        | #{personal_list[index].date_added} |
+        | #{personal_list[index].date_started} |
+        | #{personal_list[index].date_finished} | 
+        a(href=personal_list[index].book._id+'/edit') Edit | 
+        a(href=personal_list[index].book._id+'/remove') Remove from list
     else
       li There are no books.

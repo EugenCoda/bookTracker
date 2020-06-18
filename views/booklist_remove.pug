@@ -3,10 +3,10 @@ extends layout
 block content
   h1 #{title}: #{book.title}
   
-  p Do you really want to delete this Book?
+  p Do you really want to remove this Book from your list?
     
   form(method='POST' action='')
     div.form-group
       input#bookid.form-control(type='hidden',name='bookid', required='true', value=book._id )
 
-    button.btn.btn-primary(type='submit') Delete
+    button.btn.btn-primary(type='submit') Remove

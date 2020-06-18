@@ -10,7 +10,7 @@ var BooklistSchema = new Schema({
       book: { type: Schema.Types.ObjectId, ref: "Book", required: true },
       date_added: { type: Date },
       date_started: { type: Date },
-      date_of_read: { type: Date },
+      date_finished: { type: Date },
 
       status: {
         type: String,
@@ -22,7 +22,7 @@ var BooklistSchema = new Schema({
       availability: {
         type: String,
         required: true,
-        enum: ["No", "Yahoo", "Hardcopy", "Softcopy", "Github", "Web"],
+        enum: ["No", "Mail", "Hard copy", "Soft copy", "Github", "Web"],
         default: "No",
       },
     },
@@ -46,9 +46,9 @@ BooklistSchema.virtual("date_started_formatted").get(function () {
     : "";
 });
 
-BooklistSchema.virtual("date_of_read_formatted").get(function () {
-  return this.personal_list.date_of_read
-    ? moment(this.personal_list.date_of_read).format("YYYY-MM-DD")
+BooklistSchema.virtual("date_finished_formatted").get(function () {
+  return this.personal_list.date_finished
+    ? moment(this.personal_list.date_finished).format("YYYY-MM-DD")
     : "";
 });
 

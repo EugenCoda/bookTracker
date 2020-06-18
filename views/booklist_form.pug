@@ -10,7 +10,31 @@ block content
     div.form-group
       label(for='author') Author:
       input#author.form-control(type='text' placeholder='Author' name='author' required='true' value=(undefined===book ? '' : book.author.name) readonly='')
-    button.btn.btn-primary(type='submit') Add
+    div.form-group
+      label(for='status') Status:
+      select#status.form-control(type='select' placeholder='Select status' name='status' required='true' )
+        option(value="Not read") Not read
+        option(value="In progress") In progress
+        option(value="Read") Read
+    div.form-group
+      label(for='availability') Availability:
+      select#availability.form-control(type='select' placeholder='Select availability' name='availability' required='true' )
+        option(value="No") No
+        option(value="Mail") Mail
+        option(value="Hard Copy") Hard Copy
+        option(value="Soft Copy") Soft Copy
+        option(value="Github") Github
+        option(value="Web") Web
+    div.form-group
+      label(for='date_added') Date added:
+      input#date_added.form-control(type='date' name='date_added' value=(undefined===personal_list.book ? '' : personal_list.book.date_added) )
+    div.form-group
+      label(for='date_started') Date started:
+      input#date_started.form-control(type='date' name='date_started' value=(undefined===personal_list.book ? '' : personal_list.book.date_started) )
+    div.form-group
+      label(for='date_finished') Date finished:
+      input#date_finished.form-control(type='date' name='date_finished' value=(undefined===personal_list.book ? '' : personal_list.book.date_finished) )
+    button.btn.btn-primary(type='submit') Submit
 
   if errors 
     ul
