@@ -32,6 +32,8 @@ app.set("view engine", "pug");
 
 app.use(logger("dev"));
 
+app.locals.moment = require("moment"); //for formatting the date in the pug template
+
 //Body Parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
