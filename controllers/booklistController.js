@@ -80,6 +80,7 @@ exports.booklist_add_get = (req, res, next) => {
         return next(err);
       }
       // Success.
+
       res.render("booklist_form", {
         title: "Add Book to My List",
         book: results.book,

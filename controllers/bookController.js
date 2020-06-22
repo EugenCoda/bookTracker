@@ -21,7 +21,7 @@ exports.index = function (req, res) {
     },
     function (err, results) {
       res.render("index", {
-        title: "My Book List",
+        title: "Book Tracker",
         error: err,
         data: results,
       });
@@ -30,16 +30,59 @@ exports.index = function (req, res) {
 };
 
 // Display list of all Books.
-exports.book_list = function (req, res, next) {
-  Book.find({}, "title author")
-    .populate("author")
-    .exec(function (err, list_books) {
-      if (err) {
-        return next(err);
+exports.book_list = (req, res, next) => {
+  //User is logged in, so we're able to search in the booklist
+  if (req.user) {
+    console.log("User logged");
+    async.parallel(
+      {
+        book: function (callback) {
+          Book.find({}, "title author").populate("author").exec(callback);
+        },
+        booklist: function (callback) {
+          Booklist.findOne({ user: req.user._id })
+            .populate("user")
+            .populate({
+              path: "personal_list.book",
+              populate: { path: "genre" },
+              populate: { path: "author" },
+            })
+            .exec(callback);
+        },
+      },
+      function (err, results) {
+        if (err) {
+          return next(err);
+        }
+        //Successful, so render
+        res.render("book_list", {
+          title: "Book List",
+          book_list: results.book,
+          personal_list: results.booklist.personal_list,
+        });
       }
-      //Successful, so render
-      res.render("book_list", { title: "Book List", book_list: list_books });
-    });
+    );
+  } else {
+    //User is not logged in, so we go through the standard path
+    console.log("No user logged");
+    async.parallel(
+      {
+        book: function (callback) {
+          Book.find({}, "title author").populate("author").exec(callback);
+        },
+      },
+      function (err, results) {
+        if (err) {
+          return next(err);
+        }
+        //Successful, so render
+        res.render("book_list", {
+          title: "Book List",
+          book_list: results.book,
+        });
+      }
+    );
+  }
 };
 
 // Display detail page for a specific book.

@@ -16,10 +16,10 @@ Created a display menu for my book list
 TODO:
 
 - format date in booklist - done
+- restrict adding a book more than once in a booklist - in progress
 - date_added should be recorded automatically (for updates it should remain unchanged)
 - date_updated should be recorded automatically (for new items it should be equal to date_added)
 - restrict deleting a book if used in a booklist
-- restrict adding a book more than once in a booklist
 - update forms - get the data from db and pre-populate the existing information
 - show book, authors, genres count in "All..." links
 - book details - change from "Add to my list" to Status/Edit/Remove when already added
