@@ -7,6 +7,9 @@ block content
     div.form-group
       label(for='title') Title:
       input#title.form-control(type='text', placeholder='Name of book' name='title' required='true' value=(undefined===book ? '' : book.title) )
+    div.form-group  
+      label(for='originalTitle') Original Title:
+      input#originalTitle.form-control(type='text', placeholder='Name of book in original language' name='originalTitle' value=(undefined===book ? '' : book.originalTitle) )
     div.form-group
       label(for='author') Author:
       select#author.form-control(type='select' placeholder='Select author' name='author' required='true' )
@@ -36,11 +39,44 @@ block content
             input.checkbox-input(type='checkbox', name='genre', id=genre._id, value=genre._id, checked=genre.checked )
             label(for=genre._id) #{genre.name}
     div.form-group
+      label(for='language') Language:
+      select#language.form-control(type='select' placeholder='Select language' name='language' required='true' )
+        for language in languages
+          if book
+            //- Handle GET form, where book.language is an object, and POST form, where it is a string.
+            option(
+              value=language._id
+              selected=(
+                language._id.toString()==book.language._id
+                || language._id.toString()==book.language
+              ) ? 'selected' : false
+            ) #{language.name}
+          else
+            option(value=language._id) #{language.name}
+    div.form-group
+      label(for='originalLanguage') Original Language:
+      select#originalLanguage.form-control(type='select' placeholder='Select original language' name='originalLanguage')
+        for language in languages
+          if book
+            //- Handle GET form, where book.language is an object, and POST form, where it is a string.
+            option(
+              value=language._id
+              selected=(
+                language._id.toString()==book.language._id
+                || language._id.toString()==book.language
+              ) ? 'selected' : false
+            ) #{language.name}
+          else
+            option(value=language._id) #{language.name}
+    div.form-group
+      label(for='pages') Number of Pages:
+      input#pages.form-control(type='text', placeholder='100' name='pages' value=(undefined===book ? '' : book.pages)) 
+    div.form-group
       label(for='rating') Rating:
-      input#rating.form-control(type='text', placeholder='1-5' name='rating' value=(undefined===book ? '' : book.rating) required='false') 
+      input#rating.form-control(type='text', placeholder='1-5' name='rating' value=(undefined===book ? '' : book.rating)) 
     div.form-group
       label(for='reviews') Reviews:
-      textarea#reviews.form-control(type='textarea', placeholder='Reviews' name='reviews' rows='3' required='false') #{undefined===book ? '' : book.reviews}
+      textarea#reviews.form-control(type='textarea', placeholder='Reviews' name='reviews' rows='3') #{undefined===book ? '' : book.reviews}
     button.btn.btn-primary(type='submit') Submit
 
   if errors 

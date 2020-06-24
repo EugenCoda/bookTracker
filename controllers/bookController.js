@@ -1,4 +1,5 @@
 var Book = require("../models/book");
+var Language = require("../models/language");
 var Booklist = require("../models/booklist");
 var Author = require("../models/author");
 var Genre = require("../models/genre");
@@ -18,6 +19,9 @@ exports.index = function (req, res) {
       genre_count: function (callback) {
         Genre.countDocuments({}, callback);
       },
+      language_count: function (callback) {
+        Language.countDocuments({}, callback);
+      },
     },
     function (err, results) {
       res.render("index", {
@@ -33,7 +37,6 @@ exports.index = function (req, res) {
 exports.book_list = (req, res, next) => {
   //User is logged in, so we're able to search in the booklist
   if (req.user) {
-    console.log("User logged");
     async.parallel(
       {
         book: function (callback) {
@@ -64,7 +67,6 @@ exports.book_list = (req, res, next) => {
     );
   } else {
     //User is not logged in, so we go through the standard path
-    console.log("No user logged");
     async.parallel(
       {
         book: function (callback) {
@@ -87,32 +89,81 @@ exports.book_list = (req, res, next) => {
 
 // Display detail page for a specific book.
 exports.book_detail = function (req, res, next) {
-  async.parallel(
-    {
-      book: function (callback) {
-        Book.findById(req.params.id)
-          .populate("author")
-          .populate("genre")
-          .exec(callback);
+  //User is logged in, so we're able to search in the booklist
+  if (req.user) {
+    async.parallel(
+      {
+        book: function (callback) {
+          Book.findById(req.params.id)
+            .populate("author")
+            .populate("genre")
+            .populate("language")
+            .populate("originalLanguage")
+            .exec(callback);
+        },
+        booklist: function (callback) {
+          Booklist.findOne({
+            "personal_list.book": req.params.id,
+            user: req.user._id,
+          })
+            .populate({
+              path: "personal_list.book",
+              populate: { path: "genre" },
+              populate: { path: "author" },
+            })
+            .exec(callback);
+        },
       },
-    },
-    function (err, results) {
-      if (err) {
-        return next(err);
+      function (err, results) {
+        if (err) {
+          return next(err);
+        }
+        if (results.book == null) {
+          // No results.
+          var err = new Error("Book not found");
+          err.status = 404;
+          return next(err);
+        }
+
+        // Successful, so render.
+        res.render("book_detail", {
+          title: results.book.title,
+          book: results.book,
+          booklist: results.booklist,
+        });
       }
-      if (results.book == null) {
-        // No results.
-        var err = new Error("Book not found");
-        err.status = 404;
-        return next(err);
+    );
+  } else {
+    //User is not logged in, so we go through the standard path
+    async.parallel(
+      {
+        book: function (callback) {
+          Book.findById(req.params.id)
+            .populate("author")
+            .populate("genre")
+            .populate("language")
+            .populate("originalLanguage")
+            .exec(callback);
+        },
+      },
+      function (err, results) {
+        if (err) {
+          return next(err);
+        }
+        if (results.book == null) {
+          // No results.
+          var err = new Error("Book not found");
+          err.status = 404;
+          return next(err);
+        }
+        // Successful, so render.
+        res.render("book_detail", {
+          title: results.book.title,
+          book: results.book,
+        });
       }
-      // Successful, so render.
-      res.render("book_detail", {
-        title: results.book.title,
-        book: results.book,
-      });
-    }
-  );
+    );
+  }
 };
 
 // Display book create form on GET.
@@ -126,6 +177,9 @@ exports.book_create_get = function (req, res, next) {
       genres: function (callback) {
         Genre.find(callback);
       },
+      languages: function (callback) {
+        Language.find(callback);
+      },
     },
     function (err, results) {
       if (err) {
@@ -135,6 +189,7 @@ exports.book_create_get = function (req, res, next) {
         title: "Create Book",
         authors: results.authors,
         genres: results.genres,
+        languages: results.languages,
       });
     }
   );
@@ -153,9 +208,15 @@ exports.book_create_post = [
 
   // Validate fields.
   body("title", "Title must not be empty.").trim().isLength({ min: 1 }),
+  body("originalTitle").trim().optional(),
   body("author", "Author must not be empty.").trim().isLength({ min: 1 }),
   body("summary", "Summary must not be empty.").trim().isLength({ min: 1 }),
   body("isbn", "ISBN must not be empty").trim().isLength({ min: 1 }),
+  body("language", "Language must not be empty.").trim().isLength({ min: 1 }),
+  body("originalLanguage").trim().optional(),
+  body("pages").trim().optional(),
+  body("rating").trim().optional(),
+  body("reviews").trim().optional(),
 
   // Sanitize fields (using wildcard).
   body("*").escape(),
@@ -168,10 +229,14 @@ exports.book_create_post = [
     // Create a Book object with escaped and trimmed data.
     var book = new Book({
       title: req.body.title,
+      originalTitle: req.body.originalTitle,
       author: req.body.author,
       summary: req.body.summary,
       isbn: req.body.isbn,
       genre: req.body.genre,
+      language: req.body.language,
+      originalLanguage: req.body.originalLanguage,
+      pages: req.body.pages,
       rating: req.body.rating,
       reviews: req.body.reviews,
     });
@@ -187,6 +252,9 @@ exports.book_create_post = [
           },
           genres: function (callback) {
             Genre.find(callback);
+          },
+          languages: function (callback) {
+            Language.find(callback);
           },
         },
         function (err, results) {
@@ -204,6 +272,7 @@ exports.book_create_post = [
             title: "Create Book",
             authors: results.authors,
             genres: results.genres,
+            languages: results.languages,
             book: book,
             errors: errors.array(),
           });
@@ -230,6 +299,15 @@ exports.book_delete_get = (req, res, next) => {
       book: function (callback) {
         Book.findById(req.params.id).exec(callback);
       },
+      booklist: function (callback) {
+        Booklist.find({ "personal_list.book": req.params.id })
+          .populate({
+            path: "personal_list.book",
+            populate: { path: "genre" },
+            populate: { path: "author" },
+          })
+          .exec(callback);
+      },
     },
     function (err, results) {
       if (err) {
@@ -243,6 +321,7 @@ exports.book_delete_get = (req, res, next) => {
       res.render("book_delete", {
         title: "Delete Book",
         book: results.book,
+        booklist: results.booklist,
       });
     }
   );
@@ -255,21 +334,41 @@ exports.book_delete_post = function (req, res, next) {
       book: function (callback) {
         Book.findById(req.body.bookid).exec(callback);
       },
+      booklist: function (callback) {
+        Booklist.find({})
+          .populate({
+            path: "personal_list.book",
+            populate: { path: "genre" },
+            populate: { path: "author" },
+          })
+          .exec(callback);
+      },
     },
     function (err, results) {
       if (err) {
         return next(err);
       }
       // Success
-      //Deleted the if for checking if the book has book instances
-      //Delete object and redirect to the list of books.
-      Book.findByIdAndRemove(req.body.bookid, function deleteBook(err) {
-        if (err) {
-          return next(err);
-        }
-        // Success - go to book list
-        res.redirect("/catalog/books");
-      });
+
+      //Checking if the book has booklist instances
+      if (results.booklist.personal_list) {
+        // Book has booklist instances. Render in same way as for GET route.
+        res.render("book_delete", {
+          title: "Delete Book",
+          book: results.book,
+          booklist: results.booklist,
+        });
+        return;
+      } else {
+        //Delete object and redirect to the list of books.
+        Book.findByIdAndRemove(req.body.bookid, function deleteBook(err) {
+          if (err) {
+            return next(err);
+          }
+          // Success - go to book list
+          res.redirect("/catalog/books");
+        });
+      }
     }
   );
 };
@@ -283,6 +382,7 @@ exports.book_update_get = function (req, res, next) {
         Book.findById(req.params.id)
           .populate("author")
           .populate("genre")
+          .populate("language")
           .exec(callback);
       },
       authors: function (callback) {
@@ -290,6 +390,9 @@ exports.book_update_get = function (req, res, next) {
       },
       genres: function (callback) {
         Genre.find(callback);
+      },
+      languages: function (callback) {
+        Language.find(callback);
       },
     },
     function (err, results) {
@@ -326,6 +429,7 @@ exports.book_update_get = function (req, res, next) {
         title: "Update Book",
         authors: results.authors,
         genres: results.genres,
+        languages: results.languages,
         book: results.book,
       });
     }
@@ -345,9 +449,15 @@ exports.book_update_post = [
 
   // Validate fields.
   body("title", "Title must not be empty.").trim().isLength({ min: 1 }),
+  body("originalTitle").trim().optional(),
   body("author", "Author must not be empty.").trim().isLength({ min: 1 }),
   body("summary", "Summary must not be empty.").trim().isLength({ min: 1 }),
   body("isbn", "ISBN must not be empty").trim().isLength({ min: 1 }),
+  body("language", "Language must not be empty.").trim().isLength({ min: 1 }),
+  body("originalLanguage").trim().optional(),
+  body("pages").trim().optional(),
+  body("rating").trim().optional(),
+  body("reviews").trim().optional(),
 
   // Sanitize fields.
   body("*").escape(),
@@ -360,10 +470,14 @@ exports.book_update_post = [
     // Create a Book object with escaped/trimmed data and old id.
     var book = new Book({
       title: req.body.title,
+      originalTitle: req.body.originalTitle,
       author: req.body.author,
       summary: req.body.summary,
       isbn: req.body.isbn,
       genre: typeof req.body.genre === "undefined" ? [] : req.body.genre,
+      language: req.body.language,
+      originalLanguage: req.body.originalLanguage,
+      pages: req.body.pages,
       rating: req.body.rating,
       reviews: req.body.reviews,
       _id: req.params.id, //This is required, or a new ID will be assigned!
@@ -381,6 +495,9 @@ exports.book_update_post = [
           genres: function (callback) {
             Genre.find(callback);
           },
+          language: function (callback) {
+            Language.find(callback);
+          },
         },
         function (err, results) {
           if (err) {
@@ -397,6 +514,7 @@ exports.book_update_post = [
             title: "Update Book",
             authors: results.authors,
             genres: results.genres,
+            languages: results.languages,
             book: book,
             errors: errors.array(),
           });

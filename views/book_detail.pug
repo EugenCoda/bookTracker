@@ -2,6 +2,8 @@ extends layout
 
 block content
   h1 Title: #{book.title}
+  h6 (Original Title: #{book.originalTitle})
+
   
   p #[strong Author:] 
     a(href=book.author.url) #{book.author.name}
@@ -12,14 +14,25 @@ block content
       if index < book.genre.length - 1
         |, 
   p #[strong Summary:] #{book.summary}
+  p #[strong Language:] #{book.language.name}
+  p #[strong Original Language:] #{book.originalLanguage.name}
+  p #[strong Number of Pages:] #{book.pages}
   p #[strong Rating:] #{book.rating}
   p #[strong Reviews:] #{book.reviews}
 
   hr
   if user
-      
-    p
-      a(href=book.booklisturl) Add to my list
+    if booklist == null
+      p
+        a(href=book.booklisturl+'/addtolist') Add to list
+    else
+      each val, index in booklist.personal_list
+        - if (booklist.personal_list[index].book.equals(book._id))
+          p #[strong My Status:] #{booklist.personal_list[index].status} | 
+            a(href=book.booklisturl+'/edit') Edit | 
+            a(href=book.booklisturl+'/remove') Remove
+        - else 
+          return
     p
       a(href=book.url+'/delete') Delete Book
     p

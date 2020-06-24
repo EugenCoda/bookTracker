@@ -17,6 +17,9 @@ block content
         option(value="In progress") In progress
         option(value="Read") Read
     div.form-group
+      label(for='currentPage') Current Page:
+      input#currentPage.form-control(type='text', placeholder='1' name='currentPage' value=(undefined===personal_list ? '' : personal_list.currentPage)) 
+    div.form-group
       label(for='availability') Availability:
       select#availability.form-control(type='select' placeholder='Select availability' name='availability' required='true' )
         option(value="No") No

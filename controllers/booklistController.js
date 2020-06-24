@@ -79,8 +79,16 @@ exports.booklist_add_get = (req, res, next) => {
         err.status = 404;
         return next(err);
       }
-      // Success.
 
+      // Loop through personal list and check if the book is already added
+      // TODO: It gives a 500 error, tbc how to avoid this
+      for (var i = 0; i < results.booklist.personal_list.length; i++) {
+        if (results.booklist.personal_list[i].book._id == req.params.id) {
+          req.flash("danger", "Book already added to your list");
+          res.redirect("/catalog/books");
+        }
+      }
+      // Success.
       res.render("booklist_form", {
         title: "Add Book to My List",
         book: results.book,
@@ -100,6 +108,7 @@ exports.booklist_add_post = (req, res, next) => {
           {
             book: req.params.id,
             status: req.body.status,
+            currentPage: req.body.currentPage,
             availability: req.body.availability,
             date_added: Date.now(),
             date_updated: Date.now(),
@@ -165,6 +174,7 @@ exports.booklist_edit_post = (req, res, next) => {
           {
             book: req.params.id,
             status: req.body.status,
+            currentPage: req.body.currentPage,
             availability: req.body.availability,
             date_added: Date.now(),
             date_updated: Date.now(),
@@ -211,7 +221,7 @@ exports.booklist_remove_get = (req, res, next) => {
 
 // Handle Book remove from booklist on POST
 exports.booklist_remove_post = (req, res, next) => {
-  Booklist.update(
+  Booklist.updateOne(
     { user: req.user._id, "personal_list.book": req.params.id },
     {
       $pull: {

@@ -4,10 +4,21 @@ var Schema = mongoose.Schema;
 
 var BookSchema = new Schema({
   title: { type: String, required: true },
+  originalTitle: String,
   author: { type: Schema.Types.ObjectId, ref: "Author", required: true },
   summary: { type: String, required: true },
   isbn: { type: String, required: true },
   genre: [{ type: Schema.Types.ObjectId, ref: "Genre" }],
+  language: {
+    type: Schema.Types.ObjectId,
+    ref: "Language",
+    required: true,
+  },
+  originalLanguage: {
+    type: Schema.Types.ObjectId,
+    ref: "Language",
+  },
+  pages: Number,
   rating: String,
   reviews: String,
 });
@@ -19,7 +30,7 @@ BookSchema.virtual("url").get(function () {
 
 // Virtual for book's booklist URL
 BookSchema.virtual("booklisturl").get(function () {
-  return "/booklists/addtolist/" + this._id;
+  return "/booklists/" + this._id;
 });
 
 //Export model

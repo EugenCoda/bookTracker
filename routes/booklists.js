@@ -11,13 +11,13 @@ router.get("/mylist", ensureAuthenticated, booklist_controller.booklist_list);
 
 // Add book to user list of books on GET
 router.get(
-  "/addtolist/:id",
+  "/:id/addtolist",
   ensureAuthenticated,
   booklist_controller.booklist_add_get
 );
 
 // Add book to user list of books on POST
-router.post("/addtolist/:id", booklist_controller.booklist_add_post);
+router.post("/:id/addtolist", booklist_controller.booklist_add_post);
 
 // GET request to edit book from booklist.
 router.get(

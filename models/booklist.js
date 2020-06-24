@@ -20,6 +20,8 @@ var BooklistSchema = new Schema({
         default: "Not read",
       },
 
+      currentPage: Number,
+
       availability: {
         type: String,
         required: true,

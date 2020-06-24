@@ -10,6 +10,21 @@ block content
       label(for='family_name') Family Name:
       input#family_name.form-control(type='text' placeholder='Family name (surname)' name='family_name' required='true' value=(undefined===author ? '' : author.family_name))
     div.form-group
+      label(for='country') Country:
+      select#country.form-control(type='select' placeholder='Select country' name='country' required='true' )
+        for country in countries
+          if author
+            //- Handle GET form, where author.country is an object, and POST form, where it is a string.
+            option(
+              value=country._id
+              selected=(
+                country._id.toString()==author.country._id
+                || country._id.toString()==author.country
+              ) ? 'selected' : false
+            ) #{country.name}
+          else
+            option(value=country._id) #{country.name}
+    div.form-group
       label(for='date_of_birth') Date of birth:
       input#date_of_birth.form-control(type='date' name='date_of_birth' value=(undefined===author ? '' : author.date_of_birth) )
     div.form-group

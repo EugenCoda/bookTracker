@@ -3,10 +3,17 @@ extends layout
 block content
   h1 #{title}: #{book.title}
   
-  p Do you really want to delete this Book?
+  if booklist.length
+  
+    p #[strong This book is included in their personal lists by one or more users, so you cannot delete it.]
     
-  form(method='POST' action='')
-    div.form-group
-      input#bookid.form-control(type='hidden',name='bookid', required='true', value=book._id )
+    p
+      a(href='/catalog/books') Back
+  else
+    p Do you really want to delete this Book?
+    
+    form(method='POST' action='')
+      div.form-group
+        input#bookid.form-control(type='hidden',name='bookid', required='true', value=book._id )
 
-    button.btn.btn-primary(type='submit') Delete
+      button.btn.btn-primary(type='submit') Delete

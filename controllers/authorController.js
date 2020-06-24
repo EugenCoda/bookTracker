@@ -1,23 +1,32 @@
 var Author = require("../models/author");
 var async = require("async");
 var Book = require("../models/book");
+var Country = require("../models/country");
 const { body, validationResult } = require("express-validator");
 
 // Display list of all Authors.
-exports.author_list = function (req, res, next) {
-  Author.find()
-    .populate("author")
-    .sort([["family_name", "ascending"]])
-    .exec(function (err, list_authors) {
+exports.author_list = (req, res, next) => {
+  async.parallel(
+    {
+      author: function (callback) {
+        Author.find({})
+          .populate("author")
+          .populate("country")
+          .sort([["family_name", "ascending"]])
+          .exec(callback);
+      },
+    },
+    function (err, results) {
       if (err) {
         return next(err);
       }
       //Successful, so render
       res.render("author_list", {
         title: "Author List",
-        author_list: list_authors,
+        author_list: results.author,
       });
-    });
+    }
+  );
 };
 
 // Display detail page for a specific Author.
@@ -25,7 +34,7 @@ exports.author_detail = function (req, res, next) {
   async.parallel(
     {
       author: function (callback) {
-        Author.findById(req.params.id).exec(callback);
+        Author.findById(req.params.id).populate("country").exec(callback);
       },
       authors_books: function (callback) {
         Book.find({ author: req.params.id }, "title summary").exec(callback);
@@ -53,7 +62,22 @@ exports.author_detail = function (req, res, next) {
 
 // Display Author create form on GET.
 exports.author_create_get = function (req, res, next) {
-  res.render("author_form", { title: "Create Author" });
+  async.parallel(
+    {
+      countries: function (callback) {
+        Country.find(callback);
+      },
+    },
+    function (err, results) {
+      if (err) {
+        return next(err);
+      }
+      res.render("author_form", {
+        title: "Create Author",
+        countries: results.countries,
+      });
+    }
+  );
 };
 
 // Handle Author create on POST.
@@ -72,6 +96,10 @@ exports.author_create_post = [
   //below check doesn't allow spaces, so it needs to be rewritten
   //.isAlphanumeric()
   //.withMessage("Family name has non-alphanumeric characters."),
+  body("country")
+    .isLength({ min: 1 })
+    .trim()
+    .withMessage("Country must be specified."),
   body("date_of_birth", "Invalid date of birth")
     .optional({ checkFalsy: true })
     .isISO8601(),
@@ -80,8 +108,7 @@ exports.author_create_post = [
     .isISO8601(),
 
   // Sanitize fields.
-  body("first_name").escape(),
-  body("family_name").escape(),
+  body("*").escape(),
   body("date_of_birth").toDate(),
   body("date_of_death").toDate(),
 
@@ -92,10 +119,24 @@ exports.author_create_post = [
 
     if (!errors.isEmpty()) {
       // There are errors. Render form again with sanitized values/errors messages.
-      res.render("author_form", {
-        title: "Create Author",
-        author: req.body,
-        errors: errors.array(),
+
+      // Get all countries for form.
+      async.parallel({
+        countries: function (callback) {
+          Country.find(callback);
+        },
+        function(err, results) {
+          if (err) {
+            return next(err);
+          }
+
+          res.render("author_form", {
+            title: "Create Author",
+            author: req.body,
+            countries: results.countries,
+            errors: errors.array(),
+          });
+        },
       });
       return;
     } else {
@@ -105,6 +146,7 @@ exports.author_create_post = [
       var author = new Author({
         first_name: req.body.first_name,
         family_name: req.body.family_name,
+        country: req.body.country,
         date_of_birth: req.body.date_of_birth,
         date_of_death: req.body.date_of_death,
       });
@@ -188,19 +230,34 @@ exports.author_delete_post = function (req, res, next) {
 
 // Display Author update form on GET.
 exports.author_update_get = function (req, res, next) {
-  Author.findById(req.params.id, function (err, author) {
-    if (err) {
-      return next(err);
+  // Get authors and countries for form.
+  async.parallel(
+    {
+      author: function (callback) {
+        Author.findById(req.params.id).populate("country").exec(callback);
+      },
+      countries: function (callback) {
+        Country.find(callback);
+      },
+    },
+    function (err, results) {
+      if (err) {
+        return next(err);
+      }
+      if (results.author == null) {
+        // No results.
+        var err = new Error("Author not found");
+        err.status = 404;
+        return next(err);
+      }
+      // Success.
+      res.render("author_form", {
+        title: "Update Author",
+        author: results.author,
+        countries: results.countries,
+      });
     }
-    if (author == null) {
-      // No results.
-      var err = new Error("Author not found");
-      err.status = 404;
-      return next(err);
-    }
-    // Success.
-    res.render("author_form", { title: "Update Author", author: author });
-  });
+  );
 };
 
 // Handle Author update on POST.
@@ -219,6 +276,10 @@ exports.author_update_post = [
   //below check doesn't allow spaces, so it needs to be rewritten
   //.isAlphanumeric()
   //.withMessage("Family name has non-alphanumeric characters."),
+  body("country")
+    .isLength({ min: 1 })
+    .trim()
+    .withMessage("Country must be specified."),
   body("date_of_birth", "Invalid date of birth")
     .optional({ checkFalsy: true })
     .isISO8601(),
@@ -227,8 +288,7 @@ exports.author_update_post = [
     .isISO8601(),
 
   // Sanitize fields.
-  body("first_name").escape(),
-  body("family_name").escape(),
+  body("*").escape(),
   body("date_of_birth").toDate(),
   body("date_of_death").toDate(),
 
@@ -241,6 +301,7 @@ exports.author_update_post = [
     var author = new Author({
       first_name: req.body.first_name,
       family_name: req.body.family_name,
+      country: req.body.country,
       date_of_birth: req.body.date_of_birth,
       date_of_death: req.body.date_of_death,
       _id: req.params.id,
@@ -248,11 +309,25 @@ exports.author_update_post = [
 
     if (!errors.isEmpty()) {
       // There are errors. Render the form again with sanitized values and error messages.
-      res.render("author_form", {
-        title: "Update Author",
-        author: author,
-        errors: errors.array(),
-      });
+      // Get all countries for form.
+      async.parallel(
+        {
+          countries: function (callback) {
+            Country.find(callback);
+          },
+        },
+        function (err, results) {
+          if (err) {
+            return next(err);
+          }
+          res.render("author_form", {
+            title: "Update Author",
+            author: results.author,
+            countries: results.countries,
+            errors: errors.array(),
+          });
+        }
+      );
       return;
     } else {
       // Data from form is valid. Update the record.

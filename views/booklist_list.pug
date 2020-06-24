@@ -9,8 +9,8 @@ block content
         th Title 
         th Author 
         th Status 
+        th Current Page
         th Availability 
-        th Date Added 
         th Date Started 
         th Date Finished 
     tbody
@@ -22,10 +22,16 @@ block content
           td
             a(href=personal_list[index].book.author.url) #{personal_list[index].book.author.name}  
           td #{personal_list[index].status}  
-          td #{personal_list[index].availability}  
-          td #{moment(personal_list[index].date_added).format('YYYY-MMM-DD')}  
-          td #{moment(personal_list[index].date_started).format('YYYY-MMM-DD')}  
-          td #{moment(personal_list[index].date_finished).format('YYYY-MMM-DD')}  
+          td #{personal_list[index].currentPage}
+          td #{personal_list[index].availability}   
+          if personal_list[index].date_started == null
+            td 
+          else
+            td #{moment(personal_list[index].date_started).format('YYYY-MMM-DD')}  
+          if personal_list[index].date_finished == null
+            td 
+          else
+            td #{moment(personal_list[index].date_finished).format('YYYY-MMM-DD')}  
           td 
             a(href=personal_list[index].book._id+'/edit') Edit  
           td 
