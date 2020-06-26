@@ -1,5 +1,6 @@
 var express = require("express");
 var router = express.Router();
+const { ensureAuthenticated } = require("../middleware/auth");
 
 // Require controller module.
 var booklist_controller = require("../controllers/booklistController");
@@ -38,15 +39,5 @@ router.get(
 
 // POST request to remove book from booklist.
 router.post("/:id/remove", booklist_controller.booklist_remove_post);
-
-//Access Control
-function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  } else {
-    req.flash("danger", "Please login");
-    res.redirect("/users/login");
-  }
-}
 
 module.exports = router;

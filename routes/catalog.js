@@ -1,5 +1,6 @@
 var express = require("express");
 var router = express.Router();
+const { ensureAuthenticated } = require("../middleware/auth");
 
 // Require controller modules.
 var book_controller = require("../controllers/bookController");
@@ -122,15 +123,5 @@ router.get("/genre/:id", genre_controller.genre_detail);
 
 // GET request for list of all Genre.
 router.get("/genres", genre_controller.genre_list);
-
-//Access Control
-function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  } else {
-    req.flash("danger", "Please login");
-    res.redirect("/users/login");
-  }
-}
 
 module.exports = router;

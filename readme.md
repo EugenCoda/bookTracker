@@ -24,6 +24,10 @@ Branch 5:
 - Added country to authors
 - Added language, original language, original title and number of pages to books
 - Added current page to personal list
+- Moved ensureAuthenticated, ensureGuest to a separate file (middleware folder)
+- Implement session for user login (it does not kick the user out if there are changes in the files)
+- Moved config.env to config folder
+- Created db.js file in config folder and moved database connection code there
 
 TODO:
 
