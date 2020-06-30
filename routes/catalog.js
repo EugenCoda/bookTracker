@@ -6,6 +6,8 @@ const { ensureAuthenticated } = require("../middleware/auth");
 var book_controller = require("../controllers/bookController");
 var author_controller = require("../controllers/authorController");
 var genre_controller = require("../controllers/genreController");
+var language_controller = require("../controllers/languageController");
+var country_controller = require("../controllers/countryController");
 
 /// BOOK ROUTES ///
 
@@ -123,5 +125,81 @@ router.get("/genre/:id", genre_controller.genre_detail);
 
 // GET request for list of all Genre.
 router.get("/genres", genre_controller.genre_list);
+
+/// LANGUAGE ROUTES ///
+
+// GET request for creating a Language. NOTE This must come before route that displays Language (uses id).
+router.get(
+  "/language/create",
+  ensureAuthenticated,
+  language_controller.language_create_get
+);
+
+//POST request for creating Language.
+router.post("/language/create", language_controller.language_create_post);
+
+// GET request to delete Language.
+router.get(
+  "/language/:id/delete",
+  ensureAuthenticated,
+  language_controller.language_delete_get
+);
+
+// POST request to delete Language.
+router.post("/language/:id/delete", language_controller.language_delete_post);
+
+// GET request to update Language.
+router.get(
+  "/language/:id/update",
+  ensureAuthenticated,
+  language_controller.language_update_get
+);
+
+// POST request to update Language.
+router.post("/language/:id/update", language_controller.language_update_post);
+
+// GET request for one Language.
+router.get("/language/:id", language_controller.language_detail);
+
+// GET request for list of all Languages.
+router.get("/languages", language_controller.language_list);
+
+/// COUNTRY ROUTES ///
+
+// GET request for creating a Country. NOTE This must come before route that displays Country (uses id).
+router.get(
+  "/country/create",
+  ensureAuthenticated,
+  country_controller.country_create_get
+);
+
+//POST request for creating Country.
+router.post("/country/create", country_controller.country_create_post);
+
+// GET request to delete Country.
+router.get(
+  "/country/:id/delete",
+  ensureAuthenticated,
+  country_controller.country_delete_get
+);
+
+// POST request to delete Country.
+router.post("/country/:id/delete", country_controller.country_delete_post);
+
+// GET request to update Country.
+router.get(
+  "/country/:id/update",
+  ensureAuthenticated,
+  country_controller.country_update_get
+);
+
+// POST request to update Country.
+router.post("/country/:id/update", country_controller.country_update_post);
+
+// GET request for one Country.
+router.get("/country/:id", country_controller.country_detail);
+
+// GET request for list of all Countries.
+router.get("/countries", country_controller.country_list);
 
 module.exports = router;

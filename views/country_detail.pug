@@ -1,0 +1,27 @@
+extends layout
+
+block content
+
+  h1 Country: #{country.name}
+  
+  div(style='margin-left:20px;margin-top:20px')
+
+    h4 Authors
+    
+    ul
+      - country_authors.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
+      each author in country_authors
+        li 
+          a(href=author.url) #{author.name} 
+          | (#{author.lifespan})
+
+      else
+        p This country has no authors
+
+  hr
+  if user
+    p
+      a(href=country.url+'/delete') Delete country
+
+    p
+      a(href=country.url+'/update') Update country

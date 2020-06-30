@@ -1,0 +1,36 @@
+extends layout
+
+block content
+
+  h1 Language: #{language.name}
+  
+  div(style='margin-left:20px;margin-top:20px')
+
+    h4 Books 
+    
+    ul
+      h6 Books available in this language: 
+      - language_books.sort(function(a, b) {let textA = a.title.toUpperCase(); let textB = b.title.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
+      each book in language_books
+        li 
+          a(href=book.url) #{book.title} 
+          |  
+          a(href=book.author.url) (#{book.author.name})
+      hr
+      h6 Books written in this language: 
+      - originalLanguage_books.sort(function(a, b) {let textA = a.title.toUpperCase(); let textB = b.title.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
+      each book in originalLanguage_books
+        li 
+          a(href=book.url) #{book.title} 
+          |  
+          a(href=book.author.url) (#{book.author.name})
+      else
+        p This language has no books
+
+  hr
+  if user
+    p
+      a(href=language.url+'/delete') Delete language
+
+    p
+      a(href=language.url+'/update') Update language

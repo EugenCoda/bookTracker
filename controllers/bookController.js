@@ -1,5 +1,6 @@
 var Book = require("../models/book");
 var Language = require("../models/language");
+var Country = require("../models/country");
 var Booklist = require("../models/booklist");
 var Author = require("../models/author");
 var Genre = require("../models/genre");
@@ -21,6 +22,9 @@ exports.index = function (req, res) {
       },
       language_count: function (callback) {
         Language.countDocuments({}, callback);
+      },
+      country_count: function (callback) {
+        Country.countDocuments({}, callback);
       },
     },
     function (err, results) {

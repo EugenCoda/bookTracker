@@ -28,10 +28,10 @@ Branch 5:
 - Implement session for user login (it does not kick the user out if there are changes in the files)
 - Moved config.env to config folder
 - Created db.js file in config folder and moved database connection code there
+- Added option to create languages and countries
 
 TODO:
 
-- add option to create languages and countries
 - update forms - get the data from db and pre-populate the existing information
 - update forms - show the drop down list options in alphabetical order
 - show book, authors, genres count in "All..." links
