@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  h1= title
+  h1= title  
 
   form(method='POST' action='')
     div.form-group
@@ -12,28 +12,85 @@ block content
       input#author.form-control(type='text' placeholder='Author' name='author' required='true' value=(undefined===book ? '' : book.author.name) readonly='')
     div.form-group
       label(for='status') Status:
-      select#status.form-control(type='select' placeholder='Select status' name='status' required='true')
-        option(value="Not read") Not read
-        option(value="In progress") In progress
-        option(value="Read") Read
+      - let included = false
+      each val, index in personal_list
+        if personal_list[index].book._id==book.id
+          - included = true
+          select#status.form-control(type='select' placeholder='Select status' name='status' required='true')
+            option(value="Not read" selected=(personal_list[index].status=="Not read") ? 'selected' : false) Not read
+            option(value="In progress" selected=(personal_list[index].status=="In progress") ? 'selected' : false) In progress
+            option(value="Read" selected=(personal_list[index].status=="Read") ? 'selected' : false) Read
+        else
+          return
+      if !included      
+        select#status.form-control(type='select' placeholder='Select status' name='status' required='true')
+          option(value="Not read") Not read
+          option(value="In progress") In progress
+          option(value="Read") Read
     div.form-group
       label(for='currentPage') Current Page:
-      input#currentPage.form-control(type='text', placeholder='1' name='currentPage' value=(undefined===personal_list ? '' : personal_list.currentPage)) 
+      - included = false
+      each val, index in personal_list
+        if personal_list[index].book._id==book.id
+          - included = true
+          input#currentPage.form-control(type='text', placeholder='1' name='currentPage' value=(undefined===book ? '' : personal_list[index].currentPage)) 
+        else
+          return
+      if !included
+        input#currentPage.form-control(type='text', placeholder='1' name='currentPage') 
     div.form-group
       label(for='availability') Availability:
-      select#availability.form-control(type='select' placeholder='Select availability' name='availability' required='true' )
-        option(value="No") No
-        option(value="Mail") Mail
-        option(value="Hard Copy") Hard Copy
-        option(value="Soft Copy") Soft Copy
-        option(value="Github") Github
-        option(value="Web") Web
+      - included = false
+      each val, index in personal_list
+        if personal_list[index].book._id==book.id
+          - included = true
+          select#availability.form-control(type='select' placeholder='Select availability' name='availability' required='true' )
+            option(value="No" selected=(personal_list[index].availability=="No") ? 'selected' : false) No
+            option(value="Mail" selected=(personal_list[index].availability=="Mail") ? 'selected' : false) Mail
+            option(value="Hard Copy" selected=(personal_list[index].availability=="Hard Copy") ? 'selected' : false) Hard Copy
+            option(value="Soft Copy" selected=(personal_list[index].availability=="Soft Copy") ? 'selected' : false) Soft Copy
+            option(value="Github" selected=(personal_list[index].availability=="Github") ? 'selected' : false) Github
+            option(value="Web" selected=(personal_list[index].availability=="Web") ? 'selected' : false) Web
+        else
+          return
+      if !included  
+        select#availability.form-control(type='select' placeholder='Select availability' name='availability' required='true' )
+          option(value="No") No
+          option(value="Mail") Mail
+          option(value="Hard Copy") Hard Copy
+          option(value="Soft Copy") Soft Copy
+          option(value="Github") Github
+          option(value="Web") Web
     div.form-group
       label(for='date_started') Date started:
-      input#date_started.form-control(type='date' name='date_started' value=(undefined===personal_list ? '' : personal_list.date_started) )
+      - included = false
+      each val, index in personal_list
+        if personal_list[index].book._id==book.id
+          - included = true
+          input#date_started.form-control(type='date' 
+                                          name='date_started' 
+                                          value=(undefined===book ? '' : 
+                                          moment(personal_list[index].date_started).format('YYYY-MM-DD')))
+        else
+          return
+      if !included
+        input#date_started.form-control(type='date' name='date_started' value='')                    
     div.form-group
       label(for='date_finished') Date finished:
-      input#date_finished.form-control(type='date' name='date_finished' value=(undefined===personal_list.book ? '' : personal_list.date_finished) )
+      - included = false
+      each val, index in personal_list
+        if personal_list[index].book._id==book.id
+          - included = true
+          input#date_finished.form-control(type='date' 
+                                          name='date_finished' 
+                                          value=(undefined===book ? '' : 
+                                          moment(personal_list[index].date_finished).format('YYYY-MM-DD')))
+        else
+          return
+      if !included
+        input#date_finished.form-control(type='date' 
+                                          name='date_finished' 
+                                          value='')
     button.btn.btn-primary(type='submit') Submit
 
   if errors 

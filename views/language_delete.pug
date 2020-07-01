@@ -4,19 +4,23 @@ block content
 
   h1 #{title}: #{language.name}
   
-  if language_books.length
+  if language_books.length || originalLanguage_books.length
   
     p #[strong Delete the following books before attempting to delete this language.]
   
     div(style='margin-left:20px;margin-top:20px')
 
-      h4 Books
-    
-      dl
-      each book in language_books
-        dt 
-          a(href=book.url) #{book.title}
-        dd #{book.summary}
+      h6 Books available in this language:
+      ul
+        each book in language_books
+          li 
+            a(href=book.url) #{book.title}
+      hr
+      h6 Books written in this language:    
+      ul
+        each book in originalLanguage_books
+          li 
+            a(href=book.url) #{book.title}
 
   else
     p Do you really want to delete this Language?

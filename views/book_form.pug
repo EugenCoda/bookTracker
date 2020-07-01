@@ -13,6 +13,7 @@ block content
     div.form-group
       label(for='author') Author:
       select#author.form-control(type='select' placeholder='Select author' name='author' required='true' )
+        - authors.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
         for author in authors
           if book
             //- Handle GET form, where book.author is an object, and POST form, where it is a string.
@@ -41,6 +42,7 @@ block content
     div.form-group
       label(for='language') Language:
       select#language.form-control(type='select' placeholder='Select language' name='language' required='true' )
+        - languages.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
         for language in languages
           if book
             //- Handle GET form, where book.language is an object, and POST form, where it is a string.
@@ -56,6 +58,7 @@ block content
     div.form-group
       label(for='originalLanguage') Original Language:
       select#originalLanguage.form-control(type='select' placeholder='Select original language' name='originalLanguage')
+        - languages.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
         for language in languages
           if book
             //- Handle GET form, where book.language is an object, and POST form, where it is a string.

@@ -129,6 +129,9 @@ exports.language_delete_get = function (req, res, next) {
       languages_books: function (callback) {
         Book.find({ language: req.params.id }).exec(callback);
       },
+      originalLanguage_books: function (callback) {
+        Book.find({ originalLanguage: req.params.id }).exec(callback);
+      },
     },
     function (err, results) {
       if (err) {
@@ -143,6 +146,7 @@ exports.language_delete_get = function (req, res, next) {
         title: "Delete Language",
         language: results.language,
         language_books: results.languages_books,
+        originalLanguage_books: results.originalLanguage_books,
       });
     }
   );
@@ -158,18 +162,25 @@ exports.language_delete_post = function (req, res, next) {
       languages_books: function (callback) {
         Book.find({ language: req.body.languageid }).exec(callback);
       },
+      originalLanguage_books: function (callback) {
+        Book.find({ originalLanguage: req.body.languageid }).exec(callback);
+      },
     },
     function (err, results) {
       if (err) {
         return next(err);
       }
       // Success
-      if (results.languages_books.length > 0) {
+      if (
+        results.languages_books.length > 0 ||
+        results.originalLanguages_books.length > 0
+      ) {
         // Language has books. Render in same way as for GET route.
         res.render("language_delete", {
           title: "Delete Language",
           language: results.language,
           language_books: results.languages_books,
+          originalLanguage_books: results.originalLanguage_books,
         });
         return;
       } else {

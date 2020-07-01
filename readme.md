@@ -30,11 +30,14 @@ Branch 5:
 - Created db.js file in config folder and moved database connection code there
 - Added option to create languages and countries
 
+Branch 6:
+
+- Updated forms - get the data from db and pre-populate the existing information
+- Updated forms - show the drop down list options in alphabetical order
+
 TODO:
 
-- update forms - get the data from db and pre-populate the existing information
-- update forms - show the drop down list options in alphabetical order
-- show book, authors, genres count in "All..." links
+- implement rating and review
 - check if email address is already in use (with express-validator)
 - implement some password requirements (with express-validator)
 - enable user profile editing & password change / reset (with email confirmation?)
@@ -48,3 +51,4 @@ Problematic:
 - date_updated should be recorded automatically (for new items it should be equal to date_added)
 - enable special characters when fetching text from db
 - restrict adding a book more than once in a booklist - done in branch 5(still with a 500 error)
+- show book, authors, genres count in "All..." links

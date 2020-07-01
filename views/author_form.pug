@@ -12,6 +12,7 @@ block content
     div.form-group
       label(for='country') Country:
       select#country.form-control(type='select' placeholder='Select country' name='country' required='true' )
+        - countries.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
         for country in countries
           if author
             //- Handle GET form, where author.country is an object, and POST form, where it is a string.
@@ -26,10 +27,10 @@ block content
             option(value=country._id) #{country.name}
     div.form-group
       label(for='date_of_birth') Date of birth:
-      input#date_of_birth.form-control(type='date' name='date_of_birth' value=(undefined===author ? '' : author.date_of_birth) )
+      input#date_of_birth.form-control(type='date' name='date_of_birth' value=(undefined===author ? '' : author.date_of_birth_yyyy_mm_dd) )
     div.form-group
       label(for='date_of_death') Date of death:
-      input#date_of_death.form-control(type='date' name='date_of_death' value=(undefined===author ? '' : author.date_of_death) )
+      input#date_of_death.form-control(type='date' name='date_of_death' value=(undefined===author ? '' : author.date_of_death_yyyy_mm_dd) )
     button.btn.btn-primary(type='submit') Submit
   if errors 
     ul
