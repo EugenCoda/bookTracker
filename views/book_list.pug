@@ -8,6 +8,7 @@ block content
       tr
         th Title 
         th Author 
+        th Rating
         if user
           th My Status
     tbody
@@ -17,7 +18,8 @@ block content
           td
             a(href=book.url) #{book.title} 
           td 
-            a(href=book.author.url) #{book.author.name}
+            a(href=book.author.url) #{book.author.name} 
+          td #{book.rating} 
           if user
             each val, index in personal_list
               - if (personal_list[index].book.title == book.title)

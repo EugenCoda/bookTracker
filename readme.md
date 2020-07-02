@@ -37,7 +37,7 @@ Branch 6:
 
 TODO:
 
-- implement rating and review
+- implement rating and review - in progress (added for users)
 - check if email address is already in use (with express-validator)
 - implement some password requirements (with express-validator)
 - enable user profile editing & password change / reset (with email confirmation?)

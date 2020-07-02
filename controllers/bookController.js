@@ -44,7 +44,9 @@ exports.book_list = (req, res, next) => {
     async.parallel(
       {
         book: function (callback) {
-          Book.find({}, "title author").populate("author").exec(callback);
+          Book.find({}, "title author rating")
+            .populate("author")
+            .exec(callback);
         },
         booklist: function (callback) {
           Booklist.findOne({ user: req.user._id })
@@ -74,7 +76,9 @@ exports.book_list = (req, res, next) => {
     async.parallel(
       {
         book: function (callback) {
-          Book.find({}, "title author").populate("author").exec(callback);
+          Book.find({}, "title author rating")
+            .populate("author")
+            .exec(callback);
         },
       },
       function (err, results) {

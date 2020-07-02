@@ -13,8 +13,10 @@ block content
         th Availability 
         th Date Started 
         th Date Finished 
+        th My Rating 
     tbody
-      - personal_list.sort(function(a, b) {let textA = a.book.title.toUpperCase(); let textB = b.book.title.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
+      //- Sorted to show latest reads on top.
+      - personal_list.sort(function(a, b) {let textA = a.date_finished; let textB = b.date_finished; return (textA > textB) ? -1 : (textA < textB) ? 1 : 0;});
       each val, index in personal_list
         tr
           td
@@ -31,7 +33,8 @@ block content
           if personal_list[index].date_finished == null
             td 
           else
-            td #{moment(personal_list[index].date_finished).format('YYYY-MMM-DD')}  
+            td #{moment(personal_list[index].date_finished).format('YYYY-MMM-DD')} 
+          td #{personal_list[index].rating} 
           td 
             a(href=personal_list[index].book._id+'/edit') Edit  
           td 

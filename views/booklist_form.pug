@@ -1,6 +1,7 @@
 extends layout
 
 block content
+
   h1= title  
 
   form(method='POST' action='')
@@ -91,9 +92,30 @@ block content
         input#date_finished.form-control(type='date' 
                                           name='date_finished' 
                                           value='')
+    div.form-group
+      label(for='rating') My Rating:
+      - included = false
+      each val, index in personal_list
+        if personal_list[index].book._id==book.id
+          - included = true
+          input#rating.form-control(type='text', placeholder='Rate this book with a score between 1-5' name='rating' value=(undefined===book ? '' : personal_list[index].rating)) 
+      if !included
+        input#rating.form-control(type='text', placeholder='Rate this book with a score between 1-5' name='rating') 
+    div.form-group
+      label(for='reviews') My Review:
+      - included = false
+      each val, index in personal_list
+        if personal_list[index].book._id==book.id
+          - included = true
+          textarea#reviews.form-control(type='textarea', placeholder='Enter a review' name='reviews' rows='3') #{undefined===book ? '' : personal_list[index].reviews}
+      if !included
+        input#review.form-control(type='text', placeholder='Enter a review' name='reviews') 
     button.btn.btn-primary(type='submit') Submit
+  
 
   if errors 
     ul
       for error in errors
         li!= error.msg
+  
+  script(src='/javascripts/main.js')

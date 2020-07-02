@@ -28,6 +28,8 @@ var BooklistSchema = new Schema({
         enum: ["No", "Mail", "Hard copy", "Soft copy", "Github", "Web"],
         default: "No",
       },
+      rating: Number,
+      reviews: String,
     },
   ],
 });
