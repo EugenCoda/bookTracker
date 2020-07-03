@@ -19,8 +19,6 @@ var BookSchema = new Schema({
     ref: "Language",
   },
   pages: Number,
-  rating: String,
-  reviews: String,
 });
 
 // Virtual for book's URL

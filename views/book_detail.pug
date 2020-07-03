@@ -17,8 +17,28 @@ block content
   p #[strong Language:] #{book.language.name}
   p #[strong Original Language:] #{book.originalLanguage.name}
   p #[strong Number of Pages:] #{book.pages}
-  p #[strong Rating:] #{book.rating}
-  p #[strong Reviews:] #{book.reviews}
+  - let ratingCount = 0
+  - let ratingSum = 0
+  each val, i in booklist_count
+    each value, j in booklist_count[i].personal_list
+      - if (booklist_count[i].personal_list[j].book.equals(book._id))
+        - if (booklist_count[i].personal_list[j].rating)
+          - ratingCount++
+          - ratingSum=ratingSum+booklist_count[i].personal_list[j].rating
+      - else 
+        return
+  if ratingCount == 0
+    p #[strong Average Rating:] N/A
+  else
+    p #[strong Average Rating:] #{ratingSum/ratingCount} (#[strong No. of Ratings:] #{ratingCount})
+
+  - let reviewCount = 0
+  each val, i in booklist_count
+    each value, j in booklist_count[i].personal_list
+      - if (booklist_count[i].personal_list[j].book.equals(book._id))
+        - if (booklist_count[i].personal_list[j].reviews)
+          - reviewCount++
+          p #[strong Review #{reviewCount}:] #{booklist_count[i].personal_list[j].reviews}
 
   hr
   if user

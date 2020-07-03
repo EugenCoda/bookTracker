@@ -58,16 +58,21 @@ exports.book_list = (req, res, next) => {
             })
             .exec(callback);
         },
+        booklist_count: function (callback) {
+          Booklist.find({}, callback);
+        },
       },
       function (err, results) {
         if (err) {
           return next(err);
         }
+
         //Successful, so render
         res.render("book_list", {
           title: "Book List",
           book_list: results.book,
           personal_list: results.booklist.personal_list,
+          booklist_count: results.booklist_count,
         });
       }
     );
@@ -80,15 +85,20 @@ exports.book_list = (req, res, next) => {
             .populate("author")
             .exec(callback);
         },
+        booklist_count: function (callback) {
+          Booklist.find({}, callback);
+        },
       },
       function (err, results) {
         if (err) {
           return next(err);
         }
+
         //Successful, so render
         res.render("book_list", {
           title: "Book List",
           book_list: results.book,
+          booklist_count: results.booklist_count,
         });
       }
     );
@@ -121,6 +131,9 @@ exports.book_detail = function (req, res, next) {
             })
             .exec(callback);
         },
+        booklist_count: function (callback) {
+          Booklist.find({}, callback);
+        },
       },
       function (err, results) {
         if (err) {
@@ -138,6 +151,7 @@ exports.book_detail = function (req, res, next) {
           title: results.book.title,
           book: results.book,
           booklist: results.booklist,
+          booklist_count: results.booklist_count,
         });
       }
     );
@@ -152,6 +166,9 @@ exports.book_detail = function (req, res, next) {
             .populate("language")
             .populate("originalLanguage")
             .exec(callback);
+        },
+        booklist_count: function (callback) {
+          Booklist.find({}, callback);
         },
       },
       function (err, results) {
@@ -168,6 +185,7 @@ exports.book_detail = function (req, res, next) {
         res.render("book_detail", {
           title: results.book.title,
           book: results.book,
+          booklist_count: results.booklist_count,
         });
       }
     );
@@ -223,8 +241,6 @@ exports.book_create_post = [
   body("language", "Language must not be empty.").trim().isLength({ min: 1 }),
   body("originalLanguage").trim().optional(),
   body("pages").trim().optional(),
-  body("rating").trim().optional(),
-  body("reviews").trim().optional(),
 
   // Sanitize fields (using wildcard).
   body("*").escape(),
@@ -245,8 +261,6 @@ exports.book_create_post = [
       language: req.body.language,
       originalLanguage: req.body.originalLanguage,
       pages: req.body.pages,
-      rating: req.body.rating,
-      reviews: req.body.reviews,
     });
 
     if (!errors.isEmpty()) {
@@ -464,8 +478,6 @@ exports.book_update_post = [
   body("language", "Language must not be empty.").trim().isLength({ min: 1 }),
   body("originalLanguage").trim().optional(),
   body("pages").trim().optional(),
-  body("rating").trim().optional(),
-  body("reviews").trim().optional(),
 
   // Sanitize fields.
   body("*").escape(),
@@ -486,8 +498,6 @@ exports.book_update_post = [
       language: req.body.language,
       originalLanguage: req.body.originalLanguage,
       pages: req.body.pages,
-      rating: req.body.rating,
-      reviews: req.body.reviews,
       _id: req.params.id, //This is required, or a new ID will be assigned!
     });
 

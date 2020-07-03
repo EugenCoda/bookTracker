@@ -8,7 +8,7 @@ block content
       tr
         th Title 
         th Author 
-        th Rating
+        th Avg. Rating
         if user
           th My Status
     tbody
@@ -19,7 +19,20 @@ block content
             a(href=book.url) #{book.title} 
           td 
             a(href=book.author.url) #{book.author.name} 
-          td #{book.rating} 
+          - let ratingCount = 0
+          - let ratingSum = 0
+          each val, i in booklist_count
+            each value, j in booklist_count[i].personal_list
+              - if (booklist_count[i].personal_list[j].book.equals(book._id))
+                - if (booklist_count[i].personal_list[j].rating)
+                  - ratingCount++
+                  - ratingSum=ratingSum+booklist_count[i].personal_list[j].rating
+              - else 
+                return
+          if ratingCount == 0
+            td N/A
+          else
+            td #{(ratingSum/ratingCount).toFixed(2)}
           if user
             each val, index in personal_list
               - if (personal_list[index].book.title == book.title)

@@ -74,12 +74,6 @@ block content
     div.form-group
       label(for='pages') Number of Pages:
       input#pages.form-control(type='text', placeholder='100' name='pages' value=(undefined===book ? '' : book.pages)) 
-    div.form-group
-      label(for='rating') Rating:
-      input#rating.form-control(type='text', placeholder='1-5' name='rating' value=(undefined===book ? '' : book.rating)) 
-    div.form-group
-      label(for='reviews') Reviews:
-      textarea#reviews.form-control(type='textarea', placeholder='Reviews' name='reviews' rows='3') #{undefined===book ? '' : book.reviews}
     button.btn.btn-primary(type='submit') Submit
 
   if errors 

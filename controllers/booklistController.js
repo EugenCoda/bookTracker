@@ -35,6 +35,11 @@ exports.booklist_list = (req, res, next) => {
           })
           .exec(callback);
       },
+      booklist_count: function (callback) {
+        Booklist.find({})
+          .populate({ path: "personal_list.book" })
+          .exec(callback);
+      },
     },
     function (err, results) {
       if (err) {
@@ -45,6 +50,7 @@ exports.booklist_list = (req, res, next) => {
       res.render("booklist_list", {
         title: "My Books List",
         personal_list: results.booklist.personal_list,
+        booklist_count: results.booklist_count,
       });
     }
   );

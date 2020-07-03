@@ -8,12 +8,13 @@ block content
       tr
         th Title 
         th Author 
+        th Avg. Rating
+        th My Rating
         th Status 
         th Current Page
         th Availability 
         th Date Started 
-        th Date Finished 
-        th My Rating 
+        th Date Finished  
     tbody
       //- Sorted to show latest reads on top.
       - personal_list.sort(function(a, b) {let textA = a.date_finished; let textB = b.date_finished; return (textA > textB) ? -1 : (textA < textB) ? 1 : 0;});
@@ -23,6 +24,22 @@ block content
             a(href=personal_list[index].book.url) #{personal_list[index].book.title}  
           td
             a(href=personal_list[index].book.author.url) #{personal_list[index].book.author.name}  
+          - let ratingCount = 0
+          - let ratingSum = 0
+          - const book = personal_list[index].book
+          each val, i in booklist_count
+            each value, j in booklist_count[i].personal_list
+              - if (booklist_count[i].personal_list[j].book.equals(book))
+                - if (booklist_count[i].personal_list[j].rating)
+                  - ratingCount++
+                  - ratingSum=ratingSum+booklist_count[i].personal_list[j].rating
+              - else 
+                return
+          if ratingCount == 0
+            td N/A
+          else
+            td #{(ratingSum/ratingCount).toFixed(2)} 
+          td #{personal_list[index].rating} 
           td #{personal_list[index].status}  
           td #{personal_list[index].currentPage}
           td #{personal_list[index].availability}   
@@ -34,7 +51,6 @@ block content
             td 
           else
             td #{moment(personal_list[index].date_finished).format('YYYY-MMM-DD')} 
-          td #{personal_list[index].rating} 
           td 
             a(href=personal_list[index].book._id+'/edit') Edit  
           td 
