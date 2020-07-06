@@ -1,9 +1,7 @@
 var Genre = require("../models/genre");
 var Book = require("../models/book");
 var async = require("async");
-const validator = require("express-validator");
 const { body, validationResult } = require("express-validator");
-const author = require("../models/author");
 
 // Display list of all Genre.
 exports.genre_list = function (req, res, next) {
@@ -62,10 +60,11 @@ exports.genre_create_get = function (req, res, next) {
 // Handle Genre create on POST.
 exports.genre_create_post = [
   // Validate that the name field is not empty.
-  validator.body("name", "Genre name required").trim().isLength({ min: 1 }),
+  body("name", "Genre name required").trim().isLength({ min: 1 }),
 
   // Sanitize (escape) the name field.
-  validator.body("name").escape(),
+  body("name").escape(),
+  body("name").unescape(), //not sure if it is safe to do so
 
   // Process request after validation and sanitization.
   (req, res, next) => {
@@ -199,6 +198,7 @@ exports.genre_update_post = [
 
   // Sanitize (escape) the name field.
   body("name").escape(),
+  body("name").unescape(), //not sure if it is safe to do so
 
   // Process request after validation and sanitization.
   (req, res, next) => {

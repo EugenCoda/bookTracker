@@ -109,6 +109,7 @@ exports.author_create_post = [
 
   // Sanitize fields.
   body("*").escape(),
+  body("*").unescape(), //not sure if it is safe to do so
   body("date_of_birth").toDate(),
   body("date_of_death").toDate(),
 
@@ -289,6 +290,7 @@ exports.author_update_post = [
 
   // Sanitize fields.
   body("*").escape(),
+  body("*").unescape(), //not sure if it is safe to do so
   body("date_of_birth").toDate(),
   body("date_of_death").toDate(),
 

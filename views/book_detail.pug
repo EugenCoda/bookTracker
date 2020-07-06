@@ -2,7 +2,8 @@ extends layout
 
 block content
   h1 Title: #{book.title}
-  h6 (Original Title: #{book.originalTitle})
+  - if (book.language.id != book.originalLanguage.id)
+    h6 (Original Title: #{book.originalTitle})
 
   
   p #[strong Author:] 
@@ -14,8 +15,10 @@ block content
       if index < book.genre.length - 1
         |, 
   p #[strong Summary:] #{book.summary}
-  p #[strong Language:] #{book.language.name}
-  p #[strong Original Language:] #{book.originalLanguage.name}
+  - if (book.language.id != book.originalLanguage.id)
+    p #[strong Language:] #{book.language.name} (#[strong Original Language:] #{book.originalLanguage.name})
+  - else
+    p #[strong Language:] #{book.language.name}
   p #[strong Number of Pages:] #{book.pages}
   - let ratingCount = 0
   - let ratingSum = 0

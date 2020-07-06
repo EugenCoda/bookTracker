@@ -244,6 +244,7 @@ exports.book_create_post = [
 
   // Sanitize fields (using wildcard).
   body("*").escape(),
+  body("*").unescape(), //not sure if it is safe to do so
 
   // Process request after validation and sanitization.
   (req, res, next) => {
@@ -405,6 +406,7 @@ exports.book_update_get = function (req, res, next) {
           .populate("author")
           .populate("genre")
           .populate("language")
+          .populate("originalLanguage")
           .exec(callback);
       },
       authors: function (callback) {
@@ -481,6 +483,7 @@ exports.book_update_post = [
 
   // Sanitize fields.
   body("*").escape(),
+  body("*").unescape(), //not sure if it is safe to do so
 
   // Process request after validation and sanitization.
   (req, res, next) => {
@@ -507,6 +510,14 @@ exports.book_update_post = [
       // Get all authors and genres for form.
       async.parallel(
         {
+          book: function (callback) {
+            Book.findById(req.params.id)
+              .populate("author")
+              .populate("genre")
+              .populate("language")
+              .populate("originalLanguage")
+              .exec(callback);
+          },
           authors: function (callback) {
             Author.find(callback);
           },

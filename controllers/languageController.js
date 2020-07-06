@@ -1,9 +1,7 @@
 var Language = require("../models/language");
 var Book = require("../models/book");
 var async = require("async");
-const validator = require("express-validator");
 const { body, validationResult } = require("express-validator");
-const author = require("../models/author");
 
 // Display list of all Languages.
 exports.language_list = function (req, res, next) {
@@ -70,10 +68,11 @@ exports.language_create_get = function (req, res, next) {
 // Handle Language create on POST.
 exports.language_create_post = [
   // Validate that the name field is not empty.
-  validator.body("name", "Language name required").trim().isLength({ min: 1 }),
+  body("name", "Language name required").trim().isLength({ min: 1 }),
 
   // Sanitize (escape) the name field.
-  validator.body("name").escape(),
+  body("name").escape(),
+  body("name").unescape(), //not sure if it is safe to do so
 
   // Process request after validation and sanitization.
   (req, res, next) => {
@@ -226,6 +225,7 @@ exports.language_update_post = [
 
   // Sanitize (escape) the name field.
   body("name").escape(),
+  body("name").unescape(), //not sure if it is safe to do so
 
   // Process request after validation and sanitization.
   (req, res, next) => {

@@ -65,15 +65,15 @@ block content
             option(
               value=language._id
               selected=(
-                language._id.toString()==book.language._id
-                || language._id.toString()==book.language
+                language._id.toString()==book.originalLanguage._id
+                || language._id.toString()==book.originalLanguage
               ) ? 'selected' : false
             ) #{language.name}
           else
             option(value=language._id) #{language.name}
     div.form-group
       label(for='pages') Number of Pages:
-      input#pages.form-control(type='text', placeholder='100' name='pages' value=(undefined===book ? '' : book.pages)) 
+      input#pages.form-control(type='text', placeholder='Add the number of pages' name='pages' value=(undefined===book ? '' : book.pages)) 
     button.btn.btn-primary(type='submit') Submit
 
   if errors 

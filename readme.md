@@ -35,20 +35,21 @@ Branch 6:
 - Updated forms - get the data from db and pre-populate the existing information
 - Updated forms - show the drop down list options in alphabetical order
 - Implemented rating and review
+- Check if email address is already in use (with express-validator)
+- Implemented some password requirements (with express-validator)
+- Validated and sanitized all user input
+- Unescaped special characters when fetching text from db
 
 TODO:
 
-- check if email address is already in use (with express-validator)
-- implement some password requirements (with express-validator)
+- improve appearance
 - enable user profile editing & password change / reset (with email confirmation?)
 - delete user booklist automatically if an user account is deleted
-- validate and sanitize all user input (done partially)
 - search bar
 
 Problematic:
 
 - date_added should be recorded automatically (for updates it should remain unchanged)
 - date_updated should be recorded automatically (for new items it should be equal to date_added)
-- enable special characters when fetching text from db
 - restrict adding a book more than once in a booklist - done in branch 5(still with a 500 error)
 - show book, authors, genres count in "All..." links

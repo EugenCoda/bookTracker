@@ -1,6 +1,6 @@
 var User = require("../models/user");
 var Booklist = require("../models/booklist");
-const { check, validationResult } = require("express-validator");
+const { body, validationResult } = require("express-validator");
 const flash = require("connect-flash");
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
@@ -12,12 +12,30 @@ exports.user_create_get = function (req, res, next) {
 
 // Handle User create on POST.
 exports.user_create_post = [
-  check("name", "Name is required").isLength({ min: 1 }),
-  check("email", "Email is required").isLength({ min: 1 }),
-  check("email", "Email is not valid").isEmail(),
-  check("username", "Username is required").isLength({ min: 1 }),
-  check("password", "Password is required").isLength({ min: 1 }),
-  check("password2", "Passwords should match").custom((value, { req }) => {
+  body("name", "Name is required").isLength({ min: 1 }),
+  body("email", "Email is required").isLength({ min: 1 }),
+  body("email", "Email is not valid")
+    .isEmail()
+    .normalizeEmail()
+    .custom((value, { req }) => {
+      return new Promise((resolve, reject) => {
+        User.findOne({ email: req.body.email }, function (err, user) {
+          if (err) {
+            reject(new Error("Server Error"));
+          }
+          if (Boolean(user)) {
+            reject(new Error("E-mail already in use"));
+          }
+          resolve(true);
+        });
+      });
+    }),
+  body("username", "Username is required").isLength({ min: 1 }),
+  body(
+    "password",
+    "Password must be at least 6 characters long and include one lowercase character, one uppercase character, a number, and a special character."
+  ).matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{6,}$/, "i"),
+  body("password2", "Passwords should match").custom((value, { req }) => {
     return value === req.body.password;
   }),
 
@@ -31,9 +49,7 @@ exports.user_create_post = [
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      console.log(errors);
-      res.render("register", {
-        user: user,
+      res.render("user_form", {
         errors: errors.mapped(),
       });
     } else {

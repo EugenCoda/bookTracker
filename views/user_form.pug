@@ -6,9 +6,9 @@ block content
   form(method='POST' action='/users/register')
     div.form-group
       label(for='name') Name:
-      input#name.form-control(type='text' placeholder='Name' name='name' required='true')
+      input#name.form-control(type='text' name='name' required='true')
       label(for='email') Email:
-      input#email.form-control(type='text' placeholder='Email' name='email' required='true')
+      input#email.form-control(type='text' name='email' required='true')
     div.form-group
       label(for='username') User Name:
       input#username.form-control(type='text' name='username' required='true')
@@ -18,7 +18,3 @@ block content
       label(for='password2') Confirm Password:
       input#password2.form-control(type='password' name='password2' required='true')
     button.btn.btn-primary(type='submit') Submit
-  if errors 
-    ul
-      for error in errors
-        li!= error.msg

@@ -119,7 +119,7 @@ block content
           - included = true
           textarea#reviews.form-control(type='textarea', placeholder='Enter a review' name='reviews' rows='3') #{undefined===book ? '' : personal_list[index].reviews}
       if !included
-        input#review.form-control(type='text', placeholder='Enter a review' name='reviews' rows='3') 
+        textarea#reviews.form-control(type='textarea', placeholder='Enter a review' name='reviews' rows='3') 
     button.btn.btn-primary(type='submit') Submit
   
 

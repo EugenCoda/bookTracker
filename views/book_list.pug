@@ -34,10 +34,17 @@ block content
           else
             td #{(ratingSum/ratingCount).toFixed(2)}
           if user
+            - let bookAdded = false
             each val, index in personal_list
               - if (personal_list[index].book.title == book.title)
-                td #{personal_list[index].status}
+                td #{personal_list[index].status} | 
+                  a(href=book.booklisturl+'/edit') Edit | 
+                  a(href=book.booklisturl+'/remove') Remove 
+                - bookAdded = true
               - else 
                 return
+            if !bookAdded
+              td 
+                a(href=book.booklisturl+'/addtolist') Add to list
       else
         p There are no books.

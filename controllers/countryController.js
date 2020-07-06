@@ -1,9 +1,7 @@
-var Country = require("../models/country");
-var Book = require("../models/book");
-var async = require("async");
-const validator = require("express-validator");
-const { body, validationResult } = require("express-validator");
+const Country = require("../models/country");
 const Author = require("../models/author");
+var async = require("async");
+const { body, validationResult } = require("express-validator");
 
 // Display list of all Countries.
 exports.country_list = function (req, res, next) {
@@ -64,10 +62,11 @@ exports.country_create_get = function (req, res, next) {
 // Handle Country create on POST.
 exports.country_create_post = [
   // Validate that the name field is not empty.
-  validator.body("name", "Country name required").trim().isLength({ min: 1 }),
+  body("name", "Country name required").trim().isLength({ min: 1 }),
 
   // Sanitize (escape) the name field.
-  validator.body("name").escape(),
+  body("name").escape(),
+  body("name").unescape(), //not sure if it is safe to do so
 
   // Process request after validation and sanitization.
   (req, res, next) => {
@@ -206,6 +205,7 @@ exports.country_update_post = [
 
   // Sanitize (escape) the name field.
   body("name").escape(),
+  body("name").unescape(), //not sure if it is safe to do so
 
   // Process request after validation and sanitization.
   (req, res, next) => {

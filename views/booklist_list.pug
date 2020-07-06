@@ -46,11 +46,11 @@ block content
           if personal_list[index].date_started == null
             td 
           else
-            td #{moment(personal_list[index].date_started).format('YYYY-MMM-DD')}  
+            td #{moment(personal_list[index].date_started).format('MMM D, YYYY')}  
           if personal_list[index].date_finished == null
             td 
           else
-            td #{moment(personal_list[index].date_finished).format('YYYY-MMM-DD')} 
+            td #{moment(personal_list[index].date_finished).format('MMM D, YYYY')} 
           td 
             a(href=personal_list[index].book._id+'/edit') Edit  
           td 
