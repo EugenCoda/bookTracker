@@ -2,7 +2,7 @@ extends layout
 
 block content
 
-  h1 #{title}: #{genre.name}
+  h3 #{title}: #{genre.name}
   
   if genre_books.length
   
@@ -25,4 +25,6 @@ block content
       div.form-group
         input#genreid.form-control(type='hidden',name='genreid', required='true', value=genre._id )
 
-      button.btn.btn-primary(type='submit') Delete
+      button.btn.btn-danger.btn-sm(type='submit') Delete
+      | 
+      a.btn.btn-secondary.btn-sm(href='/catalog/books') Cancel

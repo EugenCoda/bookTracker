@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  h1 #{title}: #{book.title}
+  h3 #{title}: #{book.title}
   
   p Do you really want to remove this Book from your list?
     
@@ -9,4 +9,6 @@ block content
     div.form-group
       input#bookid.form-control(type='hidden',name='bookid', required='true', value=book._id )
 
-    button.btn.btn-primary(type='submit') Remove
+    button.btn.btn-danger.btn-sm(type='submit') Remove
+    | 
+    a.btn.btn-secondary.btn-sm(href='/catalog/books') Cancel

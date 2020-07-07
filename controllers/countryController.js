@@ -14,7 +14,7 @@ exports.country_list = function (req, res, next) {
       }
       //Successful, so render
       res.render("country_list", {
-        title: "Country List",
+        title: "Countries",
         country_list: list_countries,
       });
     });
@@ -56,7 +56,7 @@ exports.country_detail = function (req, res, next) {
 
 // Display Country create form on GET.
 exports.country_create_get = function (req, res, next) {
-  res.render("country_form", { title: "Create Country" });
+  res.render("country_form", { title: "Add Country" });
 };
 
 // Handle Country create on POST.
@@ -79,7 +79,7 @@ exports.country_create_post = [
     if (!errors.isEmpty()) {
       // There are errors. Render the form again with sanitized values/error messages.
       res.render("country_form", {
-        title: "Create Country",
+        title: "Add Country",
         country: country,
         errors: errors.array(),
       });

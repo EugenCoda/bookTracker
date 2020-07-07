@@ -1,14 +1,33 @@
 extends layout
 
 block content
-  h1= title
+  h3= title
   
-  ul
-    each author in author_list
-      li 
-        a(href=author.url) #{author.name} 
-        |  (#{author.lifespan}) 
-        |  #{author.country.name}
+  table.table.table-sm.table-hover
+    thead.thead-light
+      tr
+        th(scope='col' width='30px') #
+        th(scope='col') Author 
+        th(scope='col') Born
+        th(scope='col') Died
+        th(scope='col') Country of Origin
+    tbody 
+      - let index = 0
+      each author in author_list
+        - index++
+        tr
+          th(scope='row') !{index}.
+          td
+            a(href=author.url) #{author.name} 
+          if author.date_of_birth == null
+            td 
+          else
+            td #{moment(author.date_of_birth).format('MMM D, YYYY')}
+          if author.date_of_death == null
+            td 
+          else
+            td #{moment(author.date_of_death).format('MMM D, YYYY')}
+          td #{author.country.name}
 
-    else
-      li There are no authors.
+      else
+        li There are no authors.

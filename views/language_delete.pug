@@ -2,7 +2,7 @@ extends layout
 
 block content
 
-  h1 #{title}: #{language.name}
+  h3 #{title}: #{language.name}
   
   if language_books.length || originalLanguage_books.length
   
@@ -29,4 +29,6 @@ block content
       div.form-group
         input#languageid.form-control(type='hidden',name='languageid', required='true', value=language._id )
 
-      button.btn.btn-primary(type='submit') Delete
+      button.btn.btn-danger.btn-sm(type='submit') Delete
+      | 
+      a.btn.btn-secondary.btn-sm(href='/catalog/books') Cancel

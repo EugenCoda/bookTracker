@@ -1,3 +1,9 @@
+/* Show it is fixed to the top */
+body {
+  min-height: 75rem;
+  padding-top: 4.5rem;
+}
+
 .sidebar-nav {
   margin-top: 20px;
   padding: 0;
@@ -16,10 +22,10 @@
   border-color: #d6e9c6;
 }
 
-.mylist {
-  width: 1000px;
-}
-
-.booklist {
-  width: 1000px;
+.bi-plus-circle-fill,
+.bi-pencil,
+.bi-x-circle-fill {
+  width: 1.3em;
+  height: 1.3em;
+  margin-right: 5px;
 }

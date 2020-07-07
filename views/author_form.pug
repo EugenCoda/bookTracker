@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  h1=title
+  h3=title
 
   form(method='POST' action='')
     div.form-group
@@ -32,6 +32,8 @@ block content
       label(for='date_of_death') Date of death:
       input#date_of_death.form-control(type='date' name='date_of_death' value=(undefined===author ? '' : author.date_of_death_yyyy_mm_dd) )
     button.btn.btn-primary(type='submit') Submit
+    | 
+    a.btn.btn-secondary(href='/catalog/books') Cancel
   if errors 
     ul
       for error in errors

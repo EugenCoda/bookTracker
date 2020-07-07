@@ -2,26 +2,43 @@ extends layout
 
 block content
 
-  h1 Country: #{country.name}
+  h3 Country: #{country.name}
   
   div(style='margin-left:20px;margin-top:20px')
 
     h4 Authors
     
-    ul
-      - country_authors.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
-      each author in country_authors
-        li 
-          a(href=author.url) #{author.name} 
-          | (#{author.lifespan})
-
-      else
-        p This country has no authors
+    table.table.table-sm.table-hover
+      thead.thead-light
+        tr
+          th(scope='col') #
+          th(scope='col') Author 
+          th(scope='col') Born
+          th(scope='col') Died
+          th(scope='col') Country of Origin
+      tbody 
+        - let index = 0
+        - country_authors.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
+        each author in country_authors
+          - index++
+          tr
+            th(scope='row') !{index}.
+            td
+              a(href=author.url) #{author.name} 
+            if author.date_of_birth == null
+              td 
+            else
+              td #{moment(author.date_of_birth).format('MMM D, YYYY')}
+            if author.date_of_death == null
+              td 
+            else
+              td #{moment(author.date_of_death).format('MMM D, YYYY')}
+            td #{country.name}
+        else
+          p This country has no authors
 
   hr
   if user
-    p
-      a(href=country.url+'/delete') Delete country
-
-    p
-      a(href=country.url+'/update') Update country
+    a.btn.btn-secondary(href=country.url+'/update') Update country
+    | 
+    a.btn.btn-danger(href=country.url+'/delete') Delete country

@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  h1 #{title}: #{author.name}
+  h3 #{title}: #{author.name}
   p= author.lifespan
   
   if author_books.length
@@ -25,4 +25,6 @@ block content
       div.form-group
         input#authorid.form-control(type='hidden',name='authorid', required='true', value=author._id )
 
-      button.btn.btn-primary(type='submit') Delete
+      button.btn.btn-danger.btn-sm(type='submit') Delete
+      | 
+      a.btn.btn-secondary.btn-sm(href='/catalog/books') Cancel

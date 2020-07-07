@@ -1,11 +1,20 @@
 extends layout
 
 block content
-  h1= title
+  h3= title
   
-  ul
-    each language in language_list
-      li 
-        a(href=language.url) #{language.name} 
-    else
-      li There are no languages.
+  table.table.table-sm.table-hover
+    thead.thead-light
+      tr
+        th(scope='col' width='30px') #
+        th(scope='col') Language 
+    tbody 
+      - let index = 0
+      each language in language_list
+        - index++
+        tr
+          th(scope='row') !{index}.
+          td
+            a(href=language.url) #{language.name} 
+      else
+        li There are no languages.

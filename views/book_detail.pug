@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  h1 Title: #{book.title}
+  h3 Title: #{book.title}
   - if (book.language.id != book.originalLanguage.id)
     h6 (Original Title: #{book.originalTitle})
 
@@ -47,16 +47,22 @@ block content
   if user
     if booklist == null
       p
-        a(href=book.booklisturl+'/addtolist') Add to list
+        a(href=book.booklisturl+'/addtolist' title="Add Book to My List")
+          svg.bi.bi-plus-circle-fill.text-success(viewBox='0 0 16 16', fill='currentColor', xmlns='http://www.w3.org/2000/svg')
+            path(fill-rule='evenodd', d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4a.5.5 0 0 0-1 0v3.5H4a.5.5 0 0 0 0 1h3.5V12a.5.5 0 0 0 1 0V8.5H12a.5.5 0 0 0 0-1H8.5V4z')
     else
       each val, index in booklist.personal_list
         - if (booklist.personal_list[index].book.equals(book._id))
-          p #[strong My Status:] #{booklist.personal_list[index].status} | 
-            a(href=book.booklisturl+'/edit') Edit | 
-            a(href=book.booklisturl+'/remove') Remove
+          p #[strong My Status:] #{booklist.personal_list[index].status}  
+            a(href=book.booklisturl+'/edit' title="Edit Book Entry") 
+              svg.bi.bi-pencil(viewBox='0 0 16 16', fill='currentColor', xmlns='http://www.w3.org/2000/svg')
+                path(fill-rule='evenodd', d='M11.293 1.293a1 1 0 0 1 1.414 0l2 2a1 1 0 0 1 0 1.414l-9 9a1 1 0 0 1-.39.242l-3 1a1 1 0 0 1-1.266-1.265l1-3a1 1 0 0 1 .242-.391l9-9zM12 2l2 2-9 9-3 1 1-3 9-9z')
+                path(fill-rule='evenodd', d='M12.146 6.354l-2.5-2.5.708-.708 2.5 2.5-.707.708zM3 10v.5a.5.5 0 0 0 .5.5H4v.5a.5.5 0 0 0 .5.5H5v.5a.5.5 0 0 0 .5.5H6v-1.5a.5.5 0 0 0-.5-.5H5v-.5a.5.5 0 0 0-.5-.5H3z')
+            a(href=book.booklisturl+'/remove' title="Delete Book Entry")
+              svg.bi.bi-x-circle-fill.text-danger(viewBox='0 0 16 16', fill='currentColor', xmlns='http://www.w3.org/2000/svg')
+                path(fill-rule='evenodd', d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.146-3.146a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z')
         - else 
           return
-    p
-      a(href=book.url+'/delete') Delete Book
-    p
-      a(href=book.url+'/update') Update Book
+    a.btn.btn-secondary(href=book.url+'/update') Update Book
+    | 
+    a.btn.btn-danger(href=book.url+'/delete') Delete Book

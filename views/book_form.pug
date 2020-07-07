@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  h1= title
+  h3= title
 
   form(method='POST' action='')
     div.form-group
@@ -75,6 +75,8 @@ block content
       label(for='pages') Number of Pages:
       input#pages.form-control(type='text', placeholder='Add the number of pages' name='pages' value=(undefined===book ? '' : book.pages)) 
     button.btn.btn-primary(type='submit') Submit
+    | 
+    a.btn.btn-secondary(href='/catalog/books') Cancel
 
   if errors 
     ul

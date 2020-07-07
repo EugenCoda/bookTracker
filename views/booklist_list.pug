@@ -1,25 +1,29 @@
 extends layout
 
 block content
-  h1= title
+  h3= title
 
-  table.mylist
-    thead
+  table.table.table-sm.table-hover
+    thead.thead-light
       tr
-        th Title 
-        th Author 
-        th Avg. Rating
-        th My Rating
-        th Status 
-        th Current Page
-        th Availability 
-        th Date Started 
-        th Date Finished  
+        th(scope='col' width='30px') #
+        th(scope='col') Title 
+        th(scope='col') Author 
+        th(scope='col') Avg. Rating
+        th(scope='col') My Rating
+        th(scope='col') Status 
+        th(scope='col') Completion
+        th(scope='col') Availability 
+        th(scope='col') Date Started 
+        th(scope='col') Date Finished  
+        th(scope='col')
+        th(scope='col')
     tbody
       //- Sorted to show latest reads on top.
       - personal_list.sort(function(a, b) {let textA = a.date_finished; let textB = b.date_finished; return (textA > textB) ? -1 : (textA < textB) ? 1 : 0;});
       each val, index in personal_list
         tr
+          th(scope='row') !{index+1}.
           td
             a(href=personal_list[index].book.url) #{personal_list[index].book.title}  
           td
@@ -41,7 +45,10 @@ block content
             td #{(ratingSum/ratingCount).toFixed(2)} 
           td #{personal_list[index].rating} 
           td #{personal_list[index].status}  
-          td #{personal_list[index].currentPage}
+          if personal_list[index].currentPage == null
+            td 0%
+          else
+            td #{Math.floor((personal_list[index].currentPage/personal_list[index].book.pages)*100)+"%"}
           td #{personal_list[index].availability}   
           if personal_list[index].date_started == null
             td 
@@ -52,8 +59,15 @@ block content
           else
             td #{moment(personal_list[index].date_finished).format('MMM D, YYYY')} 
           td 
-            a(href=personal_list[index].book._id+'/edit') Edit  
+            a(href=personal_list[index].book._id+'/edit' title="Edit Book Entry")   
+              svg.bi.bi-pencil(viewBox='0 0 16 16', fill='currentColor', xmlns='http://www.w3.org/2000/svg')
+                path(fill-rule='evenodd', d='M11.293 1.293a1 1 0 0 1 1.414 0l2 2a1 1 0 0 1 0 1.414l-9 9a1 1 0 0 1-.39.242l-3 1a1 1 0 0 1-1.266-1.265l1-3a1 1 0 0 1 .242-.391l9-9zM12 2l2 2-9 9-3 1 1-3 9-9z')
+                path(fill-rule='evenodd', d='M12.146 6.354l-2.5-2.5.708-.708 2.5 2.5-.707.708zM3 10v.5a.5.5 0 0 0 .5.5H4v.5a.5.5 0 0 0 .5.5H5v.5a.5.5 0 0 0 .5.5H6v-1.5a.5.5 0 0 0-.5-.5H5v-.5a.5.5 0 0 0-.5-.5H3z') 
+          |  
           td 
-            a(href=personal_list[index].book._id+'/remove') Remove 
+            a(href=personal_list[index].book._id+'/remove' title="Delete Book Entry")  
+              svg.bi.bi-x-circle-fill.text-danger(viewBox='0 0 16 16', fill='currentColor', xmlns='http://www.w3.org/2000/svg')
+                path(fill-rule='evenodd', d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.146-3.146a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z')
+
       else
         p There are no books.

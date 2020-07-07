@@ -1,11 +1,20 @@
 extends layout
 
 block content
-  h1= title
+  h3= title
   
-  ul
-    each country in country_list
-      li 
-        a(href=country.url) #{country.name} 
-    else
-      li There are no countries.
+  table.table.table-sm.table-hover
+    thead.thead-light
+      tr
+        th(scope='col' width='30px') #
+        th(scope='col') Country 
+    tbody 
+      - let index = 0
+      each country in country_list
+        - index++
+        tr
+          th(scope='row') !{index}.
+          td
+            a(href=country.url) #{country.name} 
+      else
+        li There are no countries.

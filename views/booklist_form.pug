@@ -2,7 +2,7 @@ extends layout
 
 block content
 
-  h1= title  
+  h3= title  
 
   form(method='POST' action='')
     div.form-group
@@ -121,6 +121,8 @@ block content
       if !included
         textarea#reviews.form-control(type='textarea', placeholder='Enter a review' name='reviews' rows='3') 
     button.btn.btn-primary(type='submit') Submit
+    | 
+    a.btn.btn-secondary(href='/catalog/books') Cancel
   
 
   if errors 

@@ -1,13 +1,15 @@
 extends layout
 
 block content
-  h1 #{title}
+  h3 #{title}
 
   form(method='POST' action='')
     div.form-group
       label(for='name') Country:
       input#name.form-control(type='text', placeholder='England, Germany etc.' name='name' value=(undefined===country ? '' : country.name))
     button.btn.btn-primary(type='submit') Submit
+    | 
+    a.btn.btn-secondary(href='/catalog/books') Cancel
 
   if errors 
    ul

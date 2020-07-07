@@ -14,7 +14,7 @@ exports.language_list = function (req, res, next) {
       }
       //Successful, so render
       res.render("language_list", {
-        title: "Language List",
+        title: "Languages",
         language_list: list_languages,
       });
     });
@@ -62,7 +62,7 @@ exports.language_detail = function (req, res, next) {
 
 // Display Language create form on GET.
 exports.language_create_get = function (req, res, next) {
-  res.render("language_form", { title: "Create Language" });
+  res.render("language_form", { title: "Add Language" });
 };
 
 // Handle Language create on POST.
@@ -85,7 +85,7 @@ exports.language_create_post = [
     if (!errors.isEmpty()) {
       // There are errors. Render the form again with sanitized values/error messages.
       res.render("language_form", {
-        title: "Create Language",
+        title: "Add Language",
         language: language,
         errors: errors.array(),
       });

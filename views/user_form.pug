@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  h1=title
+  h3=title
 
   form(method='POST' action='/users/register')
     div.form-group
@@ -18,3 +18,5 @@ block content
       label(for='password2') Confirm Password:
       input#password2.form-control(type='password' name='password2' required='true')
     button.btn.btn-primary(type='submit') Submit
+    | 
+    a.btn.btn-secondary(href='/catalog/books') Cancel

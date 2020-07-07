@@ -46,7 +46,7 @@ exports.booklist_list = (req, res, next) => {
 
       // Successful, so render.
       res.render("booklist_list", {
-        title: "My Books List",
+        title: "My Books",
         personal_list: results.booklist.personal_list,
         booklist_count: results.booklist_count,
       });

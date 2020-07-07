@@ -42,10 +42,14 @@ Branch 6:
 
 TODO:
 
-- improve appearance
+- improve appearance - in progress
+- create display page for a book in my list
+- truncate book summaries
 - enable user profile editing & password change / reset (with email confirmation?)
 - delete user booklist automatically if an user account is deleted
 - search bar
+- fix adding multiple genres
+- add multiple authors option
 
 Problematic:
 

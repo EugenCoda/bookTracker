@@ -22,7 +22,7 @@ exports.author_list = (req, res, next) => {
       }
       //Successful, so render
       res.render("author_list", {
-        title: "Author List",
+        title: "Authors",
         author_list: results.author,
       });
     }
@@ -73,7 +73,7 @@ exports.author_create_get = function (req, res, next) {
         return next(err);
       }
       res.render("author_form", {
-        title: "Create Author",
+        title: "Add Author",
         countries: results.countries,
       });
     }
@@ -132,7 +132,7 @@ exports.author_create_post = [
           }
 
           res.render("author_form", {
-            title: "Create Author",
+            title: "Add Author",
             author: req.body,
             countries: results.countries,
             errors: errors.array(),

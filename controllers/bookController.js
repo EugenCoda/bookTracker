@@ -212,7 +212,7 @@ exports.book_create_get = function (req, res, next) {
         return next(err);
       }
       res.render("book_form", {
-        title: "Create Book",
+        title: "Add Book",
         authors: results.authors,
         genres: results.genres,
         languages: results.languages,
@@ -292,7 +292,7 @@ exports.book_create_post = [
             }
           }
           res.render("book_form", {
-            title: "Create Book",
+            title: "Add Book",
             authors: results.authors,
             genres: results.genres,
             languages: results.languages,
@@ -534,9 +534,22 @@ exports.book_update_post = [
           }
 
           // Mark our selected genres as checked.
-          for (let i = 0; i < results.genres.length; i++) {
-            if (book.genre.indexOf(results.genres[i]._id) > -1) {
-              results.genres[i].checked = "true";
+          for (
+            var all_g_iter = 0;
+            all_g_iter < results.genres.length;
+            all_g_iter++
+          ) {
+            for (
+              var book_g_iter = 0;
+              book_g_iter < results.book.genre.length;
+              book_g_iter++
+            ) {
+              if (
+                results.genres[all_g_iter]._id.toString() ==
+                results.book.genre[book_g_iter]._id.toString()
+              ) {
+                results.genres[all_g_iter].checked = "true";
+              }
             }
           }
           res.render("book_form", {
