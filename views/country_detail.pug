@@ -11,7 +11,7 @@ block content
     table.table.table-sm.table-hover
       thead.thead-light
         tr
-          th(scope='col') #
+          th(scope='col' width='30px') #
           th(scope='col') Author 
           th(scope='col') Born
           th(scope='col') Died
@@ -35,10 +35,19 @@ block content
               td #{moment(author.date_of_death).format('MMM D, YYYY')}
             td #{country.name}
         else
-          p This country has no authors
+          tr
+            th(scope='row') 
+            td This country has no authors yet. Add one 
+              | 
+              a(href='/catalog/author/create') now.
+            td
+            td
+            td
+
+
 
   hr
   if user
-    a.btn.btn-secondary(href=country.url+'/update') Update country
+    a.btn.btn-dark(href=country.url+'/update') Update country
     | 
     a.btn.btn-danger(href=country.url+'/delete') Delete country

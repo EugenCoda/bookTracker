@@ -54,6 +54,39 @@ exports.booklist_list = (req, res, next) => {
   );
 };
 
+// Display one book from User booklist.
+exports.booklist_view_get = (req, res, next) => {
+  async.parallel(
+    {
+      book: function (callback) {
+        Book.findById(req.params.id).populate("author").exec(callback);
+      },
+      booklist: function (callback) {
+        Booklist.findOne({ user: req.user._id })
+          .populate("user")
+          .populate({
+            path: "personal_list.book",
+            populate: { path: "genre" },
+            populate: { path: "author" },
+          })
+          .exec(callback);
+      },
+    },
+    function (err, results) {
+      if (err) {
+        return next(err);
+      }
+
+      // Successful, so render.
+      res.render("booklist_detail", {
+        title: "View Book Entry",
+        book: results.book,
+        personal_list: results.booklist.personal_list,
+      });
+    }
+  );
+};
+
 //Add book to user list of books on GET
 exports.booklist_add_get = (req, res, next) => {
   // Get book and authors for form.

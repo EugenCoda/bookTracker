@@ -1,0 +1,39 @@
+extends layout
+
+block content
+  h3 Title: 
+    a(href=book.url) #{book.title}
+
+  p #[strong Author:] 
+    a(href=book.author.url) #{book.author.name}
+  
+  each val, index in personal_list
+    if personal_list[index].book._id==book.id
+      p #[strong Status:] #{personal_list[index].status}
+
+      if personal_list[index].currentPage == null
+        p #[strong Completion:] 0%
+      else
+        p #[strong Completion:] #{Math.floor((personal_list[index].currentPage/personal_list[index].book.pages)*100)+"%"}
+
+      p #[strong Availability:] #{personal_list[index].availability}
+
+      p #[strong Reading Progress:] 
+      if personal_list[index].date_started == null
+        p #[ Date Started:] 
+      else
+        p #[ Date Started:] #{moment(personal_list[index].date_started).format('MMM D, YYYY')}  
+      if personal_list[index].date_finished == null
+        p #[ Date Finished:] 
+      else
+        p #[ Date Finished:] #{moment(personal_list[index].date_finished).format('MMM D, YYYY')} 
+
+      p #[strong My Rating:] #{personal_list[index].rating}
+      
+      p #[strong My Review:] #{personal_list[index].reviews}
+
+  a.btn.btn-dark(href=book.booklisturl+'/edit') Edit entry
+  | 
+  a.btn.btn-danger(href=book.booklisturl+'/remove') Remove entry
+  | 
+  a.btn.btn-secondary(href='/booklists/mylist') Back

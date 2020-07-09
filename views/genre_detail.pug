@@ -11,8 +11,8 @@ block content
     table.table.table-sm.table-hover
       thead.thead-light
         tr
-          th(scope='col') #
-          th(scope='col') Title 
+          th(scope='col' width='30px') #
+          th(scope='col' width='500px') Title 
           th(scope='col') Author 
       tbody
         - genre_books.sort(function(a, b) {let textA = a.title.toUpperCase(); let textB = b.title.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
@@ -26,10 +26,15 @@ block content
             td 
               a(href=book.author.url) #{book.author.name} 
         else
-          p This genre has no books
+          tr
+            th(scope='row') 
+            td This genre has no books yet. Add one 
+              | 
+              a(href='/catalog/book/create') now.
+            td
 
   hr
   if user
-    a.btn.btn-secondary(href=genre.url+'/update') Update genre
+    a.btn.btn-dark(href=genre.url+'/update') Update genre
     | 
     a.btn.btn-danger(href=genre.url+'/delete') Delete genre

@@ -1,5 +1,12 @@
-// const s = document.getElementById("status");
+function swapText() {
+  let shortText = document.getElementById("shortText");
+  let fullText = document.getElementById("fullText");
 
-// if (s.value === "Read") {
-//   document.getElementById("currentPage").readOnly = true;
-// }
+  if (shortText.style.display === "inline") {
+    shortText.style.display = "none";
+    fullText.style.display = "inline";
+  } else {
+    shortText.style.display = "inline";
+    fullText.style.display = "none";
+  }
+}

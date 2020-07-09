@@ -10,8 +10,8 @@ block content
     table.table.table-sm.table-hover
       thead.thead-light
         tr
-          th(scope='col') #
-          th(scope='col') Title 
+          th(scope='col' width='30px') #
+          th(scope='col' width='500px') Title 
           th(scope='col') Author 
       tbody
       - language_books.sort(function(a, b) {let textA = a.title.toUpperCase(); let textB = b.title.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
@@ -24,13 +24,20 @@ block content
             a(href=book.url) #{book.title} 
           td 
             a(href=book.author.url) #{book.author.name}
+      else
+       tr
+          th(scope='row') 
+          td This language has no books yet. Add one 
+            | 
+            a(href='/catalog/book/create') now.
+          td
     hr
     h6 Books written in this language: 
     table.table.table-sm.table-hover
       thead.thead-light
         tr
-          th(scope='col') #
-          th(scope='col') Title 
+          th(scope='col' width='30px') #
+          th(scope='col' width='500px') Title 
           th(scope='col') Author 
       tbody
       - originalLanguage_books.sort(function(a, b) {let textA = a.title.toUpperCase(); let textB = b.title.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
@@ -44,10 +51,15 @@ block content
           td 
             a(href=book.author.url) #{book.author.name} 
       else
-        p This language has no books
+        tr
+          th(scope='row') 
+          td This language has no books yet. Add one 
+            | 
+            a(href='/catalog/book/create') now.
+          td
 
     hr
   if user
-    a.btn.btn-secondary(href=language.url+'/update') Update language
+    a.btn.btn-dark(href=language.url+'/update') Update language
     | 
     a.btn.btn-danger(href=language.url+'/delete') Delete language

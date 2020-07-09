@@ -25,7 +25,7 @@ var BooklistSchema = new Schema({
       availability: {
         type: String,
         required: true,
-        enum: ["No", "Mail", "Hard copy", "Soft copy", "Github", "Web"],
+        enum: ["No", "Print", "Audiobook", "eBook", "Web"],
         default: "No",
       },
       rating: Number,

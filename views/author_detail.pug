@@ -2,8 +2,13 @@ extends layout
 
 block content
 
+  include helpers
+  script(src='/javascripts/main.js')
+
   h3 Author: #{author.name}
-  p #{author.lifespan} | Country:  #{author.country.name}
+  p #{author.lifespan} | Country:  
+    | 
+    a(href=author.country.url) #{author.country.name}
   
   div(style='margin-left:20px;margin-top:20px')
 
@@ -13,14 +18,20 @@ block content
       each book in author_books
         dt 
           a(href=book.url) #{book.title}
-        dd #{book.summary}
-
+        //- tried to implement expanding the book summary text, but cannot grab the element ID for shortText and fullText
+        //- temporary solution: show the book summary in ""...more" link title
+        dd#shortText(style='display: inline') #{truncate(book.summary, 250)} 
+        dd#fullText(style='display: none') #{book.summary} 
+        |
+        a(href='#' title=book.summary) ...more
       else
-        p This author has no books. Add one 
+        p This author has no books yet. Add one 
           | 
           a(href='/catalog/book/create') now.
   hr
   if user
-    a.btn.btn-secondary(href=author.url+'/update') Update author
+    a.btn.btn-dark(href=author.url+'/update') Update author
     | 
     a.btn.btn-danger(href=author.url+'/delete') Delete author
+    | 
+    a.btn.btn-secondary(href='/booklists/mylist') Back

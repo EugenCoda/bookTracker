@@ -7,6 +7,7 @@ block content
     div.form-group
       label(for='name') Country:
       input#name.form-control(type='text', placeholder='England, Germany etc.' name='name' value=(undefined===country ? '' : country.name))
+    
     button.btn.btn-primary(type='submit') Submit
     | 
     a.btn.btn-secondary(href='/catalog/books') Cancel

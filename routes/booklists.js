@@ -10,6 +10,13 @@ var booklist_controller = require("../controllers/booklistController");
 // Get user list of books
 router.get("/mylist", ensureAuthenticated, booklist_controller.booklist_list);
 
+// View book from user list of books on GET
+router.get(
+  "/:id/view",
+  ensureAuthenticated,
+  booklist_controller.booklist_view_get
+);
+
 // Add book to user list of books on GET
 router.get(
   "/:id/addtolist",

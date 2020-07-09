@@ -7,7 +7,7 @@ block content
     thead.thead-light
       tr
         th(scope='col' width='30px') #
-        th(scope='col') Title 
+        th(scope='col' width='250px') Title 
         th(scope='col') Author 
         th(scope='col') Avg. Rating
         th(scope='col') My Rating
@@ -15,7 +15,8 @@ block content
         th(scope='col') Completion
         th(scope='col') Availability 
         th(scope='col') Date Started 
-        th(scope='col') Date Finished  
+        th(scope='col') Date Finished 
+        th(scope='col')
         th(scope='col')
         th(scope='col')
     tbody
@@ -58,6 +59,9 @@ block content
             td 
           else
             td #{moment(personal_list[index].date_finished).format('MMM D, YYYY')} 
+          td
+            a(href=personal_list[index].book._id+'/view' title="View Book Entry") view
+          |  
           td 
             a(href=personal_list[index].book._id+'/edit' title="Edit Book Entry")   
               svg.bi.bi-pencil(viewBox='0 0 16 16', fill='currentColor', xmlns='http://www.w3.org/2000/svg')

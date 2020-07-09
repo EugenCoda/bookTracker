@@ -35,7 +35,7 @@ html(lang='en')
         ul.navbar-nav.mr-right
           if user
             li.nav-item 
-              p.nav-link Hi, #{user.username}
+              a.nav-link Hi, #{user.username}
             li.nav-item 
               a.nav-link(href='/users/logout') Logout
           else

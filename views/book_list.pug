@@ -7,11 +7,12 @@ block content
     thead.thead-light
       tr
         th(scope='col' width='30px') #
-        th(scope='col') Title 
+        th(scope='col' width='500px') Title 
         th(scope='col') Author 
         th(scope='col') Avg. Rating
         if user
           th(scope='col') My Status
+          th(scope='col')
     tbody
       - book_list.sort(function(a, b) {let textA = a.title.toUpperCase(); let textB = b.title.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
       - let index = 0
@@ -34,7 +35,7 @@ block content
               - else 
                 return
           if ratingCount == 0
-            td N/A
+            td n/a
           else
             td #{(ratingSum/ratingCount).toFixed(2)}
           if user
@@ -42,6 +43,8 @@ block content
             each val, index in personal_list
               - if (personal_list[index].book.title == book.title)
                 td #{personal_list[index].status} 
+                td
+                  a(href=book.booklisturl+'/view' title="View Book Entry") view 
                   a(href=book.booklisturl+'/edit' title="Edit Book Entry") 
                     svg.bi.bi-pencil(viewBox='0 0 16 16', fill='currentColor', xmlns='http://www.w3.org/2000/svg')
                       path(fill-rule='evenodd', d='M11.293 1.293a1 1 0 0 1 1.414 0l2 2a1 1 0 0 1 0 1.414l-9 9a1 1 0 0 1-.39.242l-3 1a1 1 0 0 1-1.266-1.265l1-3a1 1 0 0 1 .242-.391l9-9zM12 2l2 2-9 9-3 1 1-3 9-9z')
@@ -57,5 +60,6 @@ block content
                 a(href=book.booklisturl+'/addtolist' title="Add Book to My List")
                   svg.bi.bi-plus-circle-fill.text-success(viewBox='0 0 16 16', fill='currentColor', xmlns='http://www.w3.org/2000/svg')
                     path(fill-rule='evenodd', d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4a.5.5 0 0 0-1 0v3.5H4a.5.5 0 0 0 0 1h3.5V12a.5.5 0 0 0 1 0V8.5H12a.5.5 0 0 0 0-1H8.5V4z')
+              td
       else
         p There are no books.

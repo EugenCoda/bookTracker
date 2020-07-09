@@ -17,4 +17,6 @@ block content
           td 
             a(href=genre.url) #{genre.name} 
       else
-        li There are no genres.
+        li There are no genres yet. Add one 
+          | 
+          a(href='/catalog/book/create') now.

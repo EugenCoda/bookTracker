@@ -40,16 +40,21 @@ Branch 6:
 - Validated and sanitized all user input
 - Unescaped special characters when fetching text from db
 
+Branch 7:
+
+- Improve appearance - done (for now)
+- Created display page for a book in my list
+
 TODO:
 
-- improve appearance - in progress
-- create display page for a book in my list
-- truncate book summaries
 - enable user profile editing & password change / reset (with email confirmation?)
-- delete user booklist automatically if an user account is deleted
 - search bar
 - fix adding multiple genres
 - add multiple authors option
+- sorting and filtering lists
+- delete user booklist automatically if an user account is deleted
+- contact page
+- deploy app to heroku
 
 Problematic:
 
@@ -57,3 +62,4 @@ Problematic:
 - date_updated should be recorded automatically (for new items it should be equal to date_added)
 - restrict adding a book more than once in a booklist - done in branch 5(still with a 500 error)
 - show book, authors, genres count in "All..." links
+- truncate book summaries - partially (not able to expand text)

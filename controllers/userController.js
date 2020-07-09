@@ -95,12 +95,36 @@ exports.user_login_get = function (req, res, next) {
 
 // Handle User login form on POST.
 exports.user_login_post = (req, res, next) => {
+  // // Make sure the user has been verified
+  //       if (!user.isVerified)
+  //         return res.status(401).send({
+  //           type: "not-verified",
+  //           msg: "Your account has not been verified.",
+  //         });
   passport.authenticate("local", {
     successRedirect: "/",
     failureRedirect: "/users/login",
     failureFlash: true,
   })(req, res, next);
 };
+
+// // Handle Confirmation of User on POST.
+// exports.user_confirmation_post = (req, res, next) => {
+//   passport.authenticate("local", {
+//     successRedirect: "/",
+//     failureRedirect: "/users/login",
+//     failureFlash: true,
+//   })(req, res, next);
+// };
+
+// // Handle Resending of Token on POST.
+// exports.resend_token_post = (req, res, next) => {
+//   passport.authenticate("local", {
+//     successRedirect: "/",
+//     failureRedirect: "/users/login",
+//     failureFlash: true,
+//   })(req, res, next);
+// };
 
 // Display User logout on GET.
 exports.user_logout_get = (req, res) => {

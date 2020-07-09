@@ -47,20 +47,18 @@ block content
           - included = true
           select#availability.form-control(type='select' placeholder='Select availability' name='availability' required='true' )
             option(value="No" selected=(personal_list[index].availability=="No") ? 'selected' : false) No
-            option(value="Mail" selected=(personal_list[index].availability=="Mail") ? 'selected' : false) Mail
-            option(value="Hard Copy" selected=(personal_list[index].availability=="Hard Copy") ? 'selected' : false) Hard Copy
-            option(value="Soft Copy" selected=(personal_list[index].availability=="Soft Copy") ? 'selected' : false) Soft Copy
-            option(value="Github" selected=(personal_list[index].availability=="Github") ? 'selected' : false) Github
+            option(value="Print" selected=(personal_list[index].availability=="Print") ? 'selected' : false) Print
+            option(value="Audiobook" selected=(personal_list[index].availability=="Audiobook") ? 'selected' : false) Audiobook
+            option(value="eBook" selected=(personal_list[index].availability=="eBook") ? 'selected' : false) eBook
             option(value="Web" selected=(personal_list[index].availability=="Web") ? 'selected' : false) Web
         else
           return
       if !included  
         select#availability.form-control(type='select' placeholder='Select availability' name='availability' required='true' )
           option(value="No") No
-          option(value="Mail") Mail
-          option(value="Hard Copy") Hard Copy
-          option(value="Soft Copy") Soft Copy
-          option(value="Github") Github
+          option(value="Print") Print
+          option(value="Audiobook") Audiobook
+          option(value="eBook") eBook
           option(value="Web") Web
     div.form-group
       label(for='date_started') Date started:
@@ -120,9 +118,10 @@ block content
           textarea#reviews.form-control(type='textarea', placeholder='Enter a review' name='reviews' rows='3') #{undefined===book ? '' : personal_list[index].reviews}
       if !included
         textarea#reviews.form-control(type='textarea', placeholder='Enter a review' name='reviews' rows='3') 
+    
     button.btn.btn-primary(type='submit') Submit
     | 
-    a.btn.btn-secondary(href='/catalog/books') Cancel
+    a.btn.btn-secondary(href='/booklists/mylist') Cancel
   
 
   if errors 

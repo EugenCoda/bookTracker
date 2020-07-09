@@ -24,6 +24,12 @@ router.get("/login", ensureGuest, user_controller.user_login_get);
 // POST request for Login User.
 router.post("/login", user_controller.user_login_post);
 
+// // POST request for Confirmation of User.
+// router.post("/confirmation", user_controller.user_confirmation_post);
+
+// // POST request for Resending the Token.
+// router.post("/resend", user_controller.resend_token_post);
+
 //User Logout
 router.get("/logout", user_controller.user_logout_get);
 
