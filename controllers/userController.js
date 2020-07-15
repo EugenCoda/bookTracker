@@ -88,7 +88,7 @@ exports.user_create_post = [
               if (err) {
                 console.error(err);
               }
-
+              // Send email for confirmation of the user register
               const mail = {
                 to: user.email,
                 from: "coda.eugen@gmail.com", //TODO - to be changed
@@ -256,7 +256,7 @@ exports.user_confirmation_post = [
   },
 ];
 
-// Handle Resending of Token on GET.
+// Display Resending of Token on GET.
 exports.resend_token_get = function (req, res, next) {
   res.render("user_resend", {
     title: "Resend Token",
@@ -352,6 +352,248 @@ exports.resend_token_post = [
     }
   },
 ];
+
+// Display Password Reset Email Sending on GET.
+exports.reset_password_email_get = (req, res, next) => {
+  res.render("user_pass_reset_email", {
+    title: "Password Reset",
+  });
+};
+
+// Handle Password Reset Email Sending on POST.
+exports.reset_password_email_post = [
+  body("email", "Email is required").isLength({ min: 1 }),
+  body("email", "Email is not valid").isEmail(), //looks like normalizeEmail() is removing "." from email name (before @)
+
+  // Process request after validation and sanitization.
+  (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render form again with sanitized values/error messages.
+      res.render("user_pass_reset_email", {
+        title: "Password Reset",
+        errors: errors.mapped(),
+      });
+    } else {
+      async.parallel(
+        {
+          // Find the user with this email in the DB
+          // Because I used the async middleware and the format below, I added the prefix "user" to all user related properties below
+          user: (callback) => {
+            User.findOne({ email: req.body.email }).exec(callback);
+          },
+        },
+        (err, user) => {
+          if (err) {
+            return next(err);
+          }
+          // No user with this email found in DB
+          if (!user.user) {
+            req.flash(
+              "danger",
+              "We were unable to find an user with that email."
+            );
+            res.redirect("/users/login");
+            return;
+          }
+
+          // Create a verification token for this user
+          var token = new Token({
+            _userId: user.user._id,
+            token: crypto.randomBytes(16).toString("hex"),
+          });
+
+          // Save the verification token
+          token.save((err) => {
+            if (err) {
+              console.error(err);
+            }
+
+            // Send email with link for password reset
+            const mail = {
+              to: user.user.email,
+              from: "coda.eugen@gmail.com", // TODO - to be changed
+              subject: "Confirm password reset",
+              html: `Hello ${user.user.username},
+              <br>
+              <br>
+              Please click the following link to reset your password: 
+              <br>
+              <br>
+              <a href=http://${req.headers.host}/users/password-reset/${token.token} target="_blank">http://${req.headers.host}/users/password-reset/${token.token}</a>.
+              <br>
+              <br>
+              If you did not request that your password be reset, you can safely ignore this email. It's likely that another person has mistakenly attempted to log in using your email. As long as you do not click the link above, no action will be taken and your account will remain secure.
+              <br>
+              <br>
+              - The BookTracker Team`,
+            };
+
+            sgMail.send(mail, (err) => {
+              if (err) {
+                console.error(err);
+              }
+              req.flash(
+                "success",
+                "A verification email has been sent to " + user.user.email + "."
+              );
+              res.redirect("/users/login");
+            });
+          });
+        }
+      );
+    }
+  },
+];
+
+// Display Password Reset on GET.
+exports.reset_password_get = (req, res, next) => {
+  res.render("user_pass_reset", {
+    title: "Password Reset",
+    secretToken: req.params.id,
+  });
+};
+
+// Handle Password Reset on POST.
+exports.reset_password_post = [
+  body(
+    "password",
+    "Password must be at least 6 characters long and include one lowercase character, one uppercase character, a number, and a special character."
+  ).matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{6,}$/, "i"),
+  body("password2", "Passwords should match").custom((value, { req }) => {
+    return value === req.body.password;
+  }),
+
+  // Process request after validation and sanitization.
+  (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render form again with sanitized values/error messages.
+      res.render("user_pass_reset", {
+        title: "Password Reset",
+        secretToken: req.params.id,
+        errors: errors.mapped(),
+      });
+    } else {
+      async.parallel(
+        {
+          // Find a matching token
+          // Because I used the async middleware and the format below, I added the prefix "token" and "user" to all
+          // token and user related properties below
+          token: (callback) => {
+            Token.findOne({ token: req.body.token }).exec(callback);
+          },
+        },
+        (err, token) => {
+          if (err) {
+            return next(err);
+          }
+          // Token is set to expire after 12 hours
+          if (!token.token) {
+            req.flash(
+              "danger",
+              "We were unable to find a valid password reset request. Your link may have expired."
+            );
+            res.redirect("/users/password-reset");
+          } else {
+            async.parallel(
+              {
+                // If we found a token, find a matching user
+                // Because I used the async middleware and the format below, I added the prefix "token" and "user" to all
+                // token and user related properties below
+                user: (callback) => {
+                  User.findOne({
+                    _id: token.token._userId,
+                  }).exec(callback);
+                },
+              },
+              (err, user) => {
+                if (err) {
+                  return next(err);
+                }
+                if (!user.user) {
+                  req.flash(
+                    "danger",
+                    "We were unable to find an user for this password reset request."
+                  );
+                  res.redirect("/users/password-reset");
+                  return;
+                }
+
+                //Hash the password and save it in DB
+                bcrypt.genSalt(10, (err, salt) => {
+                  bcrypt.hash(req.body.password, salt, (err, hash) => {
+                    if (err) {
+                      console.error(err);
+                    }
+                    user.user.password = hash;
+
+                    user.user.markModified("password");
+                    user.user.save((err) => {
+                      if (err) {
+                        console.error(err);
+                      }
+
+                      //Delete the token from DB
+                      Token.findByIdAndRemove(
+                        token.token._id,
+                        function deleteToken(err) {
+                          if (err) {
+                            return next(err);
+                          }
+                        }
+                      );
+
+                      // Send email to confirm password reset
+                      const mail = {
+                        to: user.user.email,
+                        from: "coda.eugen@gmail.com", // TODO - to be changed
+                        subject: "Booktracker - password changed",
+                        html: `Hello ${user.user.username},
+                        <br>
+                        <br>
+                        This is a notice to let you know that the password for your account has been changed.
+                        <br>
+                        <br>
+                        If you did not recently reset or change your password, it is possible that your account has been compromised. If you have any questions about this, please contact us at coda.eugen@gmail.com
+                        <br>
+                        <br>
+                        - The BookTracker Team`,
+                      };
+
+                      sgMail.send(mail, (err) => {
+                        if (err) {
+                          console.error(err);
+                        }
+                      });
+
+                      req.flash(
+                        "success",
+                        "The password has been successfully reset. Please log in."
+                      );
+                      res.redirect("/users/login");
+                    });
+                  });
+                });
+              }
+            );
+          }
+        }
+      );
+    }
+  },
+];
+
+// Display User Account Details on GET.
+exports.user_account_get = (req, res, next) => {
+  res.render("user_account", {
+    title: "Account Information",
+  });
+};
 
 // Display User logout on GET.
 exports.user_logout_get = (req, res) => {

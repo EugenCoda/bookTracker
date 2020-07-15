@@ -35,3 +35,8 @@ body {
 #tokenResend {
   font-size: small;
 }
+
+/* User Profile Dropdown */
+#dropdown02 {
+  width: 150px;
+}

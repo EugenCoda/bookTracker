@@ -34,10 +34,11 @@ html(lang='en')
           button.btn.btn-outline-success.my-2.my-sm-0(type='submit') Search   
         ul.navbar-nav.mr-right
           if user
-            li.nav-item 
-              a.nav-link Hi, #{user.username}
-            li.nav-item 
-              a.nav-link(href='/users/logout') Logout
+            li.nav-item.dropdown
+              a#dropdown02.nav-link.dropdown-toggle(href='#', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false') Hi, #{user.username}  
+              .dropdown-menu(aria-labelledby='dropdown01')
+                a.dropdown-item(href='/users/account') Account
+                a.dropdown-item(href='/users/logout') Log Out
           else
             li.nav-item
               a.nav-link(href='/users/register') Register

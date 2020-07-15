@@ -3,7 +3,7 @@ extends layout
 block content
   h3=title
   br
-  form(method='POST' action='/users/confirmation/:id')
+  form(method='POST' action=`/users/confirmation/${secretToken}`)
     
     div.form-group
       label(for='email') Confirm Your Email:

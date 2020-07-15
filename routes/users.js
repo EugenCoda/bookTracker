@@ -35,6 +35,29 @@ router.get("/resend", ensureGuest, user_controller.resend_token_get);
 // POST request for Resending the Token.
 router.post("/resend", user_controller.resend_token_post);
 
+// GET request for Password Reset Email Sending.
+router.get(
+  "/password-reset",
+  ensureGuest,
+  user_controller.reset_password_email_get
+);
+
+// POST request for Password Reset Email Sending.
+router.post("/password-reset", user_controller.reset_password_email_post);
+
+// GET request for Handling Password Reset.
+router.get(
+  "/password-reset/:id",
+  ensureGuest,
+  user_controller.reset_password_get
+);
+
+// POST request for Handling Password Reset.
+router.post("/password-reset/:id", user_controller.reset_password_post);
+
+//User Account Details
+router.get("/account", user_controller.user_account_get);
+
 //User Logout
 router.get("/logout", user_controller.user_logout_get);
 

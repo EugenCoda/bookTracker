@@ -48,10 +48,11 @@ Branch 7:
 Branch 8:
 
 - Implemented user email confirmation with token (and resending the token)
+- Implemented password reset with token and email confirmation
 
 TODO:
 
-- enable user profile editing & password change / reset (with email confirmation?) - in progress
+- enable user profile editing & password change (with email confirmation) - in progress
 - search bar
 - fix adding multiple genres
 - add multiple authors option
