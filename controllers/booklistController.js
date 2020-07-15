@@ -4,26 +4,11 @@ const { body, validationResult } = require("express-validator");
 
 var async = require("async");
 
-// Create User Booklist (right after user register)
-exports.booklist_create = (req, res, next) => {
-  var booklist = new Booklist({
-    user: req.user._id,
-    personal_list: [],
-  });
-
-  // Save booklist.
-  booklist.save(function (err) {
-    if (err) {
-      return next(err);
-    }
-  });
-};
-
 // Display User booklist.
 exports.booklist_list = (req, res, next) => {
   async.parallel(
     {
-      booklist: function (callback) {
+      booklist: (callback) => {
         Booklist.findOne({ user: req.user._id })
           .populate("user")
           .populate({
@@ -33,13 +18,13 @@ exports.booklist_list = (req, res, next) => {
           })
           .exec(callback);
       },
-      booklist_count: function (callback) {
+      booklist_count: (callback) => {
         Booklist.find({})
           .populate({ path: "personal_list.book" })
           .exec(callback);
       },
     },
-    function (err, results) {
+    (err, results) => {
       if (err) {
         return next(err);
       }
@@ -58,10 +43,10 @@ exports.booklist_list = (req, res, next) => {
 exports.booklist_view_get = (req, res, next) => {
   async.parallel(
     {
-      book: function (callback) {
+      book: (callback) => {
         Book.findById(req.params.id).populate("author").exec(callback);
       },
-      booklist: function (callback) {
+      booklist: (callback) => {
         Booklist.findOne({ user: req.user._id })
           .populate("user")
           .populate({
@@ -72,7 +57,7 @@ exports.booklist_view_get = (req, res, next) => {
           .exec(callback);
       },
     },
-    function (err, results) {
+    (err, results) => {
       if (err) {
         return next(err);
       }
@@ -92,10 +77,10 @@ exports.booklist_add_get = (req, res, next) => {
   // Get book and authors for form.
   async.parallel(
     {
-      book: function (callback) {
+      book: (callback) => {
         Book.findById(req.params.id).populate("author").exec(callback);
       },
-      booklist: function (callback) {
+      booklist: (callback) => {
         Booklist.findOne({ user: req.user._id })
           .populate("user")
           .populate({
@@ -106,7 +91,7 @@ exports.booklist_add_get = (req, res, next) => {
           .exec(callback);
       },
     },
-    function (err, results) {
+    (err, results) => {
       if (err) {
         return next(err);
       }
@@ -167,10 +152,10 @@ exports.booklist_add_post = [
       // There are errors. Render form again with sanitized values/error messages.
       async.parallel(
         {
-          book: function (callback) {
+          book: (callback) => {
             Book.findById(req.params.id).populate("author").exec(callback);
           },
-          booklist: function (callback) {
+          booklist: (callback) => {
             Booklist.findOne({ user: req.user._id })
               .populate("user")
               .populate({
@@ -181,7 +166,7 @@ exports.booklist_add_post = [
               .exec(callback);
           },
         },
-        function (err, results) {
+        (err, results) => {
           if (err) {
             return next(err);
           }
@@ -247,10 +232,10 @@ exports.booklist_add_post = [
 exports.booklist_edit_get = (req, res, next) => {
   async.parallel(
     {
-      book: function (callback) {
+      book: (callback) => {
         Book.findById(req.params.id).populate("author").exec(callback);
       },
-      booklist: function (callback) {
+      booklist: (callback) => {
         Booklist.findOne({ user: req.user._id })
           .populate("user")
           .populate({
@@ -261,7 +246,7 @@ exports.booklist_edit_get = (req, res, next) => {
           .exec(callback);
       },
     },
-    function (err, results) {
+    (err, results) => {
       if (err) {
         return next(err);
       }
@@ -311,10 +296,10 @@ exports.booklist_edit_post = [
       // There are errors. Render form again with sanitized values/error messages.
       async.parallel(
         {
-          book: function (callback) {
+          book: (callback) => {
             Book.findById(req.params.id).populate("author").exec(callback);
           },
-          booklist: function (callback) {
+          booklist: (callback) => {
             Booklist.findOne({ user: req.user._id })
               .populate("user")
               .populate({
@@ -325,7 +310,7 @@ exports.booklist_edit_post = [
               .exec(callback);
           },
         },
-        function (err, results) {
+        (err, results) => {
           if (err) {
             return next(err);
           }
@@ -379,11 +364,11 @@ exports.booklist_edit_post = [
 exports.booklist_remove_get = (req, res, next) => {
   async.parallel(
     {
-      book: function (callback) {
+      book: (callback) => {
         Book.findById(req.params.id).populate("author").exec(callback);
       },
     },
-    function (err, results) {
+    (err, results) => {
       if (err) {
         return next(err);
       }

@@ -45,9 +45,13 @@ Branch 7:
 - Improve appearance - done (for now)
 - Created display page for a book in my list
 
+Branch 8:
+
+- Implemented user email confirmation with token (and resending the token)
+
 TODO:
 
-- enable user profile editing & password change / reset (with email confirmation?)
+- enable user profile editing & password change / reset (with email confirmation?) - in progress
 - search bar
 - fix adding multiple genres
 - add multiple authors option

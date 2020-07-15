@@ -5,29 +5,28 @@ var Booklist = require("../models/booklist");
 var Author = require("../models/author");
 var Genre = require("../models/genre");
 const { body, validationResult } = require("express-validator");
-
 var async = require("async");
 
-exports.index = function (req, res) {
+exports.index = (req, res) => {
   async.parallel(
     {
-      book_count: function (callback) {
+      book_count: (callback) => {
         Book.countDocuments({}, callback); // Pass an empty object as match condition to find all documents of this collection
       },
-      author_count: function (callback) {
+      author_count: (callback) => {
         Author.countDocuments({}, callback);
       },
-      genre_count: function (callback) {
+      genre_count: (callback) => {
         Genre.countDocuments({}, callback);
       },
-      language_count: function (callback) {
+      language_count: (callback) => {
         Language.countDocuments({}, callback);
       },
-      country_count: function (callback) {
+      country_count: (callback) => {
         Country.countDocuments({}, callback);
       },
     },
-    function (err, results) {
+    (err, results) => {
       res.render("index", {
         title: "Book Tracker",
         error: err,
@@ -43,12 +42,12 @@ exports.book_list = (req, res, next) => {
   if (req.user) {
     async.parallel(
       {
-        book: function (callback) {
+        book: (callback) => {
           Book.find({}, "title author rating")
             .populate("author")
             .exec(callback);
         },
-        booklist: function (callback) {
+        booklist: (callback) => {
           Booklist.findOne({ user: req.user._id })
             .populate("user")
             .populate({
@@ -58,11 +57,11 @@ exports.book_list = (req, res, next) => {
             })
             .exec(callback);
         },
-        booklist_count: function (callback) {
+        booklist_count: (callback) => {
           Booklist.find({}, callback);
         },
       },
-      function (err, results) {
+      (err, results) => {
         if (err) {
           return next(err);
         }
@@ -80,16 +79,16 @@ exports.book_list = (req, res, next) => {
     //User is not logged in, so we go through the standard path
     async.parallel(
       {
-        book: function (callback) {
+        book: (callback) => {
           Book.find({}, "title author rating")
             .populate("author")
             .exec(callback);
         },
-        booklist_count: function (callback) {
+        booklist_count: (callback) => {
           Booklist.find({}, callback);
         },
       },
-      function (err, results) {
+      (err, results) => {
         if (err) {
           return next(err);
         }
@@ -111,7 +110,7 @@ exports.book_detail = function (req, res, next) {
   if (req.user) {
     async.parallel(
       {
-        book: function (callback) {
+        book: (callback) => {
           Book.findById(req.params.id)
             .populate("author")
             .populate("genre")
@@ -119,7 +118,7 @@ exports.book_detail = function (req, res, next) {
             .populate("originalLanguage")
             .exec(callback);
         },
-        booklist: function (callback) {
+        booklist: (callback) => {
           Booklist.findOne({
             "personal_list.book": req.params.id,
             user: req.user._id,
@@ -131,11 +130,11 @@ exports.book_detail = function (req, res, next) {
             })
             .exec(callback);
         },
-        booklist_count: function (callback) {
+        booklist_count: (callback) => {
           Booklist.find({}, callback);
         },
       },
-      function (err, results) {
+      (err, results) => {
         if (err) {
           return next(err);
         }
@@ -159,7 +158,7 @@ exports.book_detail = function (req, res, next) {
     //User is not logged in, so we go through the standard path
     async.parallel(
       {
-        book: function (callback) {
+        book: (callback) => {
           Book.findById(req.params.id)
             .populate("author")
             .populate("genre")
@@ -167,11 +166,11 @@ exports.book_detail = function (req, res, next) {
             .populate("originalLanguage")
             .exec(callback);
         },
-        booklist_count: function (callback) {
+        booklist_count: (callback) => {
           Booklist.find({}, callback);
         },
       },
-      function (err, results) {
+      (err, results) => {
         if (err) {
           return next(err);
         }
@@ -193,21 +192,21 @@ exports.book_detail = function (req, res, next) {
 };
 
 // Display book create form on GET.
-exports.book_create_get = function (req, res, next) {
+exports.book_create_get = (req, res, next) => {
   // Get all authors and genres, which we can use for adding to our book.
   async.parallel(
     {
-      authors: function (callback) {
+      authors: (callback) => {
         Author.find(callback);
       },
-      genres: function (callback) {
+      genres: (callback) => {
         Genre.find(callback);
       },
-      languages: function (callback) {
+      languages: (callback) => {
         Language.find(callback);
       },
     },
-    function (err, results) {
+    (err, results) => {
       if (err) {
         return next(err);
       }
@@ -270,17 +269,17 @@ exports.book_create_post = [
       // Get all authors and genres for form.
       async.parallel(
         {
-          authors: function (callback) {
+          authors: (callback) => {
             Author.find(callback);
           },
-          genres: function (callback) {
+          genres: (callback) => {
             Genre.find(callback);
           },
-          languages: function (callback) {
+          languages: (callback) => {
             Language.find(callback);
           },
         },
-        function (err, results) {
+        (err, results) => {
           if (err) {
             return next(err);
           }
@@ -304,7 +303,7 @@ exports.book_create_post = [
       return;
     } else {
       // Data from form is valid. Save book.
-      book.save(function (err) {
+      book.save((err) => {
         if (err) {
           return next(err);
         }
@@ -319,10 +318,10 @@ exports.book_create_post = [
 exports.book_delete_get = (req, res, next) => {
   async.parallel(
     {
-      book: function (callback) {
+      book: (callback) => {
         Book.findById(req.params.id).exec(callback);
       },
-      booklist: function (callback) {
+      booklist: (callback) => {
         Booklist.find({ "personal_list.book": req.params.id })
           .populate({
             path: "personal_list.book",
@@ -332,7 +331,7 @@ exports.book_delete_get = (req, res, next) => {
           .exec(callback);
       },
     },
-    function (err, results) {
+    (err, results) => {
       if (err) {
         return next(err);
       }
@@ -351,13 +350,13 @@ exports.book_delete_get = (req, res, next) => {
 };
 
 // Handle book delete on POST.
-exports.book_delete_post = function (req, res, next) {
+exports.book_delete_post = (req, res, next) => {
   async.parallel(
     {
-      book: function (callback) {
+      book: (callback) => {
         Book.findById(req.body.bookid).exec(callback);
       },
-      booklist: function (callback) {
+      booklist: (callback) => {
         Booklist.find({})
           .populate({
             path: "personal_list.book",
@@ -367,7 +366,7 @@ exports.book_delete_post = function (req, res, next) {
           .exec(callback);
       },
     },
-    function (err, results) {
+    (err, results) => {
       if (err) {
         return next(err);
       }
@@ -397,11 +396,11 @@ exports.book_delete_post = function (req, res, next) {
 };
 
 // Display book update form on GET.
-exports.book_update_get = function (req, res, next) {
+exports.book_update_get = (req, res, next) => {
   // Get book, authors and genres for form.
   async.parallel(
     {
-      book: function (callback) {
+      book: (callback) => {
         Book.findById(req.params.id)
           .populate("author")
           .populate("genre")
@@ -409,17 +408,17 @@ exports.book_update_get = function (req, res, next) {
           .populate("originalLanguage")
           .exec(callback);
       },
-      authors: function (callback) {
+      authors: (callback) => {
         Author.find(callback);
       },
-      genres: function (callback) {
+      genres: (callback) => {
         Genre.find(callback);
       },
-      languages: function (callback) {
+      languages: (callback) => {
         Language.find(callback);
       },
     },
-    function (err, results) {
+    (err, results) => {
       if (err) {
         return next(err);
       }
@@ -510,7 +509,7 @@ exports.book_update_post = [
       // Get all authors and genres for form.
       async.parallel(
         {
-          book: function (callback) {
+          book: (callback) => {
             Book.findById(req.params.id)
               .populate("author")
               .populate("genre")
@@ -518,17 +517,17 @@ exports.book_update_post = [
               .populate("originalLanguage")
               .exec(callback);
           },
-          authors: function (callback) {
+          authors: (callback) => {
             Author.find(callback);
           },
-          genres: function (callback) {
+          genres: (callback) => {
             Genre.find(callback);
           },
-          language: function (callback) {
+          language: (callback) => {
             Language.find(callback);
           },
         },
-        function (err, results) {
+        (err, results) => {
           if (err) {
             return next(err);
           }
@@ -565,7 +564,7 @@ exports.book_update_post = [
       return;
     } else {
       // Data from form is valid. Update the record.
-      Book.findByIdAndUpdate(req.params.id, book, {}, function (err, thebook) {
+      Book.findByIdAndUpdate(req.params.id, book, {}, (err, thebook) => {
         if (err) {
           return next(err);
         }

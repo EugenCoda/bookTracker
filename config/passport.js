@@ -22,6 +22,12 @@ module.exports = (passport) => {
             return done(null, false, { message: "Invalid credentials" }); //we shouldn't have different messages for security reasons
           }
         });
+        // Make sure the user has been verified
+        if (!user.isVerified) {
+          return done(null, false, {
+            message: "Your account has not been verified.",
+          });
+        }
       });
     })
   );
@@ -31,7 +37,7 @@ module.exports = (passport) => {
   });
 
   passport.deserializeUser((id, done) => {
-    User.findById(id, function (err, user) {
+    User.findById(id, (err, user) => {
       done(err, user);
     });
   });

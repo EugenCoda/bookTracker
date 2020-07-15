@@ -1,9 +1,19 @@
 var User = require("../models/user");
 var Booklist = require("../models/booklist");
+var Token = require("../models/token");
 const { body, validationResult } = require("express-validator");
-const flash = require("connect-flash");
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
+const crypto = require("crypto");
+const dotenv = require("dotenv");
+const sgMail = require("@sendgrid/mail");
+var async = require("async");
+
+//Load config
+dotenv.config({ path: "./config/config.env" });
+
+//Setting up the Sendgrid API Key
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // Display User create form on GET.
 exports.user_create_get = function (req, res, next) {
@@ -15,8 +25,7 @@ exports.user_create_post = [
   body("name", "Name is required").isLength({ min: 1 }),
   body("email", "Email is required").isLength({ min: 1 }),
   body("email", "Email is not valid")
-    .isEmail()
-    .normalizeEmail()
+    .isEmail() //looks like normalizeEmail() is removing "." from email name (before @)
     .custom((value, { req }) => {
       return new Promise((resolve, reject) => {
         User.findOne({ email: req.body.email }, function (err, user) {
@@ -39,6 +48,7 @@ exports.user_create_post = [
     return value === req.body.password;
   }),
 
+  // Process request after validation and sanitization.
   (req, res, next) => {
     let user = new User({
       name: req.body.name,
@@ -47,8 +57,11 @@ exports.user_create_post = [
       password: req.body.password,
     });
 
+    // Extract the validation errors from a request.
     const errors = validationResult(req);
+
     if (!errors.isEmpty()) {
+      // There are errors. Render form again with sanitized values/error messages.
       res.render("user_form", {
         errors: errors.mapped(),
       });
@@ -56,18 +69,50 @@ exports.user_create_post = [
       bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(user.password, salt, (err, hash) => {
           if (err) {
-            console.log(err);
+            console.error(err);
           }
           user.password = hash;
 
           user.save((err) => {
             if (err) {
-              console.log(err);
-              return;
-            } else {
-              req.flash("success", "You are now registered and can log in");
-              res.redirect("/users/login");
+              console.error(err);
             }
+            // Create a verification token for this user
+            var token = new Token({
+              _userId: user._id,
+              token: crypto.randomBytes(16).toString("hex"),
+            });
+
+            // Save the verification token
+            token.save((err) => {
+              if (err) {
+                console.error(err);
+              }
+
+              const mail = {
+                to: user.email,
+                from: "coda.eugen@gmail.com", //TODO - to be changed
+                subject: "Account Verification Token",
+                html: `Hello ${user.username},
+                  <br>
+                  <br>
+                  Please verify your BookTracker account by clicking the link below: 
+                  <br>
+                  <br>
+                  <a href=http://${req.headers.host}/users/confirmation/${token.token} target="_blank">http://${req.headers.host}/users/confirmation/${token.token}</a>.`,
+              };
+
+              sgMail.send(mail, (err) => {
+                if (err) {
+                  console.error(err);
+                }
+                req.flash(
+                  "success",
+                  "A verification email has been sent to " + user.email + "."
+                );
+                res.redirect("/users/login");
+              });
+            });
           });
         });
       });
@@ -79,7 +124,7 @@ exports.user_create_post = [
       });
 
       // Save user booklist.
-      booklist.save(function (err) {
+      booklist.save((err) => {
         if (err) {
           return next(err);
         }
@@ -89,18 +134,12 @@ exports.user_create_post = [
 ];
 
 // Display User login form on GET.
-exports.user_login_get = function (req, res, next) {
+exports.user_login_get = (req, res, next) => {
   res.render("user_login", { title: "Login" });
 };
 
 // Handle User login form on POST.
 exports.user_login_post = (req, res, next) => {
-  // // Make sure the user has been verified
-  //       if (!user.isVerified)
-  //         return res.status(401).send({
-  //           type: "not-verified",
-  //           msg: "Your account has not been verified.",
-  //         });
   passport.authenticate("local", {
     successRedirect: "/",
     failureRedirect: "/users/login",
@@ -108,23 +147,211 @@ exports.user_login_post = (req, res, next) => {
   })(req, res, next);
 };
 
-// // Handle Confirmation of User on POST.
-// exports.user_confirmation_post = (req, res, next) => {
-//   passport.authenticate("local", {
-//     successRedirect: "/",
-//     failureRedirect: "/users/login",
-//     failureFlash: true,
-//   })(req, res, next);
-// };
+// Display Confirmation of User on GET.
+exports.user_confirmation_get = (req, res, next) => {
+  res.render("user_confirmation", {
+    title: "Verify Account Creation",
+    secretToken: req.params.id,
+  });
+};
 
-// // Handle Resending of Token on POST.
-// exports.resend_token_post = (req, res, next) => {
-//   passport.authenticate("local", {
-//     successRedirect: "/",
-//     failureRedirect: "/users/login",
-//     failureFlash: true,
-//   })(req, res, next);
-// };
+// Handle Confirmation of User on POST.
+exports.user_confirmation_post = [
+  body("email", "Email is required").isLength({ min: 1 }),
+  body("email", "Email is not valid").isEmail(), //looks like normalizeEmail() is removing "." from email name (before @)
+  body("token", "Token is required").isLength({ min: 1 }),
+
+  // Process request after validation and sanitization.
+  (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render form again with sanitized values/error messages.
+      res.render("user_confirmation", {
+        title: "Verify Account Creation",
+        secretToken: req.params.id,
+        errors: errors.mapped(),
+      });
+    } else {
+      async.parallel(
+        {
+          // Find a matching token
+          // Because I used the async middleware and the format below, I added the prefix "token" and "user" to all
+          // token and user related properties below
+          token: (callback) => {
+            Token.findOne({ token: req.body.token }).exec(callback);
+          },
+        },
+        (err, token) => {
+          if (err) {
+            return next(err);
+          }
+          // Token is set to expire after 12 hours
+          if (!token.token) {
+            req.flash(
+              "danger",
+              "We were unable to find a valid token. Your token may have expired."
+            );
+            res.redirect("/users/resend");
+          } else {
+            async.parallel(
+              {
+                // If we found a token, find a matching user
+                // Because I used the async middleware and the format below, I added the prefix "token" and "user" to all
+                // token and user related properties below
+                user: (callback) => {
+                  User.findOne({
+                    _id: token.token._userId,
+                    email: req.body.email,
+                  }).exec(callback);
+                },
+              },
+              (err, user) => {
+                if (err) {
+                  return next(err);
+                }
+                if (!user.user) {
+                  req.flash(
+                    "danger",
+                    "We were unable to find an user for this token."
+                  );
+                  res.redirect("/users/resend");
+                  return;
+                }
+                if (user.user.isVerified) {
+                  req.flash("danger", "This user has already been verified.");
+                  res.redirect("/users/resend");
+                  return;
+                }
+
+                //Mark as Verified and save the user
+                user.user.isVerified = true;
+                user.user.markModified("isVerified");
+                user.user.save((err) => {
+                  if (err) {
+                    console.error(err);
+                  }
+                  //Delete the token from DB
+                  Token.findByIdAndRemove(token.token._id, function deleteToken(
+                    err
+                  ) {
+                    if (err) {
+                      return next(err);
+                    }
+                  });
+
+                  req.flash(
+                    "success",
+                    "The account has been verified. Please log in."
+                  );
+                  res.redirect("/users/login");
+                });
+              }
+            );
+          }
+        }
+      );
+    }
+  },
+];
+
+// Handle Resending of Token on GET.
+exports.resend_token_get = function (req, res, next) {
+  res.render("user_resend", {
+    title: "Resend Token",
+  });
+};
+
+// Handle Resending of Token on POST.
+exports.resend_token_post = [
+  body("email", "Email is required").isLength({ min: 1 }),
+  body("email", "Email is not valid").isEmail(), //looks like normalizeEmail() is removing "." from email name (before @)
+
+  // Process request after validation and sanitization.
+  (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render form again with sanitized values/error messages.
+      res.render("user_resend", {
+        title: "Resend Token",
+        errors: errors.mapped(),
+      });
+    } else {
+      async.parallel(
+        {
+          // Find the user with this email in the DB
+          // Because I used the async middleware and the format below, I added the prefix "user" to all user related properties below
+          user: (callback) => {
+            User.findOne({ email: req.body.email }).exec(callback);
+          },
+        },
+        (err, user) => {
+          if (err) {
+            return next(err);
+          }
+          // No user with this email found in DB
+          if (!user.user) {
+            req.flash(
+              "danger",
+              "We were unable to find an user with that email."
+            );
+            res.redirect("/users/login");
+            return;
+          }
+          // User found, but is marked as verified in DB
+          if (user.user.isVerified) {
+            req.flash(
+              "danger",
+              "This account has already been verified. Please log in."
+            );
+            res.redirect("/users/login");
+            return;
+          }
+
+          // Create a verification token for this user
+          var token = new Token({
+            _userId: user.user._id,
+            token: crypto.randomBytes(16).toString("hex"),
+          });
+
+          // Save the verification token
+          token.save((err) => {
+            if (err) {
+              console.error(err);
+            }
+
+            const mail = {
+              to: user.user.email,
+              from: "coda.eugen@gmail.com", // TODO - to be changed
+              subject: "Account Verification Token",
+              html: `Hello ${user.user.username},
+              <br>
+              <br>
+              Please verify your BookTracker account by clicking the link below: 
+              <br>
+              <br>
+              <a href=http://${req.headers.host}/users/confirmation/${token.token} target="_blank">http://${req.headers.host}/users/confirmation/${token.token}</a>.`,
+            };
+
+            sgMail.send(mail, (err) => {
+              if (err) {
+                console.error(err);
+              }
+              req.flash(
+                "success",
+                "A verification email has been sent to " + user.user.email + "."
+              );
+              res.redirect("/users/login");
+            });
+          });
+        }
+      );
+    }
+  },
+];
 
 // Display User logout on GET.
 exports.user_logout_get = (req, res) => {

@@ -22,6 +22,7 @@ body {
   border-color: #d6e9c6;
 }
 
+/* Add, edit and delete books to/from booklist */
 .bi-plus-circle-fill,
 .bi-pencil,
 .bi-x-circle-fill {
@@ -29,4 +30,8 @@ body {
   height: 1.3em;
   margin-right: 5px;
   margin-left: 5px;
+}
+
+#tokenResend {
+  font-size: small;
 }

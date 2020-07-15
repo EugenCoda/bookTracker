@@ -76,7 +76,10 @@ block content
       input#pages.form-control(type='text', placeholder='Add the number of pages' name='pages' value=(undefined===book ? '' : book.pages)) 
     button.btn.btn-primary(type='submit') Submit
     | 
-    a.btn.btn-secondary(href='/catalog/books') Cancel
+    if book
+      a.btn.btn-secondary(href=book.url) Cancel
+    else
+      a.btn.btn-secondary(href='/catalog/books') Cancel
 
   if errors 
     ul

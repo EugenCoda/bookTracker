@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.4.2",
+    "@sendgrid/mail": "^7.2.1",
     "async": "^3.2.0",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^4.5.0",
