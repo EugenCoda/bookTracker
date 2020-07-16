@@ -49,17 +49,19 @@ Branch 8:
 
 - Implemented user email confirmation with token (and resending the token)
 - Implemented password reset with token and email confirmation
+- Implemented password change from user account page with email confirmation
+- Implemented user account deletion (with booklist automatically deleted)
 
 TODO:
 
-- enable user profile editing & password change (with email confirmation) - in progress
+- enable user profile editing (with email confirmation) - in progress
+- contact page
 - search bar
 - fix adding multiple genres
 - add multiple authors option
 - sorting and filtering lists
-- delete user booklist automatically if an user account is deleted
-- contact page
 - deploy app to heroku
+- social networks
 
 Problematic:
 

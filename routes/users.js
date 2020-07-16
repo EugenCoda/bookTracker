@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-const { ensureGuest } = require("../middleware/auth");
+const { ensureGuest, ensureAuthenticated } = require("../middleware/auth");
 
 // Require controller module.
 var user_controller = require("../controllers/userController");
@@ -56,7 +56,20 @@ router.get(
 router.post("/password-reset/:id", user_controller.reset_password_post);
 
 //User Account Details
-router.get("/account", user_controller.user_account_get);
+router.get("/account", ensureAuthenticated, user_controller.user_account_get);
+
+//POST request for Changing Password from User Account Page
+router.post("/account", user_controller.user_account_post);
+
+// GET Delete Account
+router.get(
+  "/account/delete",
+  ensureAuthenticated,
+  user_controller.user_delete_get
+);
+
+// POST Delete Account
+router.post("/account/delete", user_controller.user_delete_post);
 
 //User Logout
 router.get("/logout", user_controller.user_logout_get);

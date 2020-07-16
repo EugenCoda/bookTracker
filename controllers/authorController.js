@@ -8,7 +8,7 @@ const { body, validationResult } = require("express-validator");
 exports.author_list = (req, res, next) => {
   async.parallel(
     {
-      author: function (callback) {
+      author: (callback) => {
         Author.find({})
           .populate("author")
           .populate("country")
@@ -16,7 +16,7 @@ exports.author_list = (req, res, next) => {
           .exec(callback);
       },
     },
-    function (err, results) {
+    (err, results) => {
       if (err) {
         return next(err);
       }
@@ -30,17 +30,17 @@ exports.author_list = (req, res, next) => {
 };
 
 // Display detail page for a specific Author.
-exports.author_detail = function (req, res, next) {
+exports.author_detail = (req, res, next) => {
   async.parallel(
     {
-      author: function (callback) {
+      author: (callback) => {
         Author.findById(req.params.id).populate("country").exec(callback);
       },
-      authors_books: function (callback) {
+      authors_books: (callback) => {
         Book.find({ author: req.params.id }, "title summary").exec(callback);
       },
     },
-    function (err, results) {
+    (err, results) => {
       if (err) {
         return next(err);
       } // Error in API usage.
@@ -61,14 +61,14 @@ exports.author_detail = function (req, res, next) {
 };
 
 // Display Author create form on GET.
-exports.author_create_get = function (req, res, next) {
+exports.author_create_get = (req, res, next) => {
   async.parallel(
     {
-      countries: function (callback) {
+      countries: (callback) => {
         Country.find(callback);
       },
     },
-    function (err, results) {
+    (err, results) => {
       if (err) {
         return next(err);
       }
@@ -122,11 +122,13 @@ exports.author_create_post = [
       // There are errors. Render form again with sanitized values/errors messages.
 
       // Get all countries for form.
-      async.parallel({
-        countries: function (callback) {
-          Country.find(callback);
+      async.parallel(
+        {
+          countries: (callback) => {
+            Country.find(callback);
+          },
         },
-        function(err, results) {
+        (err, results) => {
           if (err) {
             return next(err);
           }
@@ -137,8 +139,8 @@ exports.author_create_post = [
             countries: results.countries,
             errors: errors.array(),
           });
-        },
-      });
+        }
+      );
       return;
     } else {
       // Data from form is valid.
@@ -151,7 +153,7 @@ exports.author_create_post = [
         date_of_birth: req.body.date_of_birth,
         date_of_death: req.body.date_of_death,
       });
-      author.save(function (err) {
+      author.save((err) => {
         if (err) {
           return next(err);
         }
@@ -163,17 +165,17 @@ exports.author_create_post = [
 ];
 
 // Display Author delete form on GET.
-exports.author_delete_get = function (req, res, next) {
+exports.author_delete_get = (req, res, next) => {
   async.parallel(
     {
-      author: function (callback) {
+      author: (callback) => {
         Author.findById(req.params.id).exec(callback);
       },
-      authors_books: function (callback) {
+      authors_books: (callback) => {
         Book.find({ author: req.params.id }).exec(callback);
       },
     },
-    function (err, results) {
+    (err, results) => {
       if (err) {
         return next(err);
       }
@@ -192,17 +194,17 @@ exports.author_delete_get = function (req, res, next) {
 };
 
 // Handle Author delete on POST.
-exports.author_delete_post = function (req, res, next) {
+exports.author_delete_post = (req, res, next) => {
   async.parallel(
     {
-      author: function (callback) {
+      author: (callback) => {
         Author.findById(req.body.authorid).exec(callback);
       },
-      authors_books: function (callback) {
+      authors_books: (callback) => {
         Book.find({ author: req.body.authorid }).exec(callback);
       },
     },
-    function (err, results) {
+    (err, results) => {
       if (err) {
         return next(err);
       }
@@ -230,18 +232,18 @@ exports.author_delete_post = function (req, res, next) {
 };
 
 // Display Author update form on GET.
-exports.author_update_get = function (req, res, next) {
+exports.author_update_get = (req, res, next) => {
   // Get authors and countries for form.
   async.parallel(
     {
-      author: function (callback) {
+      author: (callback) => {
         Author.findById(req.params.id).populate("country").exec(callback);
       },
-      countries: function (callback) {
+      countries: (callback) => {
         Country.find(callback);
       },
     },
-    function (err, results) {
+    (err, results) => {
       if (err) {
         return next(err);
       }
@@ -314,11 +316,11 @@ exports.author_update_post = [
       // Get all countries for form.
       async.parallel(
         {
-          countries: function (callback) {
+          countries: (callback) => {
             Country.find(callback);
           },
         },
-        function (err, results) {
+        (err, results) => {
           if (err) {
             return next(err);
           }
@@ -333,10 +335,7 @@ exports.author_update_post = [
       return;
     } else {
       // Data from form is valid. Update the record.
-      Author.findByIdAndUpdate(req.params.id, author, {}, function (
-        err,
-        theauthor
-      ) {
+      Author.findByIdAndUpdate(req.params.id, author, {}, (err, theauthor) => {
         if (err) {
           return next(err);
         }

@@ -16,7 +16,7 @@ dotenv.config({ path: "./config/config.env" });
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // Display User create form on GET.
-exports.user_create_get = function (req, res, next) {
+exports.user_create_get = (req, res, next) => {
   res.render("user_form", { title: "Register User" });
 };
 
@@ -28,7 +28,7 @@ exports.user_create_post = [
     .isEmail() //looks like normalizeEmail() is removing "." from email name (before @)
     .custom((value, { req }) => {
       return new Promise((resolve, reject) => {
-        User.findOne({ email: req.body.email }, function (err, user) {
+        User.findOne({ email: req.body.email }, (err, user) => {
           if (err) {
             reject(new Error("Server Error"));
           }
@@ -257,7 +257,7 @@ exports.user_confirmation_post = [
 ];
 
 // Display Resending of Token on GET.
-exports.resend_token_get = function (req, res, next) {
+exports.resend_token_get = (req, res, next) => {
   res.render("user_resend", {
     title: "Resend Token",
   });
@@ -590,9 +590,218 @@ exports.reset_password_post = [
 
 // Display User Account Details on GET.
 exports.user_account_get = (req, res, next) => {
-  res.render("user_account", {
-    title: "Account Information",
-  });
+  async.parallel(
+    {
+      user: (callback) => {
+        User.findOne({ email: req.user.email }).exec(callback);
+      },
+    },
+    (err, results) => {
+      if (err) {
+        return next(err);
+      }
+      //Successful, so render
+      res.render("user_account", {
+        title: "Account Information",
+        user: results.user,
+      });
+    }
+  );
+};
+
+// Handle Password Change (from User Account Page) on POST.
+exports.user_account_post = [
+  body("currentpassword", "Please enter your current password").isLength({
+    min: 1,
+  }),
+  body(
+    "newpassword",
+    "New password should not match the current password"
+  ).custom((value, { req }) => {
+    return value !== req.body.currentpassword;
+  }),
+  body(
+    "newpassword",
+    "Password must be at least 6 characters long and include one lowercase character, one uppercase character, a number, and a special character."
+  ).matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{6,}$/, "i"),
+  body("newpassword2", "Passwords should match").custom((value, { req }) => {
+    return value === req.body.newpassword;
+  }),
+
+  // Process request after validation and sanitization.
+  (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render form again with sanitized values/error messages.
+
+      async.parallel(
+        {
+          user: (callback) => {
+            User.findOne({ email: req.user.email }).exec(callback);
+          },
+        },
+        (err, results) => {
+          if (err) {
+            return next(err);
+          }
+          //Successful, so render
+          res.render("user_account", {
+            title: "Account Information",
+            user: results.user,
+            errors: errors.mapped(),
+          });
+        }
+      );
+    } else {
+      async.parallel(
+        {
+          user: (callback) => {
+            User.findOne({ email: req.user.email }).exec(callback);
+          },
+        },
+        (err, user) => {
+          if (err) {
+            return next(err);
+          }
+          //Match Password
+          console.log(req.body.currentpassword);
+          console.log(user);
+
+          bcrypt.compare(
+            req.body.currentpassword,
+            user.user.password,
+            (err, isMatch) => {
+              if (err) throw err;
+              if (!isMatch) {
+                req.flash("danger", "Invalid Password");
+                res.redirect("/users/account");
+                return;
+              } else {
+                //Hash the password and save it in DB
+                bcrypt.genSalt(10, (err, salt) => {
+                  bcrypt.hash(req.body.newpassword, salt, (err, hash) => {
+                    if (err) {
+                      return next(err);
+                    }
+                    user.user.password = hash;
+
+                    user.user.markModified("password");
+                    user.user.save((err) => {
+                      if (err) {
+                        return next(err);
+                      }
+
+                      // Send email to confirm password change
+                      const mail = {
+                        to: user.user.email,
+                        from: "coda.eugen@gmail.com", // TODO - to be changed
+                        subject: "Booktracker - password changed",
+                        html: `Hello ${user.user.username},
+                              <br>
+                              <br>
+                              This is a notice to let you know that the password for your account has been changed.
+                              <br>
+                              <br>
+                              If you did not recently reset or change your password, it is possible that your account has been compromised. If you have any questions about this, please contact us at coda.eugen@gmail.com
+                              <br>
+                              <br>
+                              - The BookTracker Team`,
+                      };
+
+                      sgMail.send(mail, (err) => {
+                        if (err) {
+                          return next(err);
+                        }
+                      });
+                      req.logout();
+                      req.flash(
+                        "success",
+                        "The password has been successfully changed. Please log in again."
+                      );
+                      res.redirect("/users/login");
+                      return;
+                    });
+                  });
+                });
+              }
+            }
+          );
+        }
+      );
+    }
+  },
+];
+
+// Display Delete Account on GET.
+exports.user_delete_get = (req, res, next) => {
+  async.parallel(
+    {
+      user: (callback) => {
+        User.findOne({ email: req.user.email }).exec(callback);
+      },
+      booklist: (callback) => {
+        Booklist.findOne({ user: req.user._id })
+          .populate("user")
+          .exec(callback);
+      },
+    },
+    (err, results) => {
+      if (err) {
+        return next(err);
+      }
+      //Successful, so render
+      res.render("user_delete", {
+        title: "Delete Account",
+        user: results.user,
+        booklist: results.booklist,
+      });
+    }
+  );
+};
+
+// Handle Delete Account on POST.
+exports.user_delete_post = (req, res, next) => {
+  async.parallel(
+    {
+      user: (callback) => {
+        User.findOne({ email: req.user.email }).exec(callback);
+      },
+      booklist: (callback) => {
+        Booklist.findOne({ user: req.user._id })
+          .populate("user")
+          .exec(callback);
+      },
+    },
+    (err, results) => {
+      if (err) {
+        return next(err);
+      }
+      // Success
+
+      //Delete the booklist from DB
+      Booklist.findOneAndRemove({ user: req.user._id }, function deleteBooklist(
+        err
+      ) {
+        if (err) {
+          return next(err);
+        }
+      });
+
+      // Delete user and redirect to home page.
+      User.findByIdAndRemove(results.user._id, function deleteUser(err) {
+        if (err) {
+          return next(err);
+        }
+
+        // Success - go to home page
+        req.logout();
+        req.flash("success", "You account is deleted.");
+        res.redirect("/");
+      });
+    }
+  );
 };
 
 // Display User logout on GET.

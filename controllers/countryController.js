@@ -4,11 +4,11 @@ var async = require("async");
 const { body, validationResult } = require("express-validator");
 
 // Display list of all Countries.
-exports.country_list = function (req, res, next) {
+exports.country_list = (req, res, next) => {
   Country.find()
     .populate("country")
     .sort([["name", "ascending"]])
-    .exec(function (err, list_countries) {
+    .exec((err, list_countries) => {
       if (err) {
         return next(err);
       }
@@ -21,20 +21,20 @@ exports.country_list = function (req, res, next) {
 };
 
 // Display detail page for a specific Country.
-exports.country_detail = function (req, res, next) {
+exports.country_detail = (req, res, next) => {
   async.parallel(
     {
-      country: function (callback) {
+      country: (callback) => {
         Country.findById(req.params.id).exec(callback);
       },
 
-      country_authors: function (callback) {
+      country_authors: (callback) => {
         Author.find({ country: req.params.id })
           .populate("author")
           .exec(callback);
       },
     },
-    function (err, results) {
+    (err, results) => {
       if (err) {
         return next(err);
       }
@@ -55,7 +55,7 @@ exports.country_detail = function (req, res, next) {
 };
 
 // Display Country create form on GET.
-exports.country_create_get = function (req, res, next) {
+exports.country_create_get = (req, res, next) => {
   res.render("country_form", { title: "Add Country" });
 };
 
@@ -87,10 +87,7 @@ exports.country_create_post = [
     } else {
       // Data from form is valid.
       // Check if country with same name already exists.
-      Country.findOne({ name: req.body.name }).exec(function (
-        err,
-        found_country
-      ) {
+      Country.findOne({ name: req.body.name }).exec((err, found_country) => {
         if (err) {
           return next(err);
         }
@@ -99,7 +96,7 @@ exports.country_create_post = [
           // Country exists, redirect to its detail page.
           res.redirect(found_country.url);
         } else {
-          country.save(function (err) {
+          country.save((err) => {
             if (err) {
               return next(err);
             }
@@ -113,17 +110,17 @@ exports.country_create_post = [
 ];
 
 // Display Country delete form on GET.
-exports.country_delete_get = function (req, res, next) {
+exports.country_delete_get = (req, res, next) => {
   async.parallel(
     {
-      country: function (callback) {
+      country: (callback) => {
         Country.findById(req.params.id).exec(callback);
       },
-      countries_authors: function (callback) {
+      countries_authors: (callback) => {
         Author.find({ country: req.params.id }).exec(callback);
       },
     },
-    function (err, results) {
+    (err, results) => {
       if (err) {
         return next(err);
       }
@@ -142,17 +139,17 @@ exports.country_delete_get = function (req, res, next) {
 };
 
 // Handle Country delete on POST.
-exports.country_delete_post = function (req, res, next) {
+exports.country_delete_post = (req, res, next) => {
   async.parallel(
     {
-      country: function (callback) {
+      country: (callback) => {
         Country.findById(req.body.countryid).exec(callback);
       },
-      countries_authors: function (callback) {
+      countries_authors: (callback) => {
         Author.find({ country: req.body.countryid }).exec(callback);
       },
     },
-    function (err, results) {
+    (err, results) => {
       if (err) {
         return next(err);
       }
@@ -182,8 +179,8 @@ exports.country_delete_post = function (req, res, next) {
 };
 
 // Display Country update form on GET.
-exports.country_update_get = function (req, res, next) {
-  Country.findById(req.params.id, function (err, country) {
+exports.country_update_get = (req, res, next) => {
+  Country.findById(req.params.id, (err, country) => {
     if (err) {
       return next(err);
     }
@@ -228,16 +225,18 @@ exports.country_update_post = [
       return;
     } else {
       // Data from form is valid. Update the record.
-      Country.findByIdAndUpdate(req.params.id, country, {}, function (
-        err,
-        thecountry
-      ) {
-        if (err) {
-          return next(err);
+      Country.findByIdAndUpdate(
+        req.params.id,
+        country,
+        {},
+        (err, thecountry) => {
+          if (err) {
+            return next(err);
+          }
+          // Successful - redirect to country detail page.
+          res.redirect(thecountry.url);
         }
-        // Successful - redirect to country detail page.
-        res.redirect(thecountry.url);
-      });
+      );
     }
   },
 ];

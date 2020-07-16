@@ -38,5 +38,6 @@ body {
 
 /* User Profile Dropdown */
 #dropdown02 {
-  width: 150px;
+  width: 130px;
+  text-align: center;
 }
