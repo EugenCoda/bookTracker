@@ -2,16 +2,15 @@ extends layout
 
 block content
 
-  h3 Genre: #{genre.name}
+  h3 #{genre.name}
   
   div(style='margin-left:20px;margin-top:20px')
 
-    h4 Books
-    
     table.table.table-sm.table-hover
       thead.thead-light
         tr
           th(scope='col' width='30px') #
+          th(scope='col' width='80px') Cover
           th(scope='col' width='500px') Title 
           th(scope='col') Author 
       tbody
@@ -21,6 +20,9 @@ block content
           - index++
           tr
             th(scope='row') !{index}.
+            td(height='100px')
+              a(href=book.url)
+                img(src=`/images/books/${book._id}.jpg`, style='float:left;width:100%;', title=`${book.title}`, alt=`${book.title}`)
             td
               a(href=book.url) #{book.title} 
             td 
@@ -28,6 +30,7 @@ block content
         else
           tr
             th(scope='row') 
+            td
             td This genre has no books yet. Add one 
               | 
               a(href='/catalog/book/create') now.

@@ -7,6 +7,15 @@ var user_controller = require("../controllers/userController");
 
 /// USER ROUTES ///
 
+// Help Page
+router.get("/help", user_controller.user_help_get);
+
+// GET Contact Page
+router.get("/help/contact", user_controller.user_help_contact_get);
+
+// POST Contact Page
+router.post("/help/contact", user_controller.user_help_contact_post);
+
 // Register Form
 router.get("/register", ensureGuest, user_controller.user_create_get);
 
@@ -60,6 +69,16 @@ router.get("/account", ensureAuthenticated, user_controller.user_account_get);
 
 //POST request for Changing Password from User Account Page
 router.post("/account", user_controller.user_account_post);
+
+//GET request User Profile Edit
+router.get(
+  "/account/edit",
+  ensureAuthenticated,
+  user_controller.user_profile_edit_get
+);
+
+//POST request User Profile Edit
+router.post("/account/edit", user_controller.user_profile_edit_post);
 
 // GET Delete Account
 router.get(

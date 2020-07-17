@@ -7,6 +7,7 @@ block content
     thead.thead-light
       tr
         th(scope='col' width='30px') #
+        th(scope='col' width='80px') 
         th(scope='col') Author 
         th(scope='col') Born
         th(scope='col') Died
@@ -17,6 +18,9 @@ block content
         - index++
         tr
           th(scope='row') !{index}.
+          td(height='100px')
+            a(href=author.url)
+              img(src=`/images/authors/${author._id}.jpg`, style='float:left;width:100%;', title=`${author.name}`, alt=`${author.name}`)
           td
             a(href=author.url) #{author.name} 
           if author.date_of_birth == null

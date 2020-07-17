@@ -5,33 +5,46 @@ block content
   include helpers
   script(src='/javascripts/main.js')
 
-  h3 Author: #{author.name}
-  p #{author.lifespan} | Country:  
-    | 
-    a(href=author.country.url) #{author.country.name}
-  
-  div(style='margin-left:20px;margin-top:20px')
-
-    h4 Books
+  div.media
+    img.align-self-start.mr-3(id='author_cover', src=`/images/authors/${author._id}.jpg`, title=`${author.name}`, alt=`${author.name}`)
     
-    dl
-      each book in author_books
-        dt 
-          a(href=book.url) #{book.title}
-        //- tried to implement expanding the book summary text, but cannot grab the element ID for shortText and fullText
-        //- temporary solution: show the book summary in ""...more" link title
-        dd#shortText(style='display: inline') #{truncate(book.summary, 250)} 
-        dd#fullText(style='display: none') #{book.summary} 
-        |
-        a(href='#' title=book.summary) ...more
-      else
-        p This author has no books yet. Add one 
+    div.media-body
+      h3 #{author.name}
+
+      hr
+
+      div(style='margin-left:20px;margin-top:20px')
+        
+        h4 Bio
+        
+        p #{author.lifespan} | Country:  
           | 
-          a(href='/catalog/book/create') now.
-  hr
-  if user
-    a.btn.btn-dark(href=author.url+'/update') Update author
-    | 
-    a.btn.btn-danger(href=author.url+'/delete') Delete author
-    | 
-    a.btn.btn-secondary(href='/booklists/mylist') Back
+          a(href=author.country.url) #{author.country.name}
+
+        h4 Books
+        
+        ul.list-unstyled
+          each book in author_books
+            li.media.my-4
+              a(href=book.url)
+                img.mr-3(src=`/images/books/${book._id}.jpg`, style='max-width:80px;', title=`${book.title}`, alt=`${book.title}`)
+              div.media-body 
+                a.mt-0.mb-1(href=book.url) #{book.title} 
+                //- tried to implement expanding the book summary text, but cannot grab the element ID for shortText and fullText
+                //- temporary solution: show the book summary in ""...more" link title
+                br
+                p#shortText(style='display: inline') #{truncate(book.summary, 250)} 
+                p#fullText(style='display: none') #{book.summary} 
+                |
+                a(href='#' title=book.summary) ...more
+          else
+            p This author has no books yet. Add one 
+              | 
+              a(href='/catalog/book/create') now.
+      hr
+      if user
+        a.btn.btn-dark(href=author.url+'/update') Update author
+        | 
+        a.btn.btn-danger(href=author.url+'/delete') Delete author
+        | 
+        a.btn.btn-secondary(href='/booklists/mylist') Back

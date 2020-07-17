@@ -7,12 +7,14 @@ block content
     thead.thead-light
       tr
         th(scope='col' width='30px') #
-        th(scope='col' width='500px') Title 
+        th(scope='col' width='30px') Cover
+        th(scope='col' width='250px') Title 
         th(scope='col') Author 
         th(scope='col') Avg. Rating
         if user
           th(scope='col') My Status
           th(scope='col')
+        th(scope='col' width='150px') 
     tbody
       - book_list.sort(function(a, b) {let textA = a.title.toUpperCase(); let textB = b.title.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
       - let index = 0
@@ -20,6 +22,9 @@ block content
         - index++
         tr
           th(scope='row') !{index}.
+          td(height='80px')
+            a(href=book.url)
+              img(src=`/images/books/${book._id}.jpg`, style='float:left;width:100%;', title=`${book.title}`, alt=`${book.title}`)
           td
             a(href=book.url) #{book.title} 
           td 
@@ -61,5 +66,6 @@ block content
                   svg.bi.bi-plus-circle-fill.text-success(viewBox='0 0 16 16', fill='currentColor', xmlns='http://www.w3.org/2000/svg')
                     path(fill-rule='evenodd', d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4a.5.5 0 0 0-1 0v3.5H4a.5.5 0 0 0 0 1h3.5V12a.5.5 0 0 0 1 0V8.5H12a.5.5 0 0 0 0-1H8.5V4z')
               td
+          td(width='150px')
       else
         p There are no books.

@@ -29,14 +29,18 @@ html(lang='en')
               a.dropdown-item(href='/catalog/genres') Genres
               a.dropdown-item(href='/catalog/languages') Languages
               a.dropdown-item(href='/catalog/countries') Countries
+          li.nav-item
+            a.nav-link(href='/users/help')
+              | Help 
+              span.sr-only (current)
         form.form-inline.my-2.my-lg-0
           input.form-control.mr-sm-2(type='text', placeholder='Search books', aria-label='Search')
           button.btn.btn-outline-success.my-2.my-sm-0(type='submit') Search   
         ul.navbar-nav.mr-right
           if user
             li.nav-item.dropdown
-              a#dropdown02.nav-link.dropdown-toggle(href='#', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false') Hi, #{user.username}  
-              .dropdown-menu(aria-labelledby='dropdown01')
+              a#dropdown02.nav-link.dropdown-toggle(href='#', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false') #{user.username}  
+              .dropdown-menu(aria-labelledby='dropdown02')
                 a.dropdown-item(href='/users/account') Account
                 a.dropdown-item(href='/users/logout') Log Out
           else

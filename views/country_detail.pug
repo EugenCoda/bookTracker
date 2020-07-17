@@ -2,20 +2,20 @@ extends layout
 
 block content
 
-  h3 Country: #{country.name}
+  h3 #{country.name}
   
   div(style='margin-left:20px;margin-top:20px')
 
-    h4 Authors
-    
     table.table.table-sm.table-hover
       thead.thead-light
         tr
           th(scope='col' width='30px') #
+          th(scope='col' width='80px') 
           th(scope='col') Author 
           th(scope='col') Born
           th(scope='col') Died
-          th(scope='col') Country of Origin
+          th(scope='col' width='500px')
+
       tbody 
         - let index = 0
         - country_authors.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
@@ -23,6 +23,9 @@ block content
           - index++
           tr
             th(scope='row') !{index}.
+            td(height='100px')
+              a(href=author.url)
+                img(src=`/images/authors/${author._id}.jpg`, style='float:left;width:100%;', title=`${author.name}`, alt=`${author.name}`)
             td
               a(href=author.url) #{author.name} 
             if author.date_of_birth == null
@@ -33,10 +36,12 @@ block content
               td 
             else
               td #{moment(author.date_of_death).format('MMM D, YYYY')}
-            td #{country.name}
+            td
+
         else
           tr
             th(scope='row') 
+            td
             td This country has no authors yet. Add one 
               | 
               a(href='/catalog/author/create') now.

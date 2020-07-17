@@ -2,7 +2,7 @@ extends layout
 
 block content
 
-  h3 Language: #{language.name}
+  h3 #{language.name}
   
   div(style='margin-left:20px;margin-top:20px')
 
@@ -11,6 +11,7 @@ block content
       thead.thead-light
         tr
           th(scope='col' width='30px') #
+          th(scope='col' width='80px') Cover
           th(scope='col' width='500px') Title 
           th(scope='col') Author 
       tbody
@@ -20,6 +21,9 @@ block content
         - index++
         tr
           th(scope='row') !{index}.
+          td(height='100px')
+              a(href=book.url)
+                img(src=`/images/books/${book._id}.jpg`, style='float:left;width:100%;', title=`${book.title}`, alt=`${book.title}`)
           td
             a(href=book.url) #{book.title} 
           td 
@@ -27,6 +31,7 @@ block content
       else
        tr
           th(scope='row') 
+          td
           td This language has no books yet. Add one 
             | 
             a(href='/catalog/book/create') now.
@@ -37,6 +42,7 @@ block content
       thead.thead-light
         tr
           th(scope='col' width='30px') #
+          th(scope='col' width='80px') Cover
           th(scope='col' width='500px') Title 
           th(scope='col') Author 
       tbody
@@ -46,6 +52,9 @@ block content
         - index++
         tr
           th(scope='row') !{index}.
+          td(height='100px')
+              a(href=book.url)
+                img(src=`/images/books/${book._id}.jpg`, style='float:left;width:100%;', title=`${book.title}`, alt=`${book.title}`)
           td
             a(href=book.url) #{book.title} 
           td 
@@ -53,6 +62,7 @@ block content
       else
         tr
           th(scope='row') 
+          td
           td This language has no books yet. Add one 
             | 
             a(href='/catalog/book/create') now.

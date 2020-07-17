@@ -7,6 +7,7 @@ block content
     thead.thead-light
       tr
         th(scope='col' width='30px') #
+        th(scope='col' width='30px') Cover
         th(scope='col' width='250px') Title 
         th(scope='col') Author 
         th(scope='col') Avg. Rating
@@ -25,6 +26,9 @@ block content
       each val, index in personal_list
         tr
           th(scope='row') !{index+1}.
+          td
+            a(href=personal_list[index].book.url)
+              img(src=`/images/books/${personal_list[index].book._id}.jpg`, style='float:left;width:100%;', title=`${personal_list[index].book.title}`, alt=`${personal_list[index].book.title}`)
           td
             a(href=personal_list[index].book.url) #{personal_list[index].book.title}  
           td

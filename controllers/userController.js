@@ -15,6 +15,60 @@ dotenv.config({ path: "./config/config.env" });
 //Setting up the Sendgrid API Key
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
+// Display Help Page on GET.
+exports.user_help_get = (req, res, next) => {
+  res.render("user_help", { title: "Help" });
+};
+
+// Display Help Contact Page on GET.
+exports.user_help_contact_get = (req, res, next) => {
+  res.render("user_help_contact", { title: "Contact Us" });
+};
+
+// Handle Help Contact Page on POST.
+exports.user_help_contact_post = [
+  body("email", "Email is required").isLength({ min: 1 }),
+  body("email", "Email is not valid").isEmail(), //looks like normalizeEmail() is removing "." from email name (before @)
+  body("subject", "Subject is required").isLength({ min: 1 }),
+  body("description", "Description must not be empty.").isLength({ min: 1 }),
+
+  // Sanitize fields (using wildcard).
+  body("*").escape(),
+  body("*").unescape(), //not sure if it is safe to do so
+
+  // Process request after validation and sanitization.
+  (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render form again with sanitized values/error messages.
+      res.render("user_help_contact", {
+        title: "Contact Us",
+        errors: errors.mapped(),
+      });
+    } else {
+      const mail = {
+        to: "coda.eugen@gmail.com", // TODO - to be changed
+        from: "coda.eugen@gmail.com", // TODO - to be changed
+        subject: `You received this message: "${req.body.subject}" from ${req.body.email}`,
+        html: req.body.description,
+      };
+
+      sgMail.send(mail, (err) => {
+        if (err) {
+          console.error(err);
+        }
+        req.flash(
+          "success",
+          "Your message was successfully submitted. We will contact you as soon as possible."
+        );
+        res.redirect("/users/help");
+      });
+    }
+  },
+];
+
 // Display User create form on GET.
 exports.user_create_get = (req, res, next) => {
   res.render("user_form", { title: "Register User" });
@@ -730,6 +784,99 @@ exports.user_account_post = [
           );
         }
       );
+    }
+  },
+];
+
+// Display User Profile Edit on GET.
+exports.user_profile_edit_get = (req, res, next) => {
+  async.parallel(
+    {
+      user: (callback) => {
+        User.findOne({ email: req.user.email }).exec(callback);
+      },
+    },
+    (err, results) => {
+      if (err) {
+        return next(err);
+      }
+
+      //Successful, so render
+      res.render("user_account_edit", {
+        title: "Edit Profile",
+        user: results.user,
+      });
+    }
+  );
+};
+
+// Handle User Profile Edit on POST.
+exports.user_profile_edit_post = [
+  body("name", "Name is required").isLength({ min: 1 }),
+  body("email", "Email is required").isLength({ min: 1 }),
+  body("email", "Email is not valid")
+    .isEmail() //looks like normalizeEmail() is removing "." from email name (before @)
+    .custom((value, { req }) => {
+      return new Promise((resolve, reject) => {
+        User.findOne({ email: req.body.email }, (err, user) => {
+          if (err) {
+            reject(new Error("Server Error"));
+          }
+          if (Boolean(user)) {
+            // For cases when the email remains unchanged, we need to allow the other changes to be submitted
+            // so we rule out the case when the user found is the same with logged user
+            if (user.email !== req.user.email) {
+              reject(new Error("E-mail already in use"));
+            }
+          }
+          resolve(true);
+        });
+      });
+    }),
+  body("username", "Username is required").isLength({ min: 1 }),
+
+  // Process request after validation and sanitization.
+  (req, res, next) => {
+    let user = new User({
+      name: req.body.name,
+      email: req.body.email,
+      username: req.body.username,
+      isVerified: true,
+      _id: req.user._id, // the id of the logged user, otherwise it will create a new user
+    });
+
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render form again with sanitized values/error messages.
+      async.parallel(
+        {
+          user: (callback) => {
+            User.findOne({ email: req.user.email }).exec(callback);
+          },
+        },
+        (err, results) => {
+          if (err) {
+            return next(err);
+          }
+
+          res.render("user_account_edit", {
+            title: "Edit Profile",
+            user: results.user,
+            errors: errors.mapped(),
+          });
+        }
+      );
+    } else {
+      // Data from form is valid. Update the record.
+      User.findByIdAndUpdate(req.user._id, user, {}, (err, user) => {
+        if (err) {
+          return next(err);
+        }
+        // Successful - redirect to user account page.
+        res.redirect("/users/account");
+      });
     }
   },
 ];

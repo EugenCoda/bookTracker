@@ -41,3 +41,16 @@ body {
   width: 130px;
   text-align: center;
 }
+
+/* Book and author images */
+#book_cover {
+  margin-right: 15px;
+  border-radius: 5px;
+  width: 15%;
+}
+
+#author_cover {
+  margin-right: 15px;
+  border-radius: 5px;
+  width: 15%;
+}

@@ -339,7 +339,7 @@ exports.author_update_post = [
         if (err) {
           return next(err);
         }
-        // Successful - redirect to genre detail page.
+        // Successful - redirect to author detail page.
         res.redirect(theauthor.url);
       });
     }

@@ -47,15 +47,16 @@ Branch 7:
 
 Branch 8:
 
-- Implemented user email confirmation with token (and resending the token)
-- Implemented password reset with token and email confirmation
-- Implemented password change from user account page with email confirmation
-- Implemented user account deletion (with booklist automatically deleted)
+- User email confirmation with token (and resending the token)
+- Password reset with token and email confirmation
+- Password change from user account page with email confirmation
+- User account deletion (with booklist automatically deleted)
+- User profile editing
+- Contact page
+- Images for books and authors
 
 TODO:
 
-- enable user profile editing (with email confirmation) - in progress
-- contact page
 - search bar
 - fix adding multiple genres
 - add multiple authors option
@@ -68,5 +69,4 @@ Problematic:
 - date_added should be recorded automatically (for updates it should remain unchanged)
 - date_updated should be recorded automatically (for new items it should be equal to date_added)
 - restrict adding a book more than once in a booklist - done in branch 5(still with a 500 error)
-- show book, authors, genres count in "All..." links
 - truncate book summaries - partially (not able to expand text)
