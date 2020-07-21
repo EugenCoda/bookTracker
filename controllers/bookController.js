@@ -241,9 +241,26 @@ exports.book_create_post = [
   body("originalLanguage").trim().optional(),
   body("pages").trim().optional(),
 
-  // Sanitize fields (using wildcard).
-  body("*").escape(),
-  body("*").unescape(), //not sure if it is safe to do so
+  // Sanitize fields (no wildcard used, it seems to affect genre array).
+  body("title").escape(),
+  body("originalTitle").escape(),
+  body("author").escape(),
+  body("summary").escape(),
+  body("isbn").escape(),
+  body("language").escape(),
+  body("originalLanguage").escape(),
+  body("pages").escape(),
+  body("genre.*").escape(), // for the values within genre array
+
+  //not sure if unescape is safe to apply like this
+  body("title").unescape(),
+  body("originalTitle").unescape(),
+  body("author").unescape(),
+  body("summary").unescape(),
+  body("isbn").unescape(),
+  body("language").unescape(),
+  body("originalLanguage").unescape(),
+  body("pages").unescape(),
 
   // Process request after validation and sanitization.
   (req, res, next) => {
@@ -480,9 +497,26 @@ exports.book_update_post = [
   body("originalLanguage").trim().optional(),
   body("pages").trim().optional(),
 
-  // Sanitize fields.
-  body("*").escape(),
-  body("*").unescape(), //not sure if it is safe to do so
+  // Sanitize fields(no wildcard used, it seems to affect genre array)
+  body("title").escape(),
+  body("originalTitle").escape(),
+  body("author").escape(),
+  body("summary").escape(),
+  body("isbn").escape(),
+  body("language").escape(),
+  body("originalLanguage").escape(),
+  body("pages").escape(),
+  body("genre.*").escape(), // for the values within genre array
+
+  //not sure if unescape is safe to apply like this
+  body("title").unescape(),
+  body("originalTitle").unescape(),
+  body("author").unescape(),
+  body("summary").unescape(),
+  body("isbn").unescape(),
+  body("language").unescape(),
+  body("originalLanguage").unescape(),
+  body("pages").unescape(),
 
   // Process request after validation and sanitization.
   (req, res, next) => {
@@ -574,3 +608,84 @@ exports.book_update_post = [
     }
   },
 ];
+
+// Display search results on GET.
+exports.search = (req, res, next) => {
+  var search = req.query.search;
+
+  async.parallel(
+    {
+      books: (callback) => {
+        // For an unknown reason, I cannot create a text index in MongoDB Atlas for books,
+        // so I created an Atlas Search Index, which works with aggregate
+        Book.aggregate([
+          {
+            $search: {
+              text: {
+                query: search,
+                path: ["title", "originalTitle", "summary", "isbn"],
+              },
+            },
+          },
+          {
+            $limit: 5,
+          },
+          {
+            $project: {
+              _id: 1,
+              title: 1,
+              originalTitle: 1,
+              summary: 1,
+              isbn: 1,
+              author: 1, // populate doesn't work with aggregate, so not sure how to bring author, language etc to results
+              language: 1,
+            },
+          },
+        ]).exec(callback);
+      },
+      authors: (callback) => {
+        // For the rest of collections, there was no issue to create text index,
+        // so below I'm using the "standard" text search with find
+        Author.find({
+          $text: {
+            $search: search,
+          },
+        })
+          .limit(5)
+          .exec(callback);
+      },
+      countries: (callback) => {
+        Country.find({
+          $text: {
+            $search: search,
+          },
+        })
+          .limit(5)
+          .exec(callback);
+      },
+      genres: (callback) => {
+        Genre.find({
+          $text: {
+            $search: search,
+          },
+        })
+          .limit(5)
+          .exec(callback);
+      },
+    },
+
+    (err, results) => {
+      if (err) {
+        return next(err);
+      }
+
+      res.render("search", {
+        title: "Search Results",
+        books: results.books,
+        authors: results.authors,
+        countries: results.countries,
+        genres: results.genres,
+      });
+    }
+  );
+};

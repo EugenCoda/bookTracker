@@ -55,10 +55,13 @@ Branch 8:
 - Contact page
 - Images for books and authors
 
+Branch 9:
+
+- Search bar - pretty basic, but it works sufficiently fine for the moment.
+- Fixed adding multiple genres
+
 TODO:
 
-- search bar
-- fix adding multiple genres
 - add multiple authors option
 - sorting and filtering lists
 - deploy app to heroku

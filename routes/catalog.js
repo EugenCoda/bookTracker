@@ -1,4 +1,5 @@
 var express = require("express");
+var cors = require("cors");
 var router = express.Router();
 const { ensureAuthenticated } = require("../middleware/auth");
 
@@ -201,5 +202,10 @@ router.get("/country/:id", country_controller.country_detail);
 
 // GET request for list of all Countries.
 router.get("/countries", country_controller.country_list);
+
+/// SEARCH ROUTES ///
+
+// GET request for SEARCH.
+router.get("/search", cors(), book_controller.search);
 
 module.exports = router;

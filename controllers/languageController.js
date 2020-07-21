@@ -77,7 +77,7 @@ exports.language_create_post = [
   // Process request after validation and sanitization.
   (req, res, next) => {
     // Extract the validation errors from a request.
-    const errors = validator.validationResult(req);
+    const errors = validationResult(req);
 
     // Create a language object with escaped and trimmed data.
     var language = new Language({ name: req.body.name });

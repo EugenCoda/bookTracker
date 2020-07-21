@@ -1,0 +1,55 @@
+extends layout
+
+block content
+  h3=title
+
+  div(style='margin-left:20px;margin-top:20px')
+    table.table.table-borderless.table-hover
+      thead.thead-light
+        tr
+          th(scope='col' width='30px') #
+          th(scope='col' width='30px') Cover
+          th(scope='col' width='400px') Title 
+          th(scope='col' width='300px') 
+      tbody
+        - let index = 0
+        each book in books
+          - index++
+          tr
+            th(scope='row') !{index}.
+            td(height='80px')
+              a(href=`/catalog/book/${book._id}`)
+                  img(src=`/images/books/${book._id}.jpg`, style='float:left;width:40%;', title=`${book.title}`, alt=`${book.title}`)
+            td 
+              a(href=`/catalog/book/${book._id}`) #{book.title} 
+            td(width='300px')
+
+        each author in authors
+          - index++
+          tr
+            th(scope='row') !{index}.
+            td(height='80px')
+              a(href=author.url)
+                img(src=`/images/authors/${author._id}.jpg`, style='float:left;width:40%;', title=`${author.name}`, alt=`${author.name}`)
+            td 
+              a(href=author.url) #{author.name} 
+            td(width='300px')
+
+        each country in countries
+          - index++
+          tr
+            th(scope='row') !{index}.
+            td 
+              a(href=country.url) #{country.name} 
+            td(width='300px')
+            td(width='300px')
+        
+        each genre in genres
+          - index++
+          tr
+            th(scope='row') !{index}.
+            td 
+              a(href=genre.url) #{genre.name} 
+            td(width='300px')
+            td(width='300px')
+
