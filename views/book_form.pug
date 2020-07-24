@@ -17,15 +17,48 @@ block content
         for author in authors
           if book
             //- Handle GET form, where book.author is an object, and POST form, where it is a string.
-            option(
-              value=author._id
-              selected=(
-                author._id.toString()==book.author._id
-                || author._id.toString()==book.author
-              ) ? 'selected' : false
-            ) #{author.name}
+            //- Don't show the default user in the list
+            if author._id!='5f181920c4d320322dbbf993'
+              option(
+                value=author._id
+                selected=(
+                  author._id.toString()==book.author._id
+                  || author._id.toString()==book.author
+                ) ? 'selected' : false
+              ) #{author.name}
           else
-            option(value=author._id) #{author.name}
+            //- Don't show the default user in the list
+            if author._id!='5f181920c4d320322dbbf993' 
+              option(value=author._id) #{author.name}
+      br
+      if book==undefined || book.author2==undefined || book.author2._id=='5f181920c4d320322dbbf993'
+        button#btnAddAuthor Add second author
+      else
+        button#btnChangeAuthor Change second author
+        | 
+        button#btnRemoveAuthor Remove second author
+      
+      div#secondAuthor.form-group(style='display:none')
+        label(for='author2')
+        select#author2.form-control(type='select' placeholder='Select author' name='author2' )
+          - authors.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
+          option(value='5f181920c4d320322dbbf993') Choose a Second Author
+          for author in authors
+            if book && book.author2
+              //- Handle GET form, where book.author is an object, and POST form, where it is a string.
+              //- Don't show the default user in the list
+              if author._id!='5f181920c4d320322dbbf993'
+                option(
+                  value=author._id
+                  selected=(
+                    author._id.toString()==book.author2._id
+                    || author._id.toString()==book.author2
+                  ) ? 'selected' : false
+                ) #{author.name}
+            else
+              //- Don't show the default user (again) in the list
+              if author._id!='5f181920c4d320322dbbf993' 
+                option(value=author._id) #{author.name}
     div.form-group
       label(for='summary') Summary:
       textarea#summary.form-control(type='textarea', placeholder='Summary' name='summary' rows='3' required='true') #{undefined===book ? '' : book.summary}
@@ -35,6 +68,7 @@ block content
     div.form-group
       label Genre:
       div
+        - genres.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
         for genre in genres
           div(style='display: inline; padding-right:10px;')
             input.checkbox-input(type='checkbox', name='genre', id=genre._id, value=genre._id, checked=genre.checked )
@@ -72,6 +106,9 @@ block content
           else
             option(value=language._id) #{language.name}
     div.form-group
+      label(for='yearFirstPublished') Year First Published:
+      input#yearFirstPublished.form-control(type='text', placeholder='e.g. 1997' name='yearFirstPublished' value=(undefined===book ? '' : book.yearFirstPublished)) 
+    div.form-group
       label(for='pages') Number of Pages:
       input#pages.form-control(type='text', placeholder='Add the number of pages' name='pages' value=(undefined===book ? '' : book.pages)) 
     button.btn.btn-primary(type='submit') Submit
@@ -85,3 +122,33 @@ block content
     ul
       for error in errors
         li!= error.msg
+
+  script.
+    document.getElementById("btnAddAuthor").addEventListener("click", function(e){
+      e.preventDefault();
+      var x = document.getElementById("secondAuthor");
+      if (x.style.display === "none") {
+      x.style.display = "block";
+      } else {
+      x.style.display = "none";
+      }
+    })
+
+  script.
+    document.getElementById("btnChangeAuthor").addEventListener("click", function(e){
+      e.preventDefault();
+      var x = document.getElementById("secondAuthor");
+      if (x.style.display === "none") {
+      x.style.display = "block";
+      } else {
+      x.style.display = "none";
+      }
+    })
+
+  //- it doesn't actually remove author - it changes it to default one
+  script.
+    document.getElementById("btnRemoveAuthor").addEventListener("click", function(e){
+      e.preventDefault();
+      author2.value = '5f181920c4d320322dbbf993';
+      window.alert("Second Author Removed");
+    })

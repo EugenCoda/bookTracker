@@ -29,7 +29,7 @@ var BooklistSchema = new Schema({
         default: "No",
       },
       rating: Number,
-      reviews: String,
+      review: String,
     },
   ],
 });

@@ -23,46 +23,75 @@ block content
     tbody
       //- Sorted to show latest reads on top.
       - personal_list.sort(function(a, b) {let textA = a.date_finished; let textB = b.date_finished; return (textA > textB) ? -1 : (textA < textB) ? 1 : 0;});
+      //- Loops through each book from the user personal list.
       each val, index in personal_list
         tr
+          
           th(scope='row') !{index+1}.
+          
           td
             a(href=personal_list[index].book.url)
               img(src=`/images/books/${personal_list[index].book._id}.jpg`, style='float:left;width:100%;', title=`${personal_list[index].book.title}`, alt=`${personal_list[index].book.title}`)
+          
           td
             a(href=personal_list[index].book.url) #{personal_list[index].book.title}  
+          
           td
             a(href=personal_list[index].book.author.url) #{personal_list[index].book.author.name}  
+          
           - let ratingCount = 0
           - let ratingSum = 0
           - const book = personal_list[index].book
-          each val, i in booklist_count
-            each value, j in booklist_count[i].personal_list
-              - if (booklist_count[i].personal_list[j].book.equals(book))
-                - if (booklist_count[i].personal_list[j].rating)
-                  - ratingCount++
-                  - ratingSum=ratingSum+booklist_count[i].personal_list[j].rating
+          //- Loops through all reviews from all users to find the ones for this book.
+          each val in userReview_all
+            //- If found and if it has a rating, rating is counted and added to the total sum
+            - if (val.book.equals(book))
+              - if (val.rating)
+                - ratingCount++
+                - ratingSum=ratingSum+val.rating
+            - else 
+              return
+          //- If rating count is zero, print n/a for both the average rating and this user's rating
+          if ratingCount == 0
+            td n/a
+            td n/a 
+          else
+            //- Loops through all reviews from this user to find the one for this book.
+            each val in userReview_user
+              //- If found, print the average rating and this user's rating
+              - if (val.book.equals(book))
+                td #{(ratingSum/ratingCount).toFixed(2)} 
+                //- If review exists, but the user didn't rate the book, print n/a
+                if (val.rating==null)
+                  td n/a
+                else
+                  td #{val.rating}
               - else 
                 return
-          if ratingCount == 0
-            td N/A
-          else
-            td #{(ratingSum/ratingCount).toFixed(2)} 
-          td #{personal_list[index].rating} 
+            else
+              //- There is no review from this user, but there are from other users
+              td #{(ratingSum/ratingCount).toFixed(2)} 
+              td n/a
+          
           td #{personal_list[index].status}  
+          
           if personal_list[index].currentPage == null
             td 0%
           else
             td #{Math.floor((personal_list[index].currentPage/personal_list[index].book.pages)*100)+"%"}
+          
           td #{personal_list[index].availability}   
+          
           if personal_list[index].date_started == null
             td 
           else
             td #{moment(personal_list[index].date_started).format('MMM D, YYYY')}  
+          
           if personal_list[index].date_finished == null
             td 
           else
             td #{moment(personal_list[index].date_finished).format('MMM D, YYYY')} 
+          
           td
             a(href=personal_list[index].book._id+'/view' title="View Book Entry") view
           |  
@@ -79,10 +108,10 @@ block content
       else
         tr
           th(scope='row') 
+          td
           td There are no books in your list yet. Add one 
             | 
             a(href='/catalog/books') now.
-          td
           td
           td
           td

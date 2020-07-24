@@ -15,23 +15,25 @@ block content
     tbody 
       - let index = 0
       each author in author_list
-        - index++
-        tr
-          th(scope='row') !{index}.
-          td(height='100px')
-            a(href=author.url)
-              img(src=`/images/authors/${author._id}.jpg`, style='float:left;width:100%;', title=`${author.name}`, alt=`${author.name}`)
-          td
-            a(href=author.url) #{author.name} 
-          if author.date_of_birth == null
-            td 
-          else
-            td #{moment(author.date_of_birth).format('MMM D, YYYY')}
-          if author.date_of_death == null
-            td 
-          else
-            td #{moment(author.date_of_death).format('MMM D, YYYY')}
-          td #{author.country.name}
+        //- Excluding the default author
+        if author._id!='5f181920c4d320322dbbf993'
+          - index++
+          tr
+            th(scope='row') !{index}.
+            td(height='100px')
+              a(href=author.url)
+                img(src=`/images/authors/${author._id}.jpg`, style='float:left;width:100%;', title=`${author.name}`, alt=`${author.name}`)
+            td
+              a(href=author.url) #{author.name} 
+            if author.date_of_birth == null
+              td 
+            else
+              td #{moment(author.date_of_birth).format('MMM D, YYYY')}
+            if author.date_of_death == null
+              td 
+            else
+              td #{moment(author.date_of_death).format('MMM D, YYYY')}
+            td #{author.country.name}
 
       else
         li There are no authors.

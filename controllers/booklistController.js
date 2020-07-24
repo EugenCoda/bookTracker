@@ -1,5 +1,6 @@
 var Booklist = require("../models/booklist");
 var Book = require("../models/book");
+var Review = require("../models/review");
 const { body, validationResult } = require("express-validator");
 
 var async = require("async");
@@ -18,10 +19,11 @@ exports.booklist_list = (req, res, next) => {
           })
           .exec(callback);
       },
-      booklist_count: (callback) => {
-        Booklist.find({})
-          .populate({ path: "personal_list.book" })
-          .exec(callback);
+      userReview_all: (callback) => {
+        Review.find({}).populate("book").exec(callback);
+      },
+      userReview_user: (callback) => {
+        Review.find({ user: req.user._id }).populate("book").exec(callback);
       },
     },
     (err, results) => {
@@ -33,7 +35,8 @@ exports.booklist_list = (req, res, next) => {
       res.render("booklist_list", {
         title: "My Books",
         personal_list: results.booklist.personal_list,
-        booklist_count: results.booklist_count,
+        userReview_all: results.userReview_all,
+        userReview_user: results.userReview_user,
       });
     }
   );
@@ -56,6 +59,11 @@ exports.booklist_view_get = (req, res, next) => {
           })
           .exec(callback);
       },
+      userReview: (callback) => {
+        Review.findOne({ user: req.user._id, book: req.params.id })
+          .populate("book")
+          .exec(callback);
+      },
     },
     (err, results) => {
       if (err) {
@@ -67,6 +75,7 @@ exports.booklist_view_get = (req, res, next) => {
         title: "View Book Entry",
         book: results.book,
         personal_list: results.booklist.personal_list,
+        userReview: results.userReview,
       });
     }
   );
@@ -90,6 +99,11 @@ exports.booklist_add_get = (req, res, next) => {
           })
           .exec(callback);
       },
+      userReview: (callback) => {
+        Review.findOne({ user: req.user._id, book: req.params.id })
+          .populate("book")
+          .exec(callback);
+      },
     },
     (err, results) => {
       if (err) {
@@ -103,11 +117,11 @@ exports.booklist_add_get = (req, res, next) => {
       }
 
       // Loop through personal list and check if the book is already added
-      // TODO: It gives a 500 error, tbc how to avoid this
-      for (var i = 0; i < results.booklist.personal_list.length; i++) {
+      for (let i = 0; i < results.booklist.personal_list.length; i++) {
         if (results.booklist.personal_list[i].book._id == req.params.id) {
           req.flash("danger", "Book already added to your list");
           res.redirect("/catalog/books");
+          return;
         }
       }
       // Success.
@@ -115,6 +129,7 @@ exports.booklist_add_get = (req, res, next) => {
         title: "Add Book to My List",
         book: results.book,
         personal_list: results.booklist.personal_list,
+        userReview: results.userReview,
       });
     }
   );
@@ -135,7 +150,7 @@ exports.booklist_add_post = [
     .optional({ checkFalsy: true })
     .isISO8601(),
   body("rating").trim().optional(),
-  body("reviews").trim().optional(),
+  body("review").trim().optional(),
 
   // Sanitize fields (using wildcard).
   body("*").escape(),
@@ -147,6 +162,24 @@ exports.booklist_add_post = [
   (req, res, next) => {
     // Extract the validation errors from a request.
     const errors = validationResult(req);
+    // If Review object exists, update it with escaped/trimmed data and old id.
+    if (req.body.reviewId) {
+      var userReview = new Review({
+        review: req.body.review,
+        rating: req.body.rating,
+        user: req.user,
+        book: req.params.id,
+        _id: req.body.reviewId, //This is required, or a new ID will be assigned!
+      });
+    } else {
+      // If Review object doesn't exist, create it with escaped/trimmed data.
+      var userReview = new Review({
+        review: req.body.review,
+        rating: req.body.rating,
+        user: req.user,
+        book: req.params.id,
+      });
+    }
 
     if (!errors.isEmpty()) {
       // There are errors. Render form again with sanitized values/error messages.
@@ -165,6 +198,11 @@ exports.booklist_add_post = [
               })
               .exec(callback);
           },
+          userReview: (callback) => {
+            Review.findOne({ user: req.user._id, book: req.params.id })
+              .populate("book")
+              .exec(callback);
+          },
         },
         (err, results) => {
           if (err) {
@@ -178,11 +216,11 @@ exports.booklist_add_post = [
           }
 
           // Loop through personal list and check if the book is already added
-          // TODO: It gives a 500 error, tbc how to avoid this
-          for (var i = 0; i < results.booklist.personal_list.length; i++) {
+          for (let i = 0; i < results.booklist.personal_list.length; i++) {
             if (results.booklist.personal_list[i].book._id == req.params.id) {
               req.flash("danger", "Book already added to your list");
               res.redirect("/catalog/books");
+              return;
             }
           }
           // Success.
@@ -190,6 +228,7 @@ exports.booklist_add_post = [
             title: "Add Book to My List",
             book: results.book,
             personal_list: results.booklist.personal_list,
+            userReview: results.userReview,
             errors: errors.array(),
           });
         }
@@ -209,8 +248,6 @@ exports.booklist_add_post = [
                 date_updated: Date.now(),
                 date_started: req.body.date_started,
                 date_finished: req.body.date_finished,
-                rating: req.body.rating,
-                reviews: req.body.reviews,
               },
             ],
           },
@@ -223,7 +260,27 @@ exports.booklist_add_post = [
         }
       );
 
-      res.redirect("/booklists/mylist");
+      // Data from form is valid. Update the existing Review object.
+      if (req.body.reviewId) {
+        Review.findOneAndUpdate(
+          { user: req.user._id, book: req.params.id },
+          userReview,
+          (err, review) => {
+            if (err) {
+              return next(err);
+            }
+          }
+        );
+        res.redirect("/booklists/mylist");
+      } else {
+        // Data from form is valid. Save the new Review object.
+        userReview.save((err) => {
+          if (err) {
+            return next(err);
+          }
+        });
+        res.redirect("/booklists/mylist");
+      }
     }
   },
 ];
@@ -245,6 +302,11 @@ exports.booklist_edit_get = (req, res, next) => {
           })
           .exec(callback);
       },
+      userReview: (callback) => {
+        Review.findOne({ user: req.user._id, book: req.params.id })
+          .populate("book")
+          .exec(callback);
+      },
     },
     (err, results) => {
       if (err) {
@@ -259,6 +321,7 @@ exports.booklist_edit_get = (req, res, next) => {
         title: "Edit Book Entry",
         book: results.book,
         personal_list: results.booklist.personal_list,
+        userReview: results.userReview,
       });
     }
   );
@@ -279,7 +342,7 @@ exports.booklist_edit_post = [
     .optional({ checkFalsy: true })
     .isISO8601(),
   body("rating").trim().optional(),
-  body("reviews").trim().optional(),
+  body("review").trim().optional(),
 
   // Sanitize fields (using wildcard).
   body("*").escape(),
@@ -291,6 +354,24 @@ exports.booklist_edit_post = [
   (req, res, next) => {
     // Extract the validation errors from a request.
     const errors = validationResult(req);
+    // If Review object exists, update it with escaped/trimmed data and old id.
+    if (req.body.reviewId) {
+      var userReview = new Review({
+        review: req.body.review,
+        rating: req.body.rating,
+        user: req.user,
+        book: req.params.id,
+        _id: req.body.reviewId, //This is required, or a new ID will be assigned!
+      });
+    } else {
+      // If Review object doesn't exist, create it with escaped/trimmed data.
+      var userReview = new Review({
+        review: req.body.review,
+        rating: req.body.rating,
+        user: req.user,
+        book: req.params.id,
+      });
+    }
 
     if (!errors.isEmpty()) {
       // There are errors. Render form again with sanitized values/error messages.
@@ -309,6 +390,11 @@ exports.booklist_edit_post = [
               })
               .exec(callback);
           },
+          userReview: (callback) => {
+            Review.findOne({ user: req.user._id, book: req.params.id })
+              .populate("book")
+              .exec(callback);
+          },
         },
         (err, results) => {
           if (err) {
@@ -323,6 +409,7 @@ exports.booklist_edit_post = [
             title: "Edit Book Entry",
             book: results.book,
             personal_list: results.booklist.personal_list,
+            userReview: results.userReview,
             errors: errors.array(),
           });
         }
@@ -342,8 +429,6 @@ exports.booklist_edit_post = [
                 date_updated: Date.now(),
                 date_started: req.body.date_started,
                 date_finished: req.body.date_finished,
-                rating: req.body.rating,
-                reviews: req.body.reviews,
               },
             ],
           },
@@ -355,6 +440,26 @@ exports.booklist_edit_post = [
           }
         }
       );
+      // Data from form is valid. Update the existing Review object.
+      if (req.body.reviewId) {
+        Review.findOneAndUpdate(
+          { user: req.user._id, book: req.params.id },
+          userReview,
+          (err, review) => {
+            if (err) {
+              return next(err);
+            }
+          }
+        );
+      } else {
+        // Data from form is valid. Save the new Review object.
+        userReview.save((err) => {
+          if (err) {
+            return next(err);
+          }
+        });
+      }
+
       res.redirect("/booklists/mylist");
     }
   },

@@ -4,9 +4,11 @@ var Country = require("../models/country");
 var Booklist = require("../models/booklist");
 var Author = require("../models/author");
 var Genre = require("../models/genre");
+var Review = require("../models/review");
 const { body, validationResult } = require("express-validator");
 var async = require("async");
 
+// Display statistics on main page
 exports.index = (req, res) => {
   async.parallel(
     {
@@ -38,12 +40,17 @@ exports.index = (req, res) => {
 
 // Display list of all Books.
 exports.book_list = (req, res, next) => {
+  // const pagination = req.query.pagination ? parseInt(req.query.pagination) : 10;
+  // const page = req.query.page ? parseInt(req.query.page) : 1;
   //User is logged in, so we're able to search in the booklist
   if (req.user) {
     async.parallel(
       {
         book: (callback) => {
-          Book.find({}, "title author rating")
+          Book.find({}, "title author yearFirstPublished")
+            // .skip((page - 1) * pagination)
+            // .limit(pagination)
+            // .sort("title")
             .populate("author")
             .exec(callback);
         },
@@ -57,8 +64,8 @@ exports.book_list = (req, res, next) => {
             })
             .exec(callback);
         },
-        booklist_count: (callback) => {
-          Booklist.find({}, callback);
+        userReview_all: (callback) => {
+          Review.find({}).populate("book").exec(callback);
         },
       },
       (err, results) => {
@@ -71,7 +78,7 @@ exports.book_list = (req, res, next) => {
           title: "Book List",
           book_list: results.book,
           personal_list: results.booklist.personal_list,
-          booklist_count: results.booklist_count,
+          userReview_all: results.userReview_all,
         });
       }
     );
@@ -80,12 +87,15 @@ exports.book_list = (req, res, next) => {
     async.parallel(
       {
         book: (callback) => {
-          Book.find({}, "title author rating")
+          Book.find({}, "title author yearFirstPublished")
+            // .skip((page - 1) * pagination)
+            // .limit(pagination)
+            // .sort("title")
             .populate("author")
             .exec(callback);
         },
-        booklist_count: (callback) => {
-          Booklist.find({}, callback);
+        userReview_all: (callback) => {
+          Review.find({}).populate("book").exec(callback);
         },
       },
       (err, results) => {
@@ -97,7 +107,7 @@ exports.book_list = (req, res, next) => {
         res.render("book_list", {
           title: "Book List",
           book_list: results.book,
-          booklist_count: results.booklist_count,
+          userReview_all: results.userReview_all,
         });
       }
     );
@@ -113,6 +123,7 @@ exports.book_detail = function (req, res, next) {
         book: (callback) => {
           Book.findById(req.params.id)
             .populate("author")
+            .populate("author2")
             .populate("genre")
             .populate("language")
             .populate("originalLanguage")
@@ -130,8 +141,8 @@ exports.book_detail = function (req, res, next) {
             })
             .exec(callback);
         },
-        booklist_count: (callback) => {
-          Booklist.find({}, callback);
+        userReview_all: (callback) => {
+          Review.find({}).populate("book").exec(callback);
         },
       },
       (err, results) => {
@@ -150,7 +161,7 @@ exports.book_detail = function (req, res, next) {
           title: results.book.title,
           book: results.book,
           booklist: results.booklist,
-          booklist_count: results.booklist_count,
+          userReview_all: results.userReview_all,
         });
       }
     );
@@ -161,13 +172,14 @@ exports.book_detail = function (req, res, next) {
         book: (callback) => {
           Book.findById(req.params.id)
             .populate("author")
+            .populate("author2")
             .populate("genre")
             .populate("language")
             .populate("originalLanguage")
             .exec(callback);
         },
-        booklist_count: (callback) => {
-          Booklist.find({}, callback);
+        userReview_all: (callback) => {
+          Review.find({}).populate("book").exec(callback);
         },
       },
       (err, results) => {
@@ -184,7 +196,7 @@ exports.book_detail = function (req, res, next) {
         res.render("book_detail", {
           title: results.book.title,
           book: results.book,
-          booklist_count: results.booklist_count,
+          userReview_all: results.userReview_all,
         });
       }
     );
@@ -235,49 +247,58 @@ exports.book_create_post = [
   body("title", "Title must not be empty.").trim().isLength({ min: 1 }),
   body("originalTitle").trim().optional(),
   body("author", "Author must not be empty.").trim().isLength({ min: 1 }),
+  body("author2").trim().optional(),
   body("summary", "Summary must not be empty.").trim().isLength({ min: 1 }),
   body("isbn", "ISBN must not be empty").trim().isLength({ min: 1 }),
   body("language", "Language must not be empty.").trim().isLength({ min: 1 }),
   body("originalLanguage").trim().optional(),
   body("pages").trim().optional(),
+  body("yearFirstPublished").trim().optional(),
 
   // Sanitize fields (no wildcard used, it seems to affect genre array).
   body("title").escape(),
   body("originalTitle").escape(),
   body("author").escape(),
+  body("author2").escape(),
   body("summary").escape(),
   body("isbn").escape(),
   body("language").escape(),
   body("originalLanguage").escape(),
   body("pages").escape(),
+  body("yearFirstPublished").escape(),
   body("genre.*").escape(), // for the values within genre array
 
   //not sure if unescape is safe to apply like this
   body("title").unescape(),
   body("originalTitle").unescape(),
   body("author").unescape(),
+  body("author2").unescape(),
   body("summary").unescape(),
   body("isbn").unescape(),
   body("language").unescape(),
   body("originalLanguage").unescape(),
   body("pages").unescape(),
+  body("yearFirstPublished").unescape(),
 
   // Process request after validation and sanitization.
   (req, res, next) => {
     // Extract the validation errors from a request.
     const errors = validationResult(req);
-
     // Create a Book object with escaped and trimmed data.
     var book = new Book({
       title: req.body.title,
       originalTitle: req.body.originalTitle,
       author: req.body.author,
+      author2: req.body.author2,
       summary: req.body.summary,
       isbn: req.body.isbn,
       genre: req.body.genre,
       language: req.body.language,
       originalLanguage: req.body.originalLanguage,
       pages: req.body.pages,
+      yearFirstPublished: req.body.yearFirstPublished,
+      createdBy: req.user,
+      updatedBy: req.user,
     });
 
     if (!errors.isEmpty()) {
@@ -491,32 +512,38 @@ exports.book_update_post = [
   body("title", "Title must not be empty.").trim().isLength({ min: 1 }),
   body("originalTitle").trim().optional(),
   body("author", "Author must not be empty.").trim().isLength({ min: 1 }),
+  body("author2").trim().optional(),
   body("summary", "Summary must not be empty.").trim().isLength({ min: 1 }),
   body("isbn", "ISBN must not be empty").trim().isLength({ min: 1 }),
   body("language", "Language must not be empty.").trim().isLength({ min: 1 }),
   body("originalLanguage").trim().optional(),
   body("pages").trim().optional(),
+  body("yearFirstPublished").trim().optional(),
 
   // Sanitize fields(no wildcard used, it seems to affect genre array)
   body("title").escape(),
   body("originalTitle").escape(),
   body("author").escape(),
+  body("author2").escape(),
   body("summary").escape(),
   body("isbn").escape(),
   body("language").escape(),
   body("originalLanguage").escape(),
   body("pages").escape(),
+  body("yearFirstPublished").escape(),
   body("genre.*").escape(), // for the values within genre array
 
   //not sure if unescape is safe to apply like this
   body("title").unescape(),
   body("originalTitle").unescape(),
   body("author").unescape(),
+  body("author2").unescape(),
   body("summary").unescape(),
   body("isbn").unescape(),
   body("language").unescape(),
   body("originalLanguage").unescape(),
   body("pages").unescape(),
+  body("yearFirstPublished").unescape(),
 
   // Process request after validation and sanitization.
   (req, res, next) => {
@@ -528,12 +555,15 @@ exports.book_update_post = [
       title: req.body.title,
       originalTitle: req.body.originalTitle,
       author: req.body.author,
+      author2: req.body.author2,
       summary: req.body.summary,
       isbn: req.body.isbn,
       genre: typeof req.body.genre === "undefined" ? [] : req.body.genre,
       language: req.body.language,
       originalLanguage: req.body.originalLanguage,
       pages: req.body.pages,
+      yearFirstPublished: req.body.yearFirstPublished,
+      updatedBy: req.user,
       _id: req.params.id, //This is required, or a new ID will be assigned!
     });
 

@@ -1,11 +1,14 @@
 extends layout
 
 block content
+
+  include helpers
+
   div.media
     img.align-self-start.mr-3(id='book_cover', src=`/images/books/${book._id}.jpg`, title=`${book.title}`, alt=`${book.title}`)
 
     div.media-body
-      h3 #{book.title}
+      h3 #{book.title} 
       - if (book.language.id != book.originalLanguage.id)
         h6 (Original Title: #{book.originalTitle})
       
@@ -13,9 +16,22 @@ block content
 
       div(style='margin-left:20px;margin-top:20px')
       
-        p #[strong by:] 
-          a(href=book.author.url) #{book.author.name}
-        
+        if book.author2
+          //- Excludes the default author from the list
+          if book.author2.family_name=="Default"
+            p #[strong by:] 
+              a(href=book.author.url) #{book.author.name} 
+          else
+            p #[strong by:] 
+              a(href=book.author.url) #{book.author.name} 
+              |& 
+              a(href=book.author2.url) #{book.author2.name}
+        else
+          p #[strong by:] 
+              a(href=book.author.url) #{book.author.name} 
+
+        p #[strong First Published:] #{book.yearFirstPublished}
+
         p #[strong ISBN:] #{book.isbn}
         
         p #[strong Genre:]&nbsp;
@@ -24,8 +40,12 @@ block content
             if index < book.genre.length - 1
               |, 
         
-        p #[strong Summary:] #{book.summary}
-        
+        p#shortText(style='display:inline') #[strong Summary:] #{truncate(book.summary, 500)}
+        p#fullText(style='display:none') #[strong Summary:] #{book.summary} 
+        |
+        a#expandText(href='#' title=book.summary) ...more
+        br
+        br
         - if (book.language.id != book.originalLanguage.id)
           p #[strong Language:]       
             | 
@@ -43,26 +63,29 @@ block content
         
         - let ratingCount = 0
         - let ratingSum = 0
-        each val, i in booklist_count
-          each value, j in booklist_count[i].personal_list
-            - if (booklist_count[i].personal_list[j].book.equals(book._id))
-              - if (booklist_count[i].personal_list[j].rating)
-                - ratingCount++
-                - ratingSum=ratingSum+booklist_count[i].personal_list[j].rating
-            - else 
-              return
+        //- Loops through all reviews from all users to find the ones for this book.
+        each val in userReview_all
+          //- If found and if it has a rating, rating is counted and added to the total sum
+          - if (val.book.equals(book._id))
+            - if (val.rating)
+              - ratingCount++
+              - ratingSum=ratingSum+val.rating
+          - else 
+            return
+        //- If rating count is zero, print N/A
         if ratingCount == 0
           p #[strong Average Rating:] N/A
+        //- Else, print the average rating
         else
-          p #[strong Average Rating:] #{ratingSum/ratingCount} (#[strong No. of Ratings:] #{ratingCount})
+          p #[strong Average Rating:] #{(ratingSum/ratingCount).toFixed(2)} (#[strong No. of Ratings:] #{ratingCount})
 
-        - let reviewCount = 0
-        each val, i in booklist_count
-          each value, j in booklist_count[i].personal_list
-            - if (booklist_count[i].personal_list[j].book.equals(book._id))
-              - if (booklist_count[i].personal_list[j].reviews)
-                - reviewCount++
-                p #[strong Review #{reviewCount}:] #{booklist_count[i].personal_list[j].reviews}
+        - let reviewIndex = 0
+        //- Loops again through all reviews from all users to find the ones for this book.
+        each val in userReview_all
+          - if (val.book.equals(book._id))
+            - if  (val.review!="")
+              - reviewIndex++
+              p #[strong Review # #{reviewIndex}:] #{val.review}
 
         hr
         if user
@@ -84,10 +107,29 @@ block content
                     svg.bi.bi-x-circle-fill.text-danger(viewBox='0 0 16 16', fill='currentColor', xmlns='http://www.w3.org/2000/svg')
                       path(fill-rule='evenodd', d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.146-3.146a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z')
               - else 
-                return
-          
-        a.btn.btn-dark(href=book.url+'/update') Update Book
-        | 
-        a.btn.btn-danger(href=book.url+'/delete') Delete Book
-        | 
-        a.btn.btn-secondary(href='/booklists/mylist') Back
+                return  
+          a.btn.btn-dark(href=book.url+'/update') Update Book
+          | 
+          a.btn.btn-danger(href=book.url+'/delete') Delete Book
+          | 
+          a.btn.btn-secondary(href='/booklists/mylist') Back
+
+  script.
+
+    document.getElementById("expandText").addEventListener("click", function(e){
+      e.preventDefault();
+
+      let shortText = document.getElementById("shortText");
+      let fullText = document.getElementById("fullText");
+
+      if (shortText.style.display === "inline") {
+        shortText.style.display = "none";
+        fullText.style.display = "inline";
+        document.getElementById("expandText").innerText = "...less";
+      } else {
+        shortText.style.display = "inline";
+        fullText.style.display = "none";
+        document.getElementById("expandText").innerText = "...more";
+      }
+
+    })

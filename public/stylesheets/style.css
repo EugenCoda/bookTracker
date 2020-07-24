@@ -32,7 +32,10 @@ body {
   margin-left: 5px;
 }
 
-#tokenResend {
+#tokenResend,
+#btnAddAuthor,
+#btnChangeAuthor,
+#btnRemoveAuthor {
   font-size: small;
 }
 

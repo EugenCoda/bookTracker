@@ -10,45 +10,57 @@ block content
         th(scope='col' width='30px') Cover
         th(scope='col' width='250px') Title 
         th(scope='col') Author 
+        th(scope='col') Year Published
         th(scope='col') Avg. Rating
         if user
           th(scope='col') My Status
           th(scope='col')
-        th(scope='col' width='150px') 
     tbody
       - book_list.sort(function(a, b) {let textA = a.title.toUpperCase(); let textB = b.title.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
       - let index = 0
+      //- Loops through each book from the book list.
       each book in book_list
         - index++
         tr
+          
           th(scope='row') !{index}.
+          
           td(height='80px')
             a(href=book.url)
               img(src=`/images/books/${book._id}.jpg`, style='float:left;width:100%;', title=`${book.title}`, alt=`${book.title}`)
+          
           td
             a(href=book.url) #{book.title} 
+          
           td 
             a(href=book.author.url) #{book.author.name} 
+          
+          td(width='150px') #{book.yearFirstPublished} 
+          
           - let ratingCount = 0
           - let ratingSum = 0
-          each val, i in booklist_count
-            each value, j in booklist_count[i].personal_list
-              - if (booklist_count[i].personal_list[j].book.equals(book._id))
-                - if (booklist_count[i].personal_list[j].rating)
-                  - ratingCount++
-                  - ratingSum=ratingSum+booklist_count[i].personal_list[j].rating
-              - else 
-                return
+          //- Loops through all reviews from all users to find the ones for this book.
+          each val in userReview_all
+            //- If found and if it has a rating, rating is counted and added to the total sum
+            - if (val.book.equals(book._id))
+              - if (val.rating)
+                - ratingCount++
+                - ratingSum=ratingSum+val.rating
+            - else 
+              return
+          //- If rating count is zero, print n/a
           if ratingCount == 0
             td n/a
+          //- Else, print the average rating
           else
-            td #{(ratingSum/ratingCount).toFixed(2)}
+            td(width='150px') #{(ratingSum/ratingCount).toFixed(2)}
+          
           if user
             - let bookAdded = false
             each val, index in personal_list
               - if (personal_list[index].book.title == book.title)
-                td #{personal_list[index].status} 
-                td
+                td(width='150px') #{personal_list[index].status} 
+                td(width='150px')
                   a(href=book.booklisturl+'/view' title="View Book Entry") view 
                   a(href=book.booklisturl+'/edit' title="Edit Book Entry") 
                     svg.bi.bi-pencil(viewBox='0 0 16 16', fill='currentColor', xmlns='http://www.w3.org/2000/svg')
@@ -61,11 +73,10 @@ block content
               - else 
                 return
             if !bookAdded
-              td 
+              td(width='150px') 
                 a(href=book.booklisturl+'/addtolist' title="Add Book to My List")
                   svg.bi.bi-plus-circle-fill.text-success(viewBox='0 0 16 16', fill='currentColor', xmlns='http://www.w3.org/2000/svg')
                     path(fill-rule='evenodd', d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4a.5.5 0 0 0-1 0v3.5H4a.5.5 0 0 0 0 1h3.5V12a.5.5 0 0 0 1 0V8.5H12a.5.5 0 0 0 0-1H8.5V4z')
               td
-          td(width='150px')
       else
         p There are no books.

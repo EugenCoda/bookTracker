@@ -1,7 +1,7 @@
 var Author = require("../models/author");
-var async = require("async");
 var Book = require("../models/book");
 var Country = require("../models/country");
+var async = require("async");
 const { body, validationResult } = require("express-validator");
 
 // Display list of all Authors.
@@ -37,7 +37,14 @@ exports.author_detail = (req, res, next) => {
         Author.findById(req.params.id).populate("country").exec(callback);
       },
       authors_books: (callback) => {
-        Book.find({ author: req.params.id }, "title summary").exec(callback);
+        Book.find(
+          {
+            // searching in either of two fields of authors
+            $or: [{ author: req.params.id }, { author2: req.params.id }],
+          },
+
+          "title summary"
+        ).exec(callback);
       },
     },
     (err, results) => {
@@ -152,6 +159,8 @@ exports.author_create_post = [
         country: req.body.country,
         date_of_birth: req.body.date_of_birth,
         date_of_death: req.body.date_of_death,
+        createdBy: req.user,
+        updatedBy: req.user,
       });
       author.save((err) => {
         if (err) {
@@ -308,6 +317,7 @@ exports.author_update_post = [
       country: req.body.country,
       date_of_birth: req.body.date_of_birth,
       date_of_death: req.body.date_of_death,
+      updatedBy: req.user,
       _id: req.params.id,
     });
 

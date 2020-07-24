@@ -59,17 +59,24 @@ Branch 9:
 
 - Search bar - pretty basic, but it works sufficiently fine for the moment.
 - Fixed adding multiple genres
+- Added second author option - not perfect solution, but it works sufficiently fine for the moment.
+- Authors, countries, languages, genres, books: created by, updated by, date added, date updated and isVerified
+- Books: firstPublished
+- Genres: arrange alphabetically in the book form
+- Truncate book summaries in book details
+- Restrict adding a book more than once in a booklist - done in branch 5(fixed the 500 error - added return at the end of function)
+- Reviews: new model created; date added, date updated, review, rating
 
 TODO:
 
-- add multiple authors option
+- pagination
 - sorting and filtering lists
-- deploy app to heroku
+- admin page
+- approving new items before being visible to other users
 - social networks
+- deploy app to heroku
 
 Problematic:
 
-- date_added should be recorded automatically (for updates it should remain unchanged)
-- date_updated should be recorded automatically (for new items it should be equal to date_added)
-- restrict adding a book more than once in a booklist - done in branch 5(still with a 500 error)
-- truncate book summaries - partially (not able to expand text)
+- date_added for books in booklist should be recorded automatically (for updates it should remain unchanged)
+- date_updated for books in booklist should be recorded automatically (for new items it should be equal to date_added)

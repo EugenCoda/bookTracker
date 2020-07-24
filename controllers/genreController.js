@@ -72,7 +72,11 @@ exports.genre_create_post = [
     const errors = validationResult(req);
 
     // Create a genre object with escaped and trimmed data.
-    var genre = new Genre({ name: req.body.name });
+    var genre = new Genre({
+      name: req.body.name,
+      createdBy: req.user,
+      updatedBy: req.user,
+    });
 
     if (!errors.isEmpty()) {
       // There are errors. Render the form again with sanitized values/error messages.
@@ -208,6 +212,7 @@ exports.genre_update_post = [
     // Create a genre object with escaped and trimmed data (and the old id!)
     var genre = new Genre({
       name: req.body.name,
+      updatedBy: req.user,
       _id: req.params.id,
     });
 

@@ -11,7 +11,8 @@ block content
 
     ul
       li #[strong Books:] !{data.book_count}
-      li #[strong Authors:] !{data.author_count}
+      //- minus the default author
+      li #[strong Authors:] !{data.author_count-1}
       li #[strong Genres:] !{data.genre_count}
       li #[strong Languages:] !{data.language_count}
       li #[strong Countries:] !{data.country_count}

@@ -74,7 +74,11 @@ exports.country_create_post = [
     const errors = validationResult(req);
 
     // Create a country object with escaped and trimmed data.
-    var country = new Country({ name: req.body.name });
+    var country = new Country({
+      name: req.body.name,
+      createdBy: req.user,
+      updatedBy: req.user,
+    });
 
     if (!errors.isEmpty()) {
       // There are errors. Render the form again with sanitized values/error messages.
@@ -212,6 +216,7 @@ exports.country_update_post = [
     // Create a country object with escaped and trimmed data (and the old id!)
     var country = new Country({
       name: req.body.name,
+      updatedBy: req.user,
       _id: req.params.id,
     });
 

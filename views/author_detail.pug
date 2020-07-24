@@ -3,7 +3,6 @@ extends layout
 block content
 
   include helpers
-  script(src='/javascripts/main.js')
 
   div.media
     img.align-self-start.mr-3(id='author_cover', src=`/images/authors/${author._id}.jpg`, title=`${author.name}`, alt=`${author.name}`)
@@ -33,10 +32,9 @@ block content
                 //- tried to implement expanding the book summary text, but cannot grab the element ID for shortText and fullText
                 //- temporary solution: show the book summary in ""...more" link title
                 br
-                p#shortText(style='display: inline') #{truncate(book.summary, 250)} 
-                p#fullText(style='display: none') #{book.summary} 
+                p(style='display:inline') #{truncate(book.summary, 250)} 
                 |
-                a(href='#' title=book.summary) ...more
+                a(href=href=book.url title=book.summary) ...more
           else
             p This author has no books yet. Add one 
               | 
@@ -48,3 +46,6 @@ block content
         a.btn.btn-danger(href=author.url+'/delete') Delete author
         | 
         a.btn.btn-secondary(href='/booklists/mylist') Back
+
+
+  

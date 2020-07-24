@@ -20,23 +20,25 @@ block content
         - let index = 0
         - country_authors.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
         each author in country_authors
-          - index++
-          tr
-            th(scope='row') !{index}.
-            td(height='100px')
-              a(href=author.url)
-                img(src=`/images/authors/${author._id}.jpg`, style='float:left;width:100%;', title=`${author.name}`, alt=`${author.name}`)
-            td
-              a(href=author.url) #{author.name} 
-            if author.date_of_birth == null
-              td 
-            else
-              td #{moment(author.date_of_birth).format('MMM D, YYYY')}
-            if author.date_of_death == null
-              td 
-            else
-              td #{moment(author.date_of_death).format('MMM D, YYYY')}
-            td
+          //- Excluding the default author
+          if author._id!='5f181920c4d320322dbbf993'
+            - index++
+            tr
+              th(scope='row') !{index}.
+              td(height='100px')
+                a(href=author.url)
+                  img(src=`/images/authors/${author._id}.jpg`, style='float:left;width:100%;', title=`${author.name}`, alt=`${author.name}`)
+              td
+                a(href=author.url) #{author.name} 
+              if author.date_of_birth == null
+                td 
+              else
+                td #{moment(author.date_of_birth).format('MMM D, YYYY')}
+              if author.date_of_death == null
+                td 
+              else
+                td #{moment(author.date_of_death).format('MMM D, YYYY')}
+              td
 
         else
           tr
