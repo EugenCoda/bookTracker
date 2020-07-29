@@ -6,14 +6,21 @@ const { body, validationResult } = require("express-validator");
 
 // Display list of all Authors.
 exports.author_list = (req, res, next) => {
+  const pagination = req.query.pagination ? parseInt(req.query.pagination) : 10;
+  const page = req.query.page ? parseInt(req.query.page) : 1;
   async.parallel(
     {
       author: (callback) => {
         Author.find({})
+          .skip((page - 1) * pagination)
+          .limit(pagination)
           .populate("author")
           .populate("country")
           .sort([["family_name", "ascending"]])
           .exec(callback);
+      },
+      author_count: (callback) => {
+        Author.countDocuments({}, callback);
       },
     },
     (err, results) => {
@@ -23,7 +30,10 @@ exports.author_list = (req, res, next) => {
       //Successful, so render
       res.render("author_list", {
         title: "Authors",
+        page: page,
+        pagination: pagination,
         author_list: results.author,
+        author_count: results.author_count,
       });
     }
   );

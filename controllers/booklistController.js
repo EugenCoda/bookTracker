@@ -7,6 +7,8 @@ var async = require("async");
 
 // Display User booklist.
 exports.booklist_list = (req, res, next) => {
+  const pagination = req.query.pagination ? parseInt(req.query.pagination) : 10;
+  const page = req.query.page ? parseInt(req.query.page) : 1;
   async.parallel(
     {
       booklist: (callback) => {
@@ -34,6 +36,131 @@ exports.booklist_list = (req, res, next) => {
       // Successful, so render.
       res.render("booklist_list", {
         title: "My Books",
+        page: page,
+        pagination: pagination,
+        personal_list: results.booklist.personal_list,
+        userReview_all: results.userReview_all,
+        userReview_user: results.userReview_user,
+      });
+    }
+  );
+};
+
+// Display User booklist of read books.
+exports.booklist_list_read = (req, res, next) => {
+  const pagination = req.query.pagination ? parseInt(req.query.pagination) : 10;
+  const page = req.query.page ? parseInt(req.query.page) : 1;
+  async.parallel(
+    {
+      booklist: (callback) => {
+        Booklist.findOne({ user: req.user._id })
+          .populate("user")
+          .populate({
+            path: "personal_list.book",
+            populate: { path: "genre" },
+            populate: { path: "author" },
+          })
+          .exec(callback);
+      },
+      userReview_all: (callback) => {
+        Review.find({}).populate("book").exec(callback);
+      },
+      userReview_user: (callback) => {
+        Review.find({ user: req.user._id }).populate("book").exec(callback);
+      },
+    },
+    (err, results) => {
+      if (err) {
+        return next(err);
+      }
+
+      // Successful, so render.
+      res.render("booklist_list_read", {
+        title: "My Books",
+        page: page,
+        pagination: pagination,
+        personal_list: results.booklist.personal_list,
+        userReview_all: results.userReview_all,
+        userReview_user: results.userReview_user,
+      });
+    }
+  );
+};
+
+// Display User booklist in progress.
+exports.booklist_list_inProgress = (req, res, next) => {
+  const pagination = req.query.pagination ? parseInt(req.query.pagination) : 10;
+  const page = req.query.page ? parseInt(req.query.page) : 1;
+  async.parallel(
+    {
+      booklist: (callback) => {
+        Booklist.findOne({ user: req.user._id })
+          .populate("user")
+          .populate({
+            path: "personal_list.book",
+            populate: { path: "genre" },
+            populate: { path: "author" },
+          })
+          .exec(callback);
+      },
+      userReview_all: (callback) => {
+        Review.find({}).populate("book").exec(callback);
+      },
+      userReview_user: (callback) => {
+        Review.find({ user: req.user._id }).populate("book").exec(callback);
+      },
+    },
+    (err, results) => {
+      if (err) {
+        return next(err);
+      }
+
+      // Successful, so render.
+      res.render("booklist_list_inProgress", {
+        title: "My Books",
+        page: page,
+        pagination: pagination,
+        personal_list: results.booklist.personal_list,
+        userReview_all: results.userReview_all,
+        userReview_user: results.userReview_user,
+      });
+    }
+  );
+};
+
+// Display User booklist on wishlist.
+exports.booklist_list_wishlist = (req, res, next) => {
+  const pagination = req.query.pagination ? parseInt(req.query.pagination) : 10;
+  const page = req.query.page ? parseInt(req.query.page) : 1;
+  async.parallel(
+    {
+      booklist: (callback) => {
+        Booklist.findOne({ user: req.user._id })
+          .populate("user")
+          .populate({
+            path: "personal_list.book",
+            populate: { path: "genre" },
+            populate: { path: "author" },
+          })
+          .exec(callback);
+      },
+      userReview_all: (callback) => {
+        Review.find({}).populate("book").exec(callback);
+      },
+      userReview_user: (callback) => {
+        Review.find({ user: req.user._id }).populate("book").exec(callback);
+      },
+    },
+    (err, results) => {
+      if (err) {
+        return next(err);
+      }
+
+      // Successful, so render.
+      res.render("booklist_list_wishlist", {
+        title: "My Books",
+        page: page,
+        pagination: pagination,
         personal_list: results.booklist.personal_list,
         userReview_all: results.userReview_all,
         userReview_user: results.userReview_user,

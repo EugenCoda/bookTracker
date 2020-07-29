@@ -1,10 +1,10 @@
 extends layout
 
 block content
-
+  //- Create an array for the wishlist items and counters for the read and in progress items (for display only)
   - var myBooks_read = 0
   - var myBooks_inProgress = 0
-  - var myBooks_wishList = 0
+  - var wishlistBooks = []
 
   each val, index in personal_list
     if personal_list[index].status == "Read"
@@ -13,16 +13,17 @@ block content
       if personal_list[index].status == "In progress"
         - myBooks_inProgress++
       else
-        - myBooks_wishList++
+        //- Collect the wishlist items in the array
+        - wishlistBooks.push(personal_list[index]);
 
   h3= title
-  h6 All (!{personal_list.length}) 
   h6 
-    a(href='mylist/read') Read (!{myBooks_read})
-  h6
-    a(href='mylist/in-progress') In Progress (!{myBooks_inProgress})
-  h6
-    a(href='mylist/wishlist') Wish List (!{myBooks_wishList})
+    a(href='/booklists/mylist') All (!{personal_list.length}) 
+  h6 
+    a(href='read') Read (!{myBooks_read})
+  h6 
+    a(href='in-progress') In Progress (!{myBooks_inProgress})
+  h6 Wish List (!{wishlistBooks.length})
 
   table.table.table-sm.table-hover
     thead.thead-light
@@ -42,13 +43,14 @@ block content
         th(scope='col')
         th(scope='col')
     tbody
-      //- Sorted to show latest reads on top.
-      - personal_list.sort(function(a, b) {let textA = a.date_finished; let textB = b.date_finished; return (textA > textB) ? -1 : (textA < textB) ? 1 : 0;});
+      //- TODO Sorted to show latest reads on top. TODO
+      - wishlistBooks.sort(function(a, b) {let textA = a.date_finished; let textB = b.date_finished; return (textA > textB) ? -1 : (textA < textB) ? 1 : 0;});
       
-      //- Loops through each book from the user personal list from start index to end index.
+      //- Loops through each book from the wishlist from start index to end index.
       - var startIndex = (page - 1) * pagination
       - var endIndex = (page * pagination) - 1
-      each val, index in personal_list
+      
+      each val, index in wishlistBooks
         //- skip the items from previous pages
         if index < startIndex
           skip
@@ -62,18 +64,18 @@ block content
               th(scope='row') !{index+1}.
               
               td
-                a(href=personal_list[index].book.url)
-                  img(src=`/images/books/${personal_list[index].book._id}.jpg`, style='float:left;width:100%;', title=`${personal_list[index].book.title}`, alt=`${personal_list[index].book.title}`)
+                a(href=wishlistBooks[index].book.url)
+                  img(src=`/images/books/${wishlistBooks[index].book._id}.jpg`, style='float:left;width:100%;', title=`${wishlistBooks[index].book.title}`, alt=`${wishlistBooks[index].book.title}`)
               
               td
-                a(href=personal_list[index].book.url) #{personal_list[index].book.title}  
+                a(href=wishlistBooks[index].book.url) #{wishlistBooks[index].book.title}  
               
               td
-                a(href=personal_list[index].book.author.url) #{personal_list[index].book.author.name}  
+                a(href=wishlistBooks[index].book.author.url) #{wishlistBooks[index].book.author.name}  
               
               - let ratingCount = 0
               - let ratingSum = 0
-              - const book = personal_list[index].book
+              - const book = wishlistBooks[index].book
               //- Loops through all reviews from all users to find the ones for this book.
               each val in userReview_all
                 //- If found and if it has a rating, rating is counted and added to the total sum
@@ -105,43 +107,43 @@ block content
                   td #{(ratingSum/ratingCount).toFixed(2)} 
                   td n/a
               
-              td #{personal_list[index].status}  
+              td #{wishlistBooks[index].status}  
               
-              if personal_list[index].currentPage == null
+              if wishlistBooks[index].currentPage == null
                 td 0%
               else
-                td #{Math.floor((personal_list[index].currentPage/personal_list[index].book.pages)*100)+"%"}
+                td #{Math.floor((wishlistBooks[index].currentPage/wishlistBooks[index].book.pages)*100)+"%"}
               
-              td #{personal_list[index].availability}   
+              td #{wishlistBooks[index].availability}   
               
-              if personal_list[index].date_started == null
+              if wishlistBooks[index].date_started == null
                 td 
               else
-                td #{moment(personal_list[index].date_started).format('MMM D, YYYY')}  
+                td #{moment(wishlistBooks[index].date_started).format('MMM D, YYYY')}  
               
-              if personal_list[index].date_finished == null
+              if wishlistBooks[index].date_finished == null
                 td 
               else
-                td #{moment(personal_list[index].date_finished).format('MMM D, YYYY')} 
+                td #{moment(wishlistBooks[index].date_finished).format('MMM D, YYYY')} 
               
               td
-                a(href=personal_list[index].book._id+'/view' title="View Book Entry") view
+                a(href='/booklists/'+wishlistBooks[index].book._id+'/view' title="View Book Entry") view
               |  
               td 
-                a(href=personal_list[index].book._id+'/edit' title="Edit Book Entry")   
+                a(href='/booklists/'+wishlistBooks[index].book._id+'/edit' title="Edit Book Entry")   
                   svg.bi.bi-pencil(viewBox='0 0 16 16', fill='currentColor', xmlns='http://www.w3.org/2000/svg')
                     path(fill-rule='evenodd', d='M11.293 1.293a1 1 0 0 1 1.414 0l2 2a1 1 0 0 1 0 1.414l-9 9a1 1 0 0 1-.39.242l-3 1a1 1 0 0 1-1.266-1.265l1-3a1 1 0 0 1 .242-.391l9-9zM12 2l2 2-9 9-3 1 1-3 9-9z')
                     path(fill-rule='evenodd', d='M12.146 6.354l-2.5-2.5.708-.708 2.5 2.5-.707.708zM3 10v.5a.5.5 0 0 0 .5.5H4v.5a.5.5 0 0 0 .5.5H5v.5a.5.5 0 0 0 .5.5H6v-1.5a.5.5 0 0 0-.5-.5H5v-.5a.5.5 0 0 0-.5-.5H3z') 
               |  
               td 
-                a(href=personal_list[index].book._id+'/remove' title="Delete Book Entry")  
+                a(href='/booklists/'+wishlistBooks[index].book._id+'/remove' title="Delete Book Entry")  
                   svg.bi.bi-x-circle-fill.text-danger(viewBox='0 0 16 16', fill='currentColor', xmlns='http://www.w3.org/2000/svg')
                     path(fill-rule='evenodd', d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.146-3.146a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z')
       else
         tr
           th(scope='row') 
           td
-          td There are no books in your list yet. Add one 
+          td There are no books in your wishlist yet. Add one 
             | 
             a(href='/catalog/books') now.
           td
@@ -154,107 +156,108 @@ block content
           td
           td
           td
+          td
 
   //- Pagination component
-  nav(aria-label='User book list page')
+  nav(aria-label='User book wishlist page')
     //- There are more items in db than the ones showed on page
-    if personal_list.length > pagination
+    if wishlistBooks.length > pagination
       ul.pagination
         //- There are no more than 2 pages needed
-        if personal_list.length <= (2 * pagination)
+        if wishlistBooks.length <= (2 * pagination)
           //- We are on page 1, disable "previous", enable "next" and manually index the 2 pages
           if page == 1
             li.page-item.disabled
-              a.page-link(href='mylist', aria-label='Previous' tabindex="-1" aria-disabled="true")
+              a.page-link(href='wishlist', aria-label='Previous' tabindex="-1" aria-disabled="true")
                 span(aria-hidden='true') «
             li.page-item.active(aria-current='page')
-              a.page-link(href=`mylist?page=1&pagination=${pagination}`) 1
+              a.page-link(href=`wishlist?page=1&pagination=${pagination}`) 1
                 span.sr-only (current)
             li.page-item
-              a.page-link(href=`mylist?page=2&pagination=${pagination}`) 2
+              a.page-link(href=`wishlist?page=2&pagination=${pagination}`) 2
             li.page-item
-              a.page-link(href=`mylist?page=2&pagination=${pagination}`, aria-label='Next')
+              a.page-link(href=`wishlist?page=2&pagination=${pagination}`, aria-label='Next')
                 span(aria-hidden='true') »
           //- We are on page 2, enable "previous", disable "next" and manually index the 2 pages
           else
             li.page-item
-              a.page-link(href=`mylist?page=1&pagination=${pagination}`, aria-label='Previous')
+              a.page-link(href=`wishlist?page=1&pagination=${pagination}`, aria-label='Previous')
                 span(aria-hidden='true') «
             li.page-item
-              a.page-link(href=`mylist?page=1&pagination=${pagination}`) 1
+              a.page-link(href=`wishlist?page=1&pagination=${pagination}`) 1
             li.page-item.active(aria-current='page')
-              a.page-link(href=`mylist?page=2&pagination=${pagination}`) 2
+              a.page-link(href=`wishlist?page=2&pagination=${pagination}`) 2
                 span.sr-only (current)
             li.page-item.disabled
-              a.page-link(href='mylist', aria-label='Next' tabindex="-1" aria-disabled="true")
+              a.page-link(href='wishlist', aria-label='Next' tabindex="-1" aria-disabled="true")
                 span(aria-hidden='true') »
         //- There are more than 2 pages needed
         else
           //- We are on page 1, disable "previous", enable "next", "last" and manually index the 3 pages
           if page <= 1
             li.page-item.disabled
-              a.page-link(href='mylist', aria-label='Previous' tabindex="-1" aria-disabled="true")
+              a.page-link(href='wishlist', aria-label='Previous' tabindex="-1" aria-disabled="true")
                 span(aria-hidden='true') «
             li.page-item.active(aria-current='page')
-              a.page-link(href=`mylist?page=1&pagination=${pagination}`) 1
+              a.page-link(href=`wishlist?page=1&pagination=${pagination}`) 1
                 span.sr-only (current)
             li.page-item
-              a.page-link(href=`mylist?page=2&pagination=${pagination}`) 2
+              a.page-link(href=`wishlist?page=2&pagination=${pagination}`) 2
             li.page-item
-              a.page-link(href=`mylist?page=3&pagination=${pagination}`) 3
+              a.page-link(href=`wishlist?page=3&pagination=${pagination}`) 3
             li.page-item
-              a.page-link(href=`mylist?page=2&pagination=${pagination}`, aria-label='Next')
+              a.page-link(href=`wishlist?page=2&pagination=${pagination}`, aria-label='Next')
                 span(aria-hidden='true') »
-            if (Number.isInteger(personal_list.length/pagination))
+            if (Number.isInteger(wishlistBooks.length/pagination))
               li.page-item
-                a.page-link(href=`mylist?page=${Math.floor(personal_list.length/pagination)}&pagination=${pagination}`, aria-label='Last')
+                a.page-link(href=`wishlist?page=${Math.floor(wishlistBooks.length/pagination)}&pagination=${pagination}`, aria-label='Last')
                   span(aria-hidden='true') Last »»
             else
               li.page-item
-                a.page-link(href=`mylist?page=${Math.floor(personal_list.length/pagination) + 1}&pagination=${pagination}`, aria-label='Last')
+                a.page-link(href=`wishlist?page=${Math.floor(wishlistBooks.length/pagination) + 1}&pagination=${pagination}`, aria-label='Last')
                   span(aria-hidden='true') Last »»
           else
             //- We are on page 2 or more, enable "first", "previous", "next" and "last", index the 3 pages
-            if personal_list.length > (page * pagination)
+            if wishlistBooks.length > (page * pagination)
               li.page-item
-                a.page-link(href=`mylist?page=1&pagination=${pagination}`, aria-label='First')
+                a.page-link(href=`wishlist?page=1&pagination=${pagination}`, aria-label='First')
                   span(aria-hidden='true') «« First
               li.page-item
-                a.page-link(href=`mylist?page=${page-1}&pagination=${pagination}`, aria-label='Previous')
+                a.page-link(href=`wishlist?page=${page-1}&pagination=${pagination}`, aria-label='Previous')
                   span(aria-hidden='true') «
               li.page-item
-                a.page-link(href=`mylist?page=${page-1}&pagination=${pagination}`) #{page-1}  
+                a.page-link(href=`wishlist?page=${page-1}&pagination=${pagination}`) #{page-1}  
               li.page-item.active(aria-current='page')
-                a.page-link(href=`mylist?page=${page}&pagination=${pagination}`) #{page}  
+                a.page-link(href=`wishlist?page=${page}&pagination=${pagination}`) #{page}  
                   span.sr-only (current)
               li.page-item
-                a.page-link(href=`mylist?page=${page+1}&pagination=${pagination}`) #{page+1}  
+                a.page-link(href=`wishlist?page=${page+1}&pagination=${pagination}`) #{page+1}  
               li.page-item
-                a.page-link(href=`mylist?page=${page+1}&pagination=${pagination}`, aria-label='Next')
+                a.page-link(href=`wishlist?page=${page+1}&pagination=${pagination}`, aria-label='Next')
                   span(aria-hidden='true') »
-              if (Number.isInteger(personal_list.length/pagination))
+              if (Number.isInteger(wishlistBooks.length/pagination))
                 li.page-item
-                  a.page-link(href=`mylist?page=${Math.floor(personal_list.length/pagination)}&pagination=${pagination}`, aria-label='Last')
+                  a.page-link(href=`wishlist?page=${Math.floor(wishlistBooks.length/pagination)}&pagination=${pagination}`, aria-label='Last')
                     span(aria-hidden='true') Last »»
               else
                 li.page-item
-                  a.page-link(href=`mylist?page=${Math.floor(personal_list.length/pagination) + 1}&pagination=${pagination}`, aria-label='Last')
+                  a.page-link(href=`wishlist?page=${Math.floor(wishlistBooks.length/pagination) + 1}&pagination=${pagination}`, aria-label='Last')
                     span(aria-hidden='true') Last »»
             //- We are on the last page, enable "first" and "previous", disable "next", index the 3 pages starting from the last one
             else
               li.page-item
-                a.page-link(href=`mylist?page=1&pagination=${pagination}`, aria-label='First')
+                a.page-link(href=`wishlist?page=1&pagination=${pagination}`, aria-label='First')
                   span(aria-hidden='true') «« First
               li.page-item
-                a.page-link(href=`mylist?page=${page-1}&pagination=${pagination}`, aria-label='Previous')
+                a.page-link(href=`wishlist?page=${page-1}&pagination=${pagination}`, aria-label='Previous')
                   span(aria-hidden='true') «
               li.page-item
-                a.page-link(href=`mylist?page=${page-2}&pagination=${pagination}`) #{page-2}  
+                a.page-link(href=`wishlist?page=${page-2}&pagination=${pagination}`) #{page-2}  
               li.page-item
-                a.page-link(href=`mylist?page=${page-1}&pagination=${pagination}`) #{page-1}  
+                a.page-link(href=`wishlist?page=${page-1}&pagination=${pagination}`) #{page-1}  
               li.page-item.active(aria-current='page')
-                a.page-link(href=`mylist?page=${page}&pagination=${pagination}`) #{page}  
+                a.page-link(href=`wishlist?page=${page}&pagination=${pagination}`) #{page}  
                   span.sr-only (current)
               li.page-item.disabled
-                a.page-link(href='mylist', aria-label='Next' tabindex="-1" aria-disabled="true")
+                a.page-link(href='wishlist', aria-label='Next' tabindex="-1" aria-disabled="true")
                   span(aria-hidden='true') »

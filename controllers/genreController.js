@@ -22,6 +22,8 @@ exports.genre_list = function (req, res, next) {
 
 // Display detail page for a specific Genre.
 exports.genre_detail = function (req, res, next) {
+  const pagination = req.query.pagination ? parseInt(req.query.pagination) : 10;
+  const page = req.query.page ? parseInt(req.query.page) : 1;
   async.parallel(
     {
       genre: function (callback) {
@@ -29,7 +31,15 @@ exports.genre_detail = function (req, res, next) {
       },
 
       genre_books: function (callback) {
-        Book.find({ genre: req.params.id }).populate("author").exec(callback);
+        Book.find({ genre: req.params.id })
+          .skip((page - 1) * pagination)
+          .limit(pagination)
+          .sort("title")
+          .populate("author")
+          .exec(callback);
+      },
+      genre_book_count: (callback) => {
+        Book.countDocuments({ genre: req.params.id }, callback);
       },
     },
     function (err, results) {
@@ -45,8 +55,11 @@ exports.genre_detail = function (req, res, next) {
       // Successful, so render
       res.render("genre_detail", {
         title: "Genre Detail",
+        page: page,
+        pagination: pagination,
         genre: results.genre,
         genre_books: results.genre_books,
+        genre_book_count: results.genre_book_count,
       });
     }
   );

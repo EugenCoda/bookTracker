@@ -29,8 +29,6 @@ block content
                 img.mr-3(src=`/images/books/${book._id}.jpg`, style='max-width:80px;', title=`${book.title}`, alt=`${book.title}`)
               div.media-body 
                 a.mt-0.mb-1(href=book.url) #{book.title} 
-                //- tried to implement expanding the book summary text, but cannot grab the element ID for shortText and fullText
-                //- temporary solution: show the book summary in ""...more" link title
                 br
                 p(style='display:inline') #{truncate(book.summary, 250)} 
                 |

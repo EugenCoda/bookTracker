@@ -2,19 +2,11 @@ extends layout
 
 block content
   h3= title
-  
-  table.table.table-sm.table-hover
-    thead.thead-light
-      tr
-        th(scope='col' width='30px') #
-        th(scope='col') Country 
-    tbody 
-      - let index = 0
+  hr
+  .container
+    #unorderedList.ul
       each country in country_list
-        - index++
-        tr
-          th(scope='row') !{index}.
-          td
-            a(href=country.url) #{country.name} 
+        li
+          a(href=country.url) #{country.name} 
       else
         li There are no countries.

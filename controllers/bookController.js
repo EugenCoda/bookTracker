@@ -40,19 +40,22 @@ exports.index = (req, res) => {
 
 // Display list of all Books.
 exports.book_list = (req, res, next) => {
-  // const pagination = req.query.pagination ? parseInt(req.query.pagination) : 10;
-  // const page = req.query.page ? parseInt(req.query.page) : 1;
+  const pagination = req.query.pagination ? parseInt(req.query.pagination) : 10;
+  const page = req.query.page ? parseInt(req.query.page) : 1;
   //User is logged in, so we're able to search in the booklist
   if (req.user) {
     async.parallel(
       {
         book: (callback) => {
           Book.find({}, "title author yearFirstPublished")
-            // .skip((page - 1) * pagination)
-            // .limit(pagination)
-            // .sort("title")
+            .skip((page - 1) * pagination)
+            .limit(pagination)
+            .sort("title")
             .populate("author")
             .exec(callback);
+        },
+        book_count: (callback) => {
+          Book.countDocuments({}, callback);
         },
         booklist: (callback) => {
           Booklist.findOne({ user: req.user._id })
@@ -76,7 +79,10 @@ exports.book_list = (req, res, next) => {
         //Successful, so render
         res.render("book_list", {
           title: "Book List",
+          page: page,
+          pagination: pagination,
           book_list: results.book,
+          book_count: results.book_count,
           personal_list: results.booklist.personal_list,
           userReview_all: results.userReview_all,
         });
@@ -88,11 +94,14 @@ exports.book_list = (req, res, next) => {
       {
         book: (callback) => {
           Book.find({}, "title author yearFirstPublished")
-            // .skip((page - 1) * pagination)
-            // .limit(pagination)
-            // .sort("title")
+            .skip((page - 1) * pagination)
+            .limit(pagination)
+            .sort("title")
             .populate("author")
             .exec(callback);
+        },
+        book_count: (callback) => {
+          Book.countDocuments({}, callback);
         },
         userReview_all: (callback) => {
           Review.find({}).populate("book").exec(callback);
@@ -106,7 +115,10 @@ exports.book_list = (req, res, next) => {
         //Successful, so render
         res.render("book_list", {
           title: "Book List",
+          page: page,
+          pagination: pagination,
           book_list: results.book,
+          book_count: results.book_count,
           userReview_all: results.userReview_all,
         });
       }

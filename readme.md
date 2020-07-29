@@ -67,16 +67,17 @@ Branch 9:
 - Restrict adding a book more than once in a booklist - done in branch 5(fixed the 500 error - added return at the end of function)
 - Reviews: new model created; date added, date updated, review, rating
 
+Branch 10:
+
+- Pagination - for books and authors lists, user booklist, genre, language and country details
+- My books - links for All, Read, In Progress and Wishlist
+
 TODO:
 
-- pagination
-- sorting and filtering lists
 - admin page
 - approving new items before being visible to other users
-- social networks
 - deploy app to heroku
+- social networks
+- sorting and filtering lists
 
 Problematic:
-
-- date_added for books in booklist should be recorded automatically (for updates it should remain unchanged)
-- date_updated for books in booklist should be recorded automatically (for new items it should be equal to date_added)

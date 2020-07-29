@@ -18,7 +18,7 @@ block content
       
         if book.author2
           //- Excludes the default author from the list
-          if book.author2.family_name=="Default"
+          if book.author2._id=='5f181920c4d320322dbbf993'
             p #[strong by:] 
               a(href=book.author.url) #{book.author.name} 
           else

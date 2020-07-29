@@ -159,8 +159,14 @@ router.get(
 // POST request to update Language.
 router.post("/language/:id/update", language_controller.language_update_post);
 
-// GET request for one Language.
+// GET request for one Language (show books available in this language).
 router.get("/language/:id", language_controller.language_detail);
+
+// GET request for one Language (show books written in this language).
+router.get(
+  "/originalLanguage/:id",
+  language_controller.language_detail_original
+);
 
 // GET request for list of all Languages.
 router.get("/languages", language_controller.language_list);

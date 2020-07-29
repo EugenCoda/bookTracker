@@ -6,8 +6,10 @@ block content
   
   div(style='margin-left:20px;margin-top:20px')
 
-    h6 Books available in this language 
-      a(href=`/catalog/originalLanguage/${language._id}`) Books written in this language 
+    h6 
+      a(href=`/catalog/language/${language._id}`) Books available in this language
+      |
+      | Books written in this language 
     
     table.table.table-sm.table-hover
       thead.thead-light
@@ -16,9 +18,9 @@ block content
           th(scope='col' width='500px') Title 
           th(scope='col') Author 
       tbody
-      - language_books.sort(function(a, b) {let textA = a.title.toUpperCase(); let textB = b.title.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
-      - let index = 0
-      each book in language_books
+      - originalLanguage_books.sort(function(a, b) {let textA = a.title.toUpperCase(); let textB = b.title.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
+      - index = 0
+      each book in originalLanguage_books
         - index++
         tr
           td(height='100px')
@@ -27,23 +29,22 @@ block content
           td
             a(href=book.url) #{book.title} 
           td 
-            a(href=book.author.url) #{book.author.name}
+            a(href=book.author.url) #{book.author.name} 
       else
-       tr
+        tr
           th(scope='row') 
           td This language has no books yet. Add one 
             | 
             a(href='/catalog/book/create') now.
           td
     
-    
     //- Pagination component
-    nav(aria-label='Language detail page')
+    nav(aria-label='Original language detail page')
       //- There are more items in db than the ones showed on page
-      if language_book_count > pagination
+      if originalLanguage_book_count > pagination
         ul.pagination
           //- There are no more than 2 pages needed
-          if language_book_count <= (2 * pagination)
+          if originalLanguage_book_count <= (2 * pagination)
             //- We are on page 1, disable "previous", enable "next" and manually index the 2 pages
             if page == 1
               li.page-item.disabled
@@ -87,17 +88,17 @@ block content
               li.page-item
                 a.page-link(href=`${language._id}?page=2&pagination=${pagination}`, aria-label='Next')
                   span(aria-hidden='true') »
-              if (Number.isInteger(language_book_count/pagination))
+              if (Number.isInteger(originalLanguage_book_count/pagination))
                 li.page-item
-                  a.page-link(href=`${language._id}?page=${Math.floor(language_book_count/pagination)}&pagination=${pagination}`, aria-label='Last')
+                  a.page-link(href=`${language._id}?page=${Math.floor(originalLanguage_book_count/pagination)}&pagination=${pagination}`, aria-label='Last')
                     span(aria-hidden='true') Last »»
               else
                 li.page-item
-                  a.page-link(href=`${language._id}?page=${Math.floor(language_book_count/pagination) + 1}&pagination=${pagination}`, aria-label='Last')
+                  a.page-link(href=`${language._id}?page=${Math.floor(originalLanguage_book_count/pagination) + 1}&pagination=${pagination}`, aria-label='Last')
                     span(aria-hidden='true') Last »»
             else
               //- We are on page 2 or more, enable "first", "previous", "next" and "last", index the 3 pages
-              if language_book_count > (page * pagination)
+              if originalLanguage_book_count > (page * pagination)
                 li.page-item
                   a.page-link(href=`${language._id}?page=1&pagination=${pagination}`, aria-label='First')
                     span(aria-hidden='true') «« First
@@ -114,13 +115,13 @@ block content
                 li.page-item
                   a.page-link(href=`${language._id}?page=${page+1}&pagination=${pagination}`, aria-label='Next')
                     span(aria-hidden='true') »
-                if (Number.isInteger(language_book_count/pagination))
+                if (Number.isInteger(originalLanguage_book_count/pagination))
                   li.page-item
-                    a.page-link(href=`${language._id}?page=${Math.floor(language_book_count/pagination)}&pagination=${pagination}`, aria-label='Last')
+                    a.page-link(href=`${language._id}?page=${Math.floor(originalLanguage_book_count/pagination)}&pagination=${pagination}`, aria-label='Last')
                       span(aria-hidden='true') Last »»
                 else
                   li.page-item
-                    a.page-link(href=`${language._id}?page=${Math.floor(language_book_count/pagination) + 1}&pagination=${pagination}`, aria-label='Last')
+                    a.page-link(href=`${language._id}?page=${Math.floor(originalLanguage_book_count/pagination) + 1}&pagination=${pagination}`, aria-label='Last')
                       span(aria-hidden='true') Last »»
               //- We are on the last page, enable "first" and "previous", disable "next", index the 3 pages starting from the last one
               else

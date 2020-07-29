@@ -20,8 +20,10 @@ exports.language_list = function (req, res, next) {
     });
 };
 
-// Display detail page for a specific Language.
+// Display detail page for a specific Language (show books available in this language).
 exports.language_detail = function (req, res, next) {
+  const pagination = req.query.pagination ? parseInt(req.query.pagination) : 10;
+  const page = req.query.page ? parseInt(req.query.page) : 1;
   async.parallel(
     {
       language: function (callback) {
@@ -30,13 +32,15 @@ exports.language_detail = function (req, res, next) {
 
       language_books: function (callback) {
         Book.find({ language: req.params.id })
+          .skip((page - 1) * pagination)
+          .limit(pagination)
+          .sort("title")
           .populate("author")
           .exec(callback);
       },
-      originalLanguage_books: function (callback) {
-        Book.find({ originalLanguage: req.params.id })
-          .populate("author")
-          .exec(callback);
+
+      language_book_count: (callback) => {
+        Book.countDocuments({ language: req.params.id }, callback);
       },
     },
     function (err, results) {
@@ -52,9 +56,57 @@ exports.language_detail = function (req, res, next) {
       // Successful, so render
       res.render("language_detail", {
         title: "Language Detail",
+        page: page,
+        pagination: pagination,
         language: results.language,
         language_books: results.language_books,
+        language_book_count: results.language_book_count,
+      });
+    }
+  );
+};
+
+// Display detail page for a specific Language (show books written in this language).
+exports.language_detail_original = function (req, res, next) {
+  const pagination = req.query.pagination ? parseInt(req.query.pagination) : 10;
+  const page = req.query.page ? parseInt(req.query.page) : 1;
+  async.parallel(
+    {
+      language: function (callback) {
+        Language.findById(req.params.id).exec(callback);
+      },
+
+      originalLanguage_books: function (callback) {
+        Book.find({ originalLanguage: req.params.id })
+          .skip((page - 1) * pagination)
+          .limit(pagination)
+          .sort("title")
+          .populate("author")
+          .exec(callback);
+      },
+
+      originalLanguage_book_count: (callback) => {
+        Book.countDocuments({ originalLanguage: req.params.id }, callback);
+      },
+    },
+    function (err, results) {
+      if (err) {
+        return next(err);
+      }
+      if (results.language == null) {
+        // No results.
+        var err = new Error("Language not found");
+        err.status = 404;
+        return next(err);
+      }
+      // Successful, so render
+      res.render("language_detail_original", {
+        title: "Language Detail",
+        page: page,
+        pagination: pagination,
+        language: results.language,
         originalLanguage_books: results.originalLanguage_books,
+        originalLanguage_book_count: results.originalLanguage_book_count,
       });
     }
   );

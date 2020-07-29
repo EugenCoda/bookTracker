@@ -22,6 +22,8 @@ exports.country_list = (req, res, next) => {
 
 // Display detail page for a specific Country.
 exports.country_detail = (req, res, next) => {
+  const pagination = req.query.pagination ? parseInt(req.query.pagination) : 10;
+  const page = req.query.page ? parseInt(req.query.page) : 1;
   async.parallel(
     {
       country: (callback) => {
@@ -30,8 +32,14 @@ exports.country_detail = (req, res, next) => {
 
       country_authors: (callback) => {
         Author.find({ country: req.params.id })
+          .skip((page - 1) * pagination)
+          .limit(pagination)
+          .sort("family_name")
           .populate("author")
           .exec(callback);
+      },
+      country_author_count: (callback) => {
+        Author.countDocuments({ country: req.params.id }, callback);
       },
     },
     (err, results) => {
@@ -47,8 +55,11 @@ exports.country_detail = (req, res, next) => {
       // Successful, so render
       res.render("country_detail", {
         title: "Country Detail",
+        page: page,
+        pagination: pagination,
         country: results.country,
         country_authors: results.country_authors,
+        country_author_count: results.country_author_count,
       });
     }
   );
