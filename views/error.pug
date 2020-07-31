@@ -3,6 +3,7 @@ extends layout
 block content
   h3= message
   h2= error.status
-  pre #{error.stack}
-
+  //- pre #{error.stack}
+  //- - console.log(error.stack)
+  hr
   a.btn.btn-secondary(href='/catalog') Go to Main Page

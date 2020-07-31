@@ -5,7 +5,8 @@ const { body, validationResult } = require("express-validator");
 
 // Display list of all Countries.
 exports.country_list = (req, res, next) => {
-  Country.find()
+  // Show it only if it's verified or created by the logged user
+  Country.find({ $or: [{ isVerified: true }, { createdBy: req.user }] })
     .populate("country")
     .sort([["name", "ascending"]])
     .exec((err, list_countries) => {
@@ -52,6 +53,27 @@ exports.country_detail = (req, res, next) => {
         err.status = 404;
         return next(err);
       }
+
+      if (!results.country.isVerified) {
+        // An user is logged in
+        if (req.user) {
+          if (results.country.createdBy.toString() != req.user._id.toString()) {
+            // Country is not approved by admin and it was not added by the logged user.
+            req.flash("danger", "You are not authorized to view this page.");
+            res.redirect("/");
+            return;
+          }
+          // No user logged in
+        } else {
+          {
+            // Country is not approved by admin
+            req.flash("danger", "You are not authorized to view this page.");
+            res.redirect("/");
+            return;
+          }
+        }
+      }
+
       // Successful, so render
       res.render("country_detail", {
         title: "Country Detail",

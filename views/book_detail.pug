@@ -78,14 +78,27 @@ block content
         //- Else, print the average rating
         else
           p #[strong Average Rating:] #{(ratingSum/ratingCount).toFixed(2)} (#[strong No. of Ratings:] #{ratingCount})
-
-        - let reviewIndex = 0
-        //- Loops again through all reviews from all users to find the ones for this book.
-        each val in userReview_all
-          - if (val.book.equals(book._id))
-            - if  (val.review!="")
-              - reviewIndex++
-              p #[strong Review # #{reviewIndex}:] #{val.review}
+        
+        hr
+        p #[strong User Reviews:]
+        div(style='margin-left:20px')
+          //- Loops again through all reviews from all users to find the ones for this book.
+          each val in userReview_all
+            - if (val.book.equals(book._id))
+              //- if review is blank, it is not shown here
+              - if (val.review!="")
+                //- if the user is the same with the one who made the review
+                if user
+                  if (val.user._id==user.id)
+                    p #[strong You] rated it with #[strong #{val.rating}] (#{moment(val.createdAt).format('MMM D, YYYY')}):
+                    div(style='margin-left:20px')
+                      p #{val.review}
+                else
+                  //- the reviews from other users are shown only if verified
+                  if val.isVerified
+                    p #[strong #{val.user.username}] rated it with #[strong #{val.rating}] (#{moment(val.createdAt).format('MMM D, YYYY')}):
+                    div(style='margin-left:20px')
+                      p #{val.review}
 
         hr
         if user
@@ -112,7 +125,7 @@ block content
           | 
           a.btn.btn-danger(href=book.url+'/delete') Delete Book
           | 
-          a.btn.btn-secondary(href='/booklists/mylist') Back
+          a.btn.btn-secondary(href='/catalog/books') Back to Catalog
 
   script.
 

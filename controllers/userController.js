@@ -720,9 +720,6 @@ exports.user_account_post = [
             return next(err);
           }
           //Match Password
-          console.log(req.body.currentpassword);
-          console.log(user);
-
           bcrypt.compare(
             req.body.currentpassword,
             user.user.password,

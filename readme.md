@@ -71,11 +71,14 @@ Branch 10:
 
 - Pagination - for books and authors lists, user booklist, genre, language and country details
 - My books - links for All, Read, In Progress and Wishlist
+- Show item if isVerified==true or createdBy==req.user: in lists, detail pages and searches (books don't appear in searches even if created by the logged user)
+- Fixed the search with empty string
 
 TODO:
 
-- admin page
-- approving new items before being visible to other users
+- allow updates or not?
+- allow "soft" delete
+- admin page - in progress
 - deploy app to heroku
 - social networks
 - sorting and filtering lists

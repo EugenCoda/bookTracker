@@ -14,4 +14,13 @@ module.exports = {
       return next();
     }
   },
+
+  ensureAdmin: function (req, res, next) {
+    if (req.isAuthenticated() && req.user.email == "coda.eugen@gmail.com") {
+      return next();
+    } else {
+      req.flash("danger", "You are not authorized to view this page");
+      res.redirect("/catalog");
+    }
+  },
 };

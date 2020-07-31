@@ -5,7 +5,8 @@ const { body, validationResult } = require("express-validator");
 
 // Display list of all Genre.
 exports.genre_list = function (req, res, next) {
-  Genre.find()
+  // Show it only if it's verified or created by the logged user
+  Genre.find({ $or: [{ isVerified: true }, { createdBy: req.user }] })
     .populate("genre")
     .sort([["name", "ascending"]])
     .exec(function (err, list_genres) {
@@ -52,6 +53,27 @@ exports.genre_detail = function (req, res, next) {
         err.status = 404;
         return next(err);
       }
+
+      if (!results.genre.isVerified) {
+        // An user is logged in
+        if (req.user) {
+          if (results.genre.createdBy.toString() != req.user._id.toString()) {
+            // Genre is not approved by admin and it was not added by the logged user.
+            req.flash("danger", "You are not authorized to view this page.");
+            res.redirect("/");
+            return;
+          }
+          // No user logged in
+        } else {
+          {
+            // Genre is not approved by admin
+            req.flash("danger", "You are not authorized to view this page.");
+            res.redirect("/");
+            return;
+          }
+        }
+      }
+
       // Successful, so render
       res.render("genre_detail", {
         title: "Genre Detail",

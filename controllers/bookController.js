@@ -13,19 +13,34 @@ exports.index = (req, res) => {
   async.parallel(
     {
       book_count: (callback) => {
-        Book.countDocuments({}, callback); // Pass an empty object as match condition to find all documents of this collection
+        Book.countDocuments(
+          { $or: [{ isVerified: true }, { createdBy: req.user }] },
+          callback
+        );
       },
       author_count: (callback) => {
-        Author.countDocuments({}, callback);
+        Author.countDocuments(
+          { $or: [{ isVerified: true }, { createdBy: req.user }] },
+          callback
+        );
       },
       genre_count: (callback) => {
-        Genre.countDocuments({}, callback);
+        Genre.countDocuments(
+          { $or: [{ isVerified: true }, { createdBy: req.user }] },
+          callback
+        );
       },
       language_count: (callback) => {
-        Language.countDocuments({}, callback);
+        Language.countDocuments(
+          { $or: [{ isVerified: true }, { createdBy: req.user }] },
+          callback
+        );
       },
       country_count: (callback) => {
-        Country.countDocuments({}, callback);
+        Country.countDocuments(
+          { $or: [{ isVerified: true }, { createdBy: req.user }] },
+          callback
+        );
       },
     },
     (err, results) => {
@@ -47,7 +62,11 @@ exports.book_list = (req, res, next) => {
     async.parallel(
       {
         book: (callback) => {
-          Book.find({}, "title author yearFirstPublished")
+          Book.find(
+            // Show the item only if it's approved by admin or it was created by the logged user
+            { $or: [{ isVerified: true }, { createdBy: req.user }] },
+            "title author yearFirstPublished"
+          )
             .skip((page - 1) * pagination)
             .limit(pagination)
             .sort("title")
@@ -55,7 +74,11 @@ exports.book_list = (req, res, next) => {
             .exec(callback);
         },
         book_count: (callback) => {
-          Book.countDocuments({}, callback);
+          Book.countDocuments(
+            // Count the item only if it's approved by admin or it was created by the logged user
+            { $or: [{ isVerified: true }, { createdBy: req.user }] },
+            callback
+          );
         },
         booklist: (callback) => {
           Booklist.findOne({ user: req.user._id })
@@ -93,7 +116,8 @@ exports.book_list = (req, res, next) => {
     async.parallel(
       {
         book: (callback) => {
-          Book.find({}, "title author yearFirstPublished")
+          // Show the item to the user only if it's approved by admin
+          Book.find({ isVerified: true }, "title author yearFirstPublished")
             .skip((page - 1) * pagination)
             .limit(pagination)
             .sort("title")
@@ -101,7 +125,8 @@ exports.book_list = (req, res, next) => {
             .exec(callback);
         },
         book_count: (callback) => {
-          Book.countDocuments({}, callback);
+          // Count the item only if it's approved by admin
+          Book.countDocuments({ isVerified: true }, callback);
         },
         userReview_all: (callback) => {
           Review.find({}).populate("book").exec(callback);
@@ -154,7 +179,7 @@ exports.book_detail = function (req, res, next) {
             .exec(callback);
         },
         userReview_all: (callback) => {
-          Review.find({}).populate("book").exec(callback);
+          Review.find({}).populate("book").populate("user").exec(callback);
         },
       },
       (err, results) => {
@@ -168,6 +193,13 @@ exports.book_detail = function (req, res, next) {
           return next(err);
         }
 
+        if (!results.book.isVerified)
+          if (results.book.createdBy.toString() != req.user._id.toString()) {
+            // Book is not approved by admin and it was not added by the logged user.
+            req.flash("danger", "You are not authorized to view this page.");
+            res.redirect("/");
+            return;
+          }
         // Successful, so render.
         res.render("book_detail", {
           title: results.book.title,
@@ -203,6 +235,12 @@ exports.book_detail = function (req, res, next) {
           var err = new Error("Book not found");
           err.status = 404;
           return next(err);
+        }
+        if (!results.book.isVerified) {
+          // Book is not approved by admin
+          req.flash("danger", "You are not authorized to view this page.");
+          res.redirect("/");
+          return;
         }
         // Successful, so render.
         res.render("book_detail", {
@@ -358,6 +396,7 @@ exports.book_create_post = [
           return next(err);
         }
         //successful - redirect to new book record.
+        console.log(book._id);
         res.redirect(book.url);
       });
     }
@@ -655,6 +694,15 @@ exports.book_update_post = [
 exports.search = (req, res, next) => {
   var search = req.query.search;
 
+  if (search == "") {
+    // Cannot perform the seach with empty string.
+    req.flash(
+      "danger",
+      "Please enter a book title or an author name to perform a search."
+    );
+    res.redirect("/");
+    return;
+  }
   async.parallel(
     {
       books: (callback) => {
@@ -669,6 +717,9 @@ exports.search = (req, res, next) => {
               },
             },
           },
+          // Show the item only if it's approved by admin.
+          // TODO: or if it was created by the logged user (didn't manage to make it work with aggregate)
+          { $match: { isVerified: true } },
           {
             $limit: 5,
           },
@@ -692,6 +743,8 @@ exports.search = (req, res, next) => {
           $text: {
             $search: search,
           },
+          // Show the item only if it's approved by admin or it was created by the logged user
+          $or: [{ isVerified: true }, { createdBy: req.user }],
         })
           .limit(5)
           .exec(callback);
@@ -701,6 +754,8 @@ exports.search = (req, res, next) => {
           $text: {
             $search: search,
           },
+          // Show the item only if it's approved by admin or it was created by the logged user
+          $or: [{ isVerified: true }, { createdBy: req.user }],
         })
           .limit(5)
           .exec(callback);
@@ -710,6 +765,8 @@ exports.search = (req, res, next) => {
           $text: {
             $search: search,
           },
+          // Show the item only if it's approved by admin or it was created by the logged user
+          $or: [{ isVerified: true }, { createdBy: req.user }],
         })
           .limit(5)
           .exec(callback);

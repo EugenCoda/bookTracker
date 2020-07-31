@@ -1,0 +1,41 @@
+extends layout
+
+block content
+  h3= title
+
+  table.table.table-sm.table-hover
+    thead.thead-light
+      tr
+        th(scope='col' width='250px') Genre 
+        th(scope='col') isVerified 
+
+    tbody
+      - genres.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
+      //- Loops through each genre from the genre list.
+      each genre in genres
+
+        tr
+          
+          td
+            a(href=genre.url) #{genre.name} 
+
+          if genre.isVerified
+            td Yes
+          else
+            td 
+              form(method='POST' action='')
+                div.form-group
+                  select#isVerified.form-control(type='select', name='isVerified' value=(undefined===genre ? '' : genre.isVerified)) 
+                    option(value="true" selected=(genre.isVerified) ? 'selected' : false) Yes
+                    option(value="false" selected=(!genre.isVerified) ? 'selected' : false) No
+                  label(for='genreId')
+                  input#genreId.form-control(type='hidden' name='genreId' required='true' value=genre._id)
+                button.btn.btn-primary(type='submit') Submit
+      else
+        tr
+          td
+          td There are no genres pending approval
+          td
+          td
+    
+  a.btn.btn-secondary(href='/dashboard') Go back to Dashboard

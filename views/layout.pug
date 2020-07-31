@@ -41,6 +41,8 @@ html(lang='en')
             li.nav-item.dropdown
               a#dropdown02.nav-link.dropdown-toggle(href='#', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false') #{user.username}  
               .dropdown-menu(aria-labelledby='dropdown02')
+                if user.email == 'coda.eugen@gmail.com'
+                  a.dropdown-item(href='/dashboard') Dashboard
                 a.dropdown-item(href='/users/account') Account
                 a.dropdown-item(href='/users/logout') Log Out
           else

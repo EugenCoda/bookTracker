@@ -1,0 +1,51 @@
+extends layout
+
+block content
+  h3= title
+
+  table.table.table-sm.table-hover
+    thead.thead-light
+      tr
+        th(scope='col') Category 
+        th(scope='col') Approved
+        th(scope='col') Pending
+        th(scope='col') Total
+
+    tbody
+      tr
+        td #[strong Books:] 
+        td !{data.book_count_approved}
+        td 
+          a(href='/dashboard/books') !{data.book_count_pending}
+        td !{data.book_count}
+      tr
+        //- minus the default author
+        td #[strong Authors:] 
+        td !{data.author_count_approved}
+        td 
+          a(href='/dashboard/authors') !{data.author_count_pending}
+        td !{data.author_count-1}
+      tr
+        td #[strong Genres:] 
+        td !{data.genre_count_approved}
+        td 
+          a(href='/dashboard/genres') !{data.genre_count_pending}
+        td !{data.genre_count}
+      tr
+        td #[strong Languages:] 
+        td !{data.language_count_approved}
+        td 
+          a(href='/dashboard/languages') !{data.language_count_pending}
+        td !{data.language_count}
+      tr
+        td #[strong Countries:] 
+        td !{data.country_count_approved}
+        td 
+          a(href='/dashboard/countries') !{data.country_count_pending}
+        td !{data.country_count}
+      tr
+        td #[strong Reviews:] 
+        td !{data.review_count_approved}
+        td 
+          a(href='/dashboard/reviews') !{data.review_count_pending}
+        td !{data.review_count}

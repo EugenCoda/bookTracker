@@ -5,7 +5,8 @@ const { body, validationResult } = require("express-validator");
 
 // Display list of all Languages.
 exports.language_list = function (req, res, next) {
-  Language.find()
+  // Show it only if it's verified or created by the logged user
+  Language.find({ $or: [{ isVerified: true }, { createdBy: req.user }] })
     .populate("language")
     .sort([["name", "ascending"]])
     .exec(function (err, list_languages) {
@@ -53,6 +54,29 @@ exports.language_detail = function (req, res, next) {
         err.status = 404;
         return next(err);
       }
+
+      if (!results.language.isVerified) {
+        // An user is logged in
+        if (req.user) {
+          if (
+            results.language.createdBy.toString() != req.user._id.toString()
+          ) {
+            // Language is not approved by admin and it was not added by the logged user.
+            req.flash("danger", "You are not authorized to view this page.");
+            res.redirect("/");
+            return;
+          }
+          // No user logged in
+        } else {
+          {
+            // Language is not approved by admin
+            req.flash("danger", "You are not authorized to view this page.");
+            res.redirect("/");
+            return;
+          }
+        }
+      }
+
       // Successful, so render
       res.render("language_detail", {
         title: "Language Detail",
@@ -99,6 +123,29 @@ exports.language_detail_original = function (req, res, next) {
         err.status = 404;
         return next(err);
       }
+
+      if (!results.language.isVerified) {
+        // An user is logged in
+        if (req.user) {
+          if (
+            results.language.createdBy.toString() != req.user._id.toString()
+          ) {
+            // originalLanguage is not approved by admin and it was not added by the logged user.
+            req.flash("danger", "You are not authorized to view this page.");
+            res.redirect("/");
+            return;
+          }
+          // No user logged in
+        } else {
+          {
+            // originalLanguage is not approved by admin
+            req.flash("danger", "You are not authorized to view this page.");
+            res.redirect("/");
+            return;
+          }
+        }
+      }
+
       // Successful, so render
       res.render("language_detail_original", {
         title: "Language Detail",

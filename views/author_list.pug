@@ -32,9 +32,16 @@ block content
             else
               td #{moment(author.date_of_death).format('MMM D, YYYY')}
             td #{author.country.name}
-
       else
-        li There are no authors.
+        tr
+          td
+          td There are no authors yet. Add one
+            | 
+            a(href='/catalog/author/create') now.
+          td
+          td
+          td
+        
 
   //- Pagination component
   nav(aria-label='Author list page')

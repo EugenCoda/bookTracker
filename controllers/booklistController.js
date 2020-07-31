@@ -294,6 +294,7 @@ exports.booklist_add_post = [
       var userReview = new Review({
         review: req.body.review,
         rating: req.body.rating,
+        isVerified: false,
         user: req.user,
         book: req.params.id,
         _id: req.body.reviewId, //This is required, or a new ID will be assigned!

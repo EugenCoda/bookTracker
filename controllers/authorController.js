@@ -11,7 +11,8 @@ exports.author_list = (req, res, next) => {
   async.parallel(
     {
       author: (callback) => {
-        Author.find({})
+        // Show it only if it's verified or created by the logged user
+        Author.find({ $or: [{ isVerified: true }, { createdBy: req.user }] })
           .skip((page - 1) * pagination)
           .limit(pagination)
           .populate("author")
@@ -20,7 +21,11 @@ exports.author_list = (req, res, next) => {
           .exec(callback);
       },
       author_count: (callback) => {
-        Author.countDocuments({}, callback);
+        // Count it only if it's verified or created by the logged user
+        Author.countDocuments(
+          { $or: [{ isVerified: true }, { createdBy: req.user }] },
+          callback
+        );
       },
     },
     (err, results) => {
@@ -67,6 +72,27 @@ exports.author_detail = (req, res, next) => {
         err.status = 404;
         return next(err);
       }
+
+      if (!results.author.isVerified) {
+        // An user is logged in
+        if (req.user) {
+          if (results.author.createdBy.toString() != req.user._id.toString()) {
+            // Author is not approved by admin and it was not added by the logged user.
+            req.flash("danger", "You are not authorized to view this page.");
+            res.redirect("/");
+            return;
+          }
+          // No user logged in
+        } else {
+          {
+            // Author is not approved by admin
+            req.flash("danger", "You are not authorized to view this page.");
+            res.redirect("/");
+            return;
+          }
+        }
+      }
+
       // Successful, so render.
       res.render("author_detail", {
         title: "Author Detail",
@@ -103,9 +129,9 @@ exports.author_create_post = [
   body("first_name")
     .isLength({ min: 1 })
     .trim()
-    .withMessage("First name must be specified.")
-    .isAlphanumeric()
-    .withMessage("First name has non-alphanumeric characters."),
+    .withMessage("First name must be specified."),
+  // .isAlphanumeric()
+  // .withMessage("First name has non-alphanumeric characters."),
   body("family_name")
     .isLength({ min: 1 })
     .trim()
@@ -177,6 +203,7 @@ exports.author_create_post = [
           return next(err);
         }
         // Successful - redirect to new author record.
+        console.log(author._id);
         res.redirect(author.url);
       });
     }
@@ -288,9 +315,9 @@ exports.author_update_post = [
   body("first_name")
     .isLength({ min: 1 })
     .trim()
-    .withMessage("First name must be specified.")
-    .isAlphanumeric()
-    .withMessage("First name has non-alphanumeric characters."),
+    .withMessage("First name must be specified."),
+  // .isAlphanumeric()
+  // .withMessage("First name has non-alphanumeric characters."),
   body("family_name")
     .isLength({ min: 1 })
     .trim()
