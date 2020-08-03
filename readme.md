@@ -81,6 +81,10 @@ Branch 10:
 - Admin email and default author - moved all references to config.env and layout_ignore
 - Deleted populatedb.js file (used in the beginning to upload some entries to DB)
 
+Branch 11:
+
+- Renamed the folder from express-locallibrary-tutorial to book-tracker
+
 TODO:
 
 - deploy app to heroku
