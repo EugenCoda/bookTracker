@@ -1,7 +1,7 @@
 var express = require("express");
 var cors = require("cors");
 var router = express.Router();
-const { ensureAuthenticated } = require("../middleware/auth");
+const { ensureAuthenticated, ensureAdmin } = require("../middleware/auth");
 
 // Require controller modules.
 var book_controller = require("../controllers/bookController");
@@ -26,21 +26,13 @@ router.get(
 router.post("/book/create", book_controller.book_create_post);
 
 // GET request to delete Book.
-router.get(
-  "/book/:id/delete",
-  ensureAuthenticated,
-  book_controller.book_delete_get
-);
+router.get("/book/:id/delete", ensureAdmin, book_controller.book_delete_get);
 
 // POST request to delete Book.
 router.post("/book/:id/delete", book_controller.book_delete_post);
 
 // GET request to update Book.
-router.get(
-  "/book/:id/update",
-  ensureAuthenticated,
-  book_controller.book_update_get
-);
+router.get("/book/:id/update", ensureAdmin, book_controller.book_update_get);
 
 // POST request to update Book.
 router.post("/book/:id/update", book_controller.book_update_post);
@@ -66,7 +58,7 @@ router.post("/author/create", author_controller.author_create_post);
 // GET request to delete Author.
 router.get(
   "/author/:id/delete",
-  ensureAuthenticated,
+  ensureAdmin,
   author_controller.author_delete_get
 );
 
@@ -76,7 +68,7 @@ router.post("/author/:id/delete", author_controller.author_delete_post);
 // GET request to update Author.
 router.get(
   "/author/:id/update",
-  ensureAuthenticated,
+  ensureAdmin,
   author_controller.author_update_get
 );
 
@@ -102,21 +94,13 @@ router.get(
 router.post("/genre/create", genre_controller.genre_create_post);
 
 // GET request to delete Genre.
-router.get(
-  "/genre/:id/delete",
-  ensureAuthenticated,
-  genre_controller.genre_delete_get
-);
+router.get("/genre/:id/delete", ensureAdmin, genre_controller.genre_delete_get);
 
 // POST request to delete Genre.
 router.post("/genre/:id/delete", genre_controller.genre_delete_post);
 
 // GET request to update Genre.
-router.get(
-  "/genre/:id/update",
-  ensureAuthenticated,
-  genre_controller.genre_update_get
-);
+router.get("/genre/:id/update", ensureAdmin, genre_controller.genre_update_get);
 
 // POST request to update Genre.
 router.post("/genre/:id/update", genre_controller.genre_update_post);
@@ -142,7 +126,7 @@ router.post("/language/create", language_controller.language_create_post);
 // GET request to delete Language.
 router.get(
   "/language/:id/delete",
-  ensureAuthenticated,
+  ensureAdmin,
   language_controller.language_delete_get
 );
 
@@ -152,7 +136,7 @@ router.post("/language/:id/delete", language_controller.language_delete_post);
 // GET request to update Language.
 router.get(
   "/language/:id/update",
-  ensureAuthenticated,
+  ensureAdmin,
   language_controller.language_update_get
 );
 
@@ -186,7 +170,7 @@ router.post("/country/create", country_controller.country_create_post);
 // GET request to delete Country.
 router.get(
   "/country/:id/delete",
-  ensureAuthenticated,
+  ensureAdmin,
   country_controller.country_delete_get
 );
 
@@ -196,7 +180,7 @@ router.post("/country/:id/delete", country_controller.country_delete_post);
 // GET request to update Country.
 router.get(
   "/country/:id/update",
-  ensureAuthenticated,
+  ensureAdmin,
   country_controller.country_update_get
 );
 

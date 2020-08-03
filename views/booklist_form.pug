@@ -28,17 +28,24 @@ block content
           option(value="Not read") Not read
           option(value="In progress") In progress
           option(value="Read") Read
-    div.form-group
+    br
+    div.form-row.align-items-center
       label(for='currentPage') Current Page:
-      - included = false
-      each val, index in personal_list
-        if personal_list[index].book._id==book.id
-          - included = true
-          input#currentPage.form-control(type='text', placeholder='1' name='currentPage' value=(undefined===book ? '' : personal_list[index].currentPage)) 
-        else
-          return
-      if !included
-        input#currentPage.form-control(type='text', placeholder='1' name='currentPage') 
+      .col-auto
+        - included = false
+        each val, index in personal_list
+          if personal_list[index].book._id==book.id
+            - included = true
+            input#currentPage.form-control(type='text', placeholder='1' name='currentPage' value=(undefined===book ? '' : personal_list[index].currentPage)) 
+          else
+            return
+        if !included
+          input#currentPage.form-control(type='text', placeholder='1' name='currentPage') 
+      .col-auto
+        p(style='font-size:25px; margin:auto; color:grey') / 
+      .col-auto
+        input#pages.form-control(type='text', placeholder='1' name='pages' value=(undefined===book ? '' : book.pages) readonly='') 
+    br
     div.form-group
       label(for='availability') Availability:
       - included = false

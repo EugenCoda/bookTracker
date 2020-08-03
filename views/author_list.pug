@@ -15,7 +15,7 @@ block content
       - let index = 0
       each author in author_list
         //- Excluding the default author
-        if author._id!='5f181920c4d320322dbbf993'
+        if author._id!=DEFAULT_AUTHOR
           - index++
           tr
             td(height='100px')

@@ -1,3 +1,7 @@
+const dotenv = require("dotenv");
+//Load config
+dotenv.config({ path: "./config/config.env" });
+
 module.exports = {
   ensureAuthenticated: function (req, res, next) {
     if (req.isAuthenticated()) {
@@ -16,7 +20,7 @@ module.exports = {
   },
 
   ensureAdmin: function (req, res, next) {
-    if (req.isAuthenticated() && req.user.email == "coda.eugen@gmail.com") {
+    if (req.isAuthenticated() && req.user.email == process.env.ADMIN_EMAIL) {
       return next();
     } else {
       req.flash("danger", "You are not authorized to view this page");

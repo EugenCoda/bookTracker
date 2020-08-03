@@ -130,12 +130,14 @@ exports.author_create_post = [
     .isLength({ min: 1 })
     .trim()
     .withMessage("First name must be specified."),
+  // TODO
   // .isAlphanumeric()
   // .withMessage("First name has non-alphanumeric characters."),
   body("family_name")
     .isLength({ min: 1 })
     .trim()
     .withMessage("Family name must be specified."),
+  // TODO
   //below check doesn't allow spaces, so it needs to be rewritten
   //.isAlphanumeric()
   //.withMessage("Family name has non-alphanumeric characters."),
@@ -316,12 +318,14 @@ exports.author_update_post = [
     .isLength({ min: 1 })
     .trim()
     .withMessage("First name must be specified."),
+  // TODO
   // .isAlphanumeric()
   // .withMessage("First name has non-alphanumeric characters."),
   body("family_name")
     .isLength({ min: 1 })
     .trim()
     .withMessage("Family name must be specified."),
+  // TODO
   //below check doesn't allow spaces, so it needs to be rewritten
   //.isAlphanumeric()
   //.withMessage("Family name has non-alphanumeric characters."),

@@ -140,8 +140,9 @@ block content
 
   hr
   if user
-    a.btn.btn-dark(href=genre.url+'/update') Update genre
-    | 
-    a.btn.btn-danger(href=genre.url+'/delete') Delete genre
+    if user.email==ADMIN_EMAIL
+      a.btn.btn-dark(href=genre.url+'/update') Update genre
+      | 
+      a.btn.btn-danger(href=genre.url+'/delete') Delete genre
     | 
     a.btn.btn-secondary(href='/catalog/genres') Back to Genres

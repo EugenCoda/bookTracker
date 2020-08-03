@@ -39,9 +39,10 @@ block content
               a(href='/catalog/book/create') now.
       hr
       if user
-        a.btn.btn-dark(href=author.url+'/update') Update author
-        | 
-        a.btn.btn-danger(href=author.url+'/delete') Delete author
+        if user.email==ADMIN_EMAIL
+          a.btn.btn-dark(href=author.url+'/update') Update author
+          | 
+          a.btn.btn-danger(href=author.url+'/delete') Delete author
         | 
         a.btn.btn-secondary(href='/catalog/authors') Back to Authors
 

@@ -143,8 +143,9 @@ block content
                     span(aria-hidden='true') »
     hr
   if user
-    a.btn.btn-dark(href=language.url+'/update') Update language
-    | 
-    a.btn.btn-danger(href=language.url+'/delete') Delete language
+    if user.email==ADMIN_EMAIL
+      a.btn.btn-dark(href=language.url+'/update') Update language
+      | 
+      a.btn.btn-danger(href=language.url+'/delete') Delete language
     | 
     a.btn.btn-secondary(href='/catalog/languages') Back to Languages

@@ -4,27 +4,36 @@ block content
   h3 #{title}: #{author.name}
   p= author.lifespan
   
-  if author_books.length
-  
-    p #[strong Delete the following books before attempting to delete this author.]
-  
-    div(style='margin-left:20px;margin-top:20px')
+  include helpers
 
-      h4 Books
-    
-      dl
-      each book in author_books
-        dt 
-          a(href=book.url) #{book.title}
-        dd #{book.summary}
+  div.media
 
-  else
-    p Do you really want to delete this Author?
-    
-    form(method='POST' action='')
-      div.form-group
-        input#authorid.form-control(type='hidden',name='authorid', required='true', value=author._id )
+    div.media-body
 
-      button.btn.btn-danger.btn-sm(type='submit') Delete
-      | 
-      a.btn.btn-secondary.btn-sm(href='/catalog/books') Cancel
+      if author_books.length
+        br
+        p #[strong You need to delete the following books before attempting to delete this author:]
+      
+        div(style='margin-left:20px;margin-top:20px')
+
+          ul.list-unstyled
+            each book in author_books
+              li.media.my-4
+                a(href=book.url)
+                  img.mr-3(src=`/images/books/${book._id}.jpg`, style='max-width:80px;', title=`${book.title}`, alt=`${book.title}`)
+                div.media-body 
+                  a.mt-0.mb-1(href=book.url) #{book.title} 
+                  br
+                  p(style='display:inline') #{truncate(book.summary, 250)} 
+                  |
+                  a(href=href=book.url title=book.summary) ...more
+      else
+        p Do you really want to delete this Author?
+        
+        form(method='POST' action='')
+          div.form-group
+            input#authorid.form-control(type='hidden',name='authorid', required='true', value=author._id )
+
+          button.btn.btn-danger.btn-sm(type='submit') Delete
+          | 
+          a.btn.btn-secondary.btn-sm(href='/catalog/books') Cancel

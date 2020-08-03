@@ -49,8 +49,8 @@ exports.user_help_contact_post = [
       });
     } else {
       const mail = {
-        to: "coda.eugen@gmail.com", // TODO - to be changed
-        from: "coda.eugen@gmail.com", // TODO - to be changed
+        to: process.env.ADMIN_EMAIL,
+        from: process.env.ADMIN_EMAIL,
         subject: `You received this message: "${req.body.subject}" from ${req.body.email}`,
         html: req.body.description,
       };
@@ -145,7 +145,7 @@ exports.user_create_post = [
               // Send email for confirmation of the user register
               const mail = {
                 to: user.email,
-                from: "coda.eugen@gmail.com", //TODO - to be changed
+                from: process.env.ADMIN_EMAIL,
                 subject: "Account Verification Token",
                 html: `Hello ${user.username},
                   <br>
@@ -379,7 +379,7 @@ exports.resend_token_post = [
 
             const mail = {
               to: user.user.email,
-              from: "coda.eugen@gmail.com", // TODO - to be changed
+              from: process.env.ADMIN_EMAIL,
               subject: "Account Verification Token",
               html: `Hello ${user.user.username},
               <br>
@@ -468,7 +468,7 @@ exports.reset_password_email_post = [
             // Send email with link for password reset
             const mail = {
               to: user.user.email,
-              from: "coda.eugen@gmail.com", // TODO - to be changed
+              from: process.env.ADMIN_EMAIL,
               subject: "Confirm password reset",
               html: `Hello ${user.user.username},
               <br>
@@ -482,7 +482,7 @@ exports.reset_password_email_post = [
               If you did not request that your password be reset, you can safely ignore this email. It's likely that another person has mistakenly attempted to log in using your email. As long as you do not click the link above, no action will be taken and your account will remain secure.
               <br>
               <br>
-              - The BookTracker Team`,
+              The BookTracker Team`,
             };
 
             sgMail.send(mail, (err) => {
@@ -605,7 +605,7 @@ exports.reset_password_post = [
                       // Send email to confirm password reset
                       const mail = {
                         to: user.user.email,
-                        from: "coda.eugen@gmail.com", // TODO - to be changed
+                        from: process.env.ADMIN_EMAIL,
                         subject: "Booktracker - password changed",
                         html: `Hello ${user.user.username},
                         <br>
@@ -613,10 +613,10 @@ exports.reset_password_post = [
                         This is a notice to let you know that the password for your account has been changed.
                         <br>
                         <br>
-                        If you did not recently reset or change your password, it is possible that your account has been compromised. If you have any questions about this, please contact us at coda.eugen@gmail.com
+                        If you did not recently reset or change your password, it is possible that your account has been compromised. If you have any questions about this, please contact us at ${process.env.ADMIN_EMAIL}
                         <br>
                         <br>
-                        - The BookTracker Team`,
+                        The BookTracker Team`,
                       };
 
                       sgMail.send(mail, (err) => {
@@ -747,7 +747,7 @@ exports.user_account_post = [
                       // Send email to confirm password change
                       const mail = {
                         to: user.user.email,
-                        from: "coda.eugen@gmail.com", // TODO - to be changed
+                        from: process.env.ADMIN_EMAIL,
                         subject: "Booktracker - password changed",
                         html: `Hello ${user.user.username},
                               <br>
@@ -755,10 +755,10 @@ exports.user_account_post = [
                               This is a notice to let you know that the password for your account has been changed.
                               <br>
                               <br>
-                              If you did not recently reset or change your password, it is possible that your account has been compromised. If you have any questions about this, please contact us at coda.eugen@gmail.com
+                              If you did not recently reset or change your password, it is possible that your account has been compromised. If you have any questions about this, please contact us at ${process.env.ADMIN_EMAIL}
                               <br>
                               <br>
-                              - The BookTracker Team`,
+                              The BookTracker Team`,
                       };
 
                       sgMail.send(mail, (err) => {

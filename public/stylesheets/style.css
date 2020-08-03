@@ -63,3 +63,10 @@ body {
   list-style-type: none;
   columns: 3;
 }
+
+/* For showing the number of total pages when adding/updating a book in booklist */
+#currentPage,
+#pages {
+  width: 80px;
+  text-align: center;
+}

@@ -3,32 +3,49 @@ extends layout
 block content
 
   h3 #{title}: #{language.name}
-  
-  if language_books.length || originalLanguage_books.length
-  
-    p #[strong Delete the following books before attempting to delete this language.]
-  
-    div(style='margin-left:20px;margin-top:20px')
+  include helpers
 
-      h6 Books available in this language:
-      ul
-        each book in language_books
-          li 
-            a(href=book.url) #{book.title}
-      hr
-      h6 Books written in this language:    
-      ul
-        each book in originalLanguage_books
-          li 
-            a(href=book.url) #{book.title}
+  div.media
 
-  else
-    p Do you really want to delete this Language?
-    
-    form(method='POST' action='')
-      div.form-group
-        input#languageid.form-control(type='hidden',name='languageid', required='true', value=language._id )
+    div.media-body
+      if language_books.length || originalLanguage_books.length
+        br
+        p #[strong You need to delete the following books before attempting to delete this language:]
+      
+        div(style='margin-left:20px;margin-top:20px')
 
-      button.btn.btn-danger.btn-sm(type='submit') Delete
-      | 
-      a.btn.btn-secondary.btn-sm(href='/catalog/books') Cancel
+          h6 Books available in this language:
+          ul.list-unstyled
+            each book in language_books
+              li.media.my-4
+                a(href=book.url)
+                  img.mr-3(src=`/images/books/${book._id}.jpg`, style='max-width:80px;', title=`${book.title}`, alt=`${book.title}`)
+                div.media-body 
+                  a.mt-0.mb-1(href=book.url) #{book.title} 
+                  br
+                  p(style='display:inline') #{truncate(book.summary, 250)} 
+                  |
+                  a(href=href=book.url title=book.summary) ...more
+          hr
+          h6 Books written in this language:    
+          ul.list-unstyled
+            each book in originalLanguage_books
+              li.media.my-4
+                a(href=book.url)
+                  img.mr-3(src=`/images/books/${book._id}.jpg`, style='max-width:80px;', title=`${book.title}`, alt=`${book.title}`)
+                div.media-body 
+                  a.mt-0.mb-1(href=book.url) #{book.title} 
+                  br
+                  p(style='display:inline') #{truncate(book.summary, 250)} 
+                  |
+                  a(href=href=book.url title=book.summary) ...more
+      else
+        p Do you really want to delete this Language?
+        
+        form(method='POST' action='')
+          div.form-group
+            input#languageid.form-control(type='hidden',name='languageid', required='true', value=language._id )
+
+          button.btn.btn-danger.btn-sm(type='submit') Delete
+          | 
+          a.btn.btn-secondary.btn-sm(href='/catalog/books') Cancel

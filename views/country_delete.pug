@@ -3,27 +3,33 @@ extends layout
 block content
 
   h3 #{title}: #{country.name}
-  
-  if country_authors.length
-  
-    p #[strong Delete the following authors before attempting to delete this country.]
-  
-    div(style='margin-left:20px;margin-top:20px')
 
-      h4 Authors
-    
-      ul
-      each author in country_authors
-        li 
-          a(href=author.url) #{author.name}
+  include helpers
 
-  else
-    p Do you really want to delete this Country?
-    
-    form(method='POST' action='')
-      div.form-group
-        input#countryid.form-control(type='hidden',name='countryid', required='true', value=country._id )
+  div.media
 
-      button.btn.btn-danger.btn-sm(type='submit') Delete
-      | 
-      a.btn.btn-secondary.btn-sm(href='/catalog/books') Cancel
+    div.media-body
+  
+      if country_authors.length
+        br
+        p #[strong You need to delete the following authors before attempting to delete this country:]
+      
+        div(style='margin-left:20px;margin-top:20px')
+
+          ul.list-unstyled
+            each author in country_authors
+              li.media.my-4 
+                a(href=author.url) 
+                  img(src=`/images/authors/${author._id}.jpg`, style='float:left;width:80px;', title=`${author.name}`, alt=`${author.name}`) 
+                div.media-body 
+                  a.mt-0.mb-1(href=author.url) #{author.name} 
+      else
+        p Do you really want to delete this Country?
+        
+        form(method='POST' action='')
+          div.form-group
+            input#countryid.form-control(type='hidden',name='countryid', required='true', value=country._id )
+
+          button.btn.btn-danger.btn-sm(type='submit') Delete
+          | 
+          a.btn.btn-secondary.btn-sm(href='/catalog/books') Cancel

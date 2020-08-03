@@ -73,12 +73,16 @@ Branch 10:
 - My books - links for All, Read, In Progress and Wishlist
 - Show item if isVerified==true or createdBy==req.user: in lists, detail pages and searches (books don't appear in searches even if created by the logged user)
 - Fixed the search with empty string
+- Styled the deletion pages
+- Allow updates or not? - For now only admin can update items
+- Allow "soft" delete - For now only admin can delete items
+- Admin page - done for now. More features will be implemented later, based on needs
+- Books in booklist - added current page vs no of total pages
+- Admin email and default author - moved all references to config.env and layout_ignore
+- Deleted populatedb.js file (used in the beginning to upload some entries to DB)
 
 TODO:
 
-- allow updates or not?
-- allow "soft" delete
-- admin page - in progress
 - deploy app to heroku
 - social networks
 - sorting and filtering lists

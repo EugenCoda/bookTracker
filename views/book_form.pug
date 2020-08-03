@@ -18,7 +18,7 @@ block content
           if book
             //- Handle GET form, where book.author is an object, and POST form, where it is a string.
             //- Don't show the default user in the list
-            if author._id!='5f181920c4d320322dbbf993'
+            if author._id!=DEFAULT_AUTHOR
               option(
                 value=author._id
                 selected=(
@@ -28,10 +28,10 @@ block content
               ) #{author.name}
           else
             //- Don't show the default user in the list
-            if author._id!='5f181920c4d320322dbbf993' 
+            if author._id!=DEFAULT_AUTHOR 
               option(value=author._id) #{author.name}
       br
-      if book==undefined || book.author2==undefined || book.author2._id=='5f181920c4d320322dbbf993'
+      if book==undefined || book.author2==undefined || book.author2._id==DEFAULT_AUTHOR
         button#btnAddAuthor Add second author
       else
         button#btnChangeAuthor Change second author
@@ -42,12 +42,12 @@ block content
         label(for='author2')
         select#author2.form-control(type='select' placeholder='Select author' name='author2' )
           - authors.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
-          option(value='5f181920c4d320322dbbf993') Choose a Second Author
+          option(value=DEFAULT_AUTHOR) Choose a Second Author
           for author in authors
             if book && book.author2
               //- Handle GET form, where book.author is an object, and POST form, where it is a string.
               //- Don't show the default user in the list
-              if author._id!='5f181920c4d320322dbbf993'
+              if author._id!=DEFAULT_AUTHOR
                 option(
                   value=author._id
                   selected=(
@@ -57,7 +57,7 @@ block content
                 ) #{author.name}
             else
               //- Don't show the default user (again) in the list
-              if author._id!='5f181920c4d320322dbbf993' 
+              if author._id!=DEFAULT_AUTHOR
                 option(value=author._id) #{author.name}
     div.form-group
       label(for='summary') Summary:
@@ -149,6 +149,6 @@ block content
   script.
     document.getElementById("btnRemoveAuthor").addEventListener("click", function(e){
       e.preventDefault();
-      author2.value = '5f181920c4d320322dbbf993';
+      author2.value = DEFAULT_AUTHOR;
       window.alert("Second Author Removed");
     })

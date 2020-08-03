@@ -20,7 +20,7 @@ block content
         - country_authors.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
         each author in country_authors
           //- Excluding the default author
-          if author._id!='5f181920c4d320322dbbf993'
+          if author._id!=DEFAULT_AUTHOR
             - index++
             tr
               td(height='100px')
@@ -158,8 +158,9 @@ block content
 
   hr
   if user
-    a.btn.btn-dark(href=country.url+'/update') Update country
-    | 
-    a.btn.btn-danger(href=country.url+'/delete') Delete country
+    if user.email==ADMIN_EMAIL
+      a.btn.btn-dark(href=country.url+'/update') Update country
+      | 
+      a.btn.btn-danger(href=country.url+'/delete') Delete country
     | 
     a.btn.btn-secondary(href='/catalog/countries') Back to Countries

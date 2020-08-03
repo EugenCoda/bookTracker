@@ -18,7 +18,7 @@ block content
       
         if book.author2
           //- Excludes the default author from the list
-          if book.author2._id=='5f181920c4d320322dbbf993'
+          if book.author2._id==DEFAULT_AUTHOR
             p #[strong by:] 
               a(href=book.author.url) #{book.author.name} 
           else
@@ -121,9 +121,10 @@ block content
                       path(fill-rule='evenodd', d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.146-3.146a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z')
               - else 
                 return  
-          a.btn.btn-dark(href=book.url+'/update') Update Book
-          | 
-          a.btn.btn-danger(href=book.url+'/delete') Delete Book
+          if user.email==ADMIN_EMAIL
+            a.btn.btn-dark(href=book.url+'/update') Update Book
+            | 
+            a.btn.btn-danger(href=book.url+'/delete') Delete Book
           | 
           a.btn.btn-secondary(href='/catalog/books') Back to Catalog
 

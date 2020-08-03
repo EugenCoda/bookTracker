@@ -23,7 +23,7 @@ block content
             if personal_list[index].currentPage == null
               p #[strong Completion:] 0%
             else
-              p #[strong Completion:] #{Math.floor((personal_list[index].currentPage/personal_list[index].book.pages)*100)+"%"}
+              p #[strong Completion:] #{Math.floor((personal_list[index].currentPage/personal_list[index].book.pages)*100)+"%"} (#{personal_list[index].currentPage} / #{personal_list[index].book.pages})
 
             p #[strong Availability:] #{personal_list[index].availability}
 
