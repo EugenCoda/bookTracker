@@ -84,6 +84,7 @@ Branch 10:
 Branch 11:
 
 - Renamed the folder from express-locallibrary-tutorial to book-tracker
+- Settings for Content Security Policy (helmet)
 
 TODO:
 

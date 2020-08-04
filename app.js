@@ -16,6 +16,9 @@ var booklistsRouter = require("./routes/booklists");
 var catalogRouter = require("./routes/catalog");
 var adminRouter = require("./routes/admin");
 
+var compression = require("compression");
+var helmet = require("helmet");
+
 //Load config
 dotenv.config({ path: "./config/config.env" });
 
@@ -23,6 +26,29 @@ dotenv.config({ path: "./config/config.env" });
 connectDB();
 
 const app = express();
+
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        "default-src": ["'self'"],
+        "script-src": [
+          "'self'",
+          "code.jquery.com",
+          "cdn.jsdelivr.net",
+          "stackpath.bootstrapcdn.com",
+          "'unsafe-inline'",
+        ],
+        "style-src": [
+          "'self'",
+          "stackpath.bootstrapcdn.com",
+          "'unsafe-inline'",
+        ],
+        "img-src": ["'self'", "data:"],
+      },
+    },
+  })
+);
 
 //View engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -42,6 +68,9 @@ app.use(express.urlencoded({ extended: false }));
 
 //Cookie Parser
 app.use(cookieParser());
+
+//Compress all routes
+app.use(compression());
 
 //Set Public Folder
 app.use(express.static(path.join(__dirname, "public")));
