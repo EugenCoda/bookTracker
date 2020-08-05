@@ -85,11 +85,12 @@ Branch 11:
 
 - Renamed the folder from express-locallibrary-tutorial to book-tracker
 - Settings for Content Security Policy (helmet)
+- Deployed app to heroku
 
 TODO:
 
-- deploy app to heroku
 - social networks
+- responsive on mobile(e.g. the book lists)
 - sorting and filtering lists
 
 Problematic:

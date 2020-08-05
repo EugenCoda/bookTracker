@@ -66,7 +66,7 @@ body {
 
 /* For showing the number of total pages when adding/updating a book in booklist */
 #currentPage,
-#pages {
+#totalPages {
   width: 80px;
   text-align: center;
 }
