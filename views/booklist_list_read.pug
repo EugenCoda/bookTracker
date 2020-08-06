@@ -18,31 +18,34 @@ block content
   
 
   h3= title
-  h6 
-    a(href='/booklists/mylist') All (!{personal_list.length}) 
-  h6 Read (!{readBooks.length})
-  h6
-    a(href='in-progress') In Progress (!{myBooks_inProgress})
-  h6
-    a(href='wishlist') Wish List (!{myBooks_wishList})
-
+  br
+  .div#book-list-view
+    ul.list-group.list-group-horizontal-sm
+      li.list-group-item.flex-fill
+        a(href='/booklists/mylist') All (!{personal_list.length})  
+      li.list-group-item.list-group-item-info.flex-fill Read (!{readBooks.length})
+      li.list-group-item.flex-fill
+        a(href='in-progress') In Progress (!{myBooks_inProgress})
+      li.list-group-item.flex-fill
+        a(href='wishlist') Wish List (!{myBooks_wishList})
+  br
   table.table.table-sm.table-hover
     thead.thead-light
       tr
-        th(scope='col' width='30px') #
-        th(scope='col' width='30px') Cover
-        th(scope='col' width='250px') Title 
-        th(scope='col') Author 
-        th(scope='col') Avg. Rating
-        th(scope='col') My Rating
-        th(scope='col') Status 
-        th(scope='col') Completion
-        th(scope='col') Availability 
-        th(scope='col') Date Started 
-        th(scope='col') Date Finished 
-        th(scope='col')
-        th(scope='col')
-        th(scope='col')
+        th.small-screen(scope='col' width='30px') #
+        th.small-screen(scope='col' width='30px') Cover
+        th.small-screen(scope='col' width='250px') Title 
+        th.small-screen(scope='col') Author 
+        th.big-screen(scope='col') Avg. Rating
+        th.big-screen(scope='col') My Rating
+        th.big-screen(scope='col') Status 
+        th.big-screen(scope='col') Completion
+        th.big-screen(scope='col') Availability 
+        th.big-screen(scope='col') Date Started 
+        th.big-screen(scope='col') Date Finished 
+        th.big-screen(scope='col')
+        th.big-screen(scope='col')
+        th.big-screen(scope='col')
     tbody
       //- Sorted to show latest reads on top.
       - readBooks.sort(function(a, b) {let textA = a.date_finished; let textB = b.date_finished; return (textA > textB) ? -1 : (textA < textB) ? 1 : 0;});
@@ -62,16 +65,16 @@ block content
           else
             tr
               
-              th(scope='row') !{index+1}.
+              th.small-screen(scope='row') !{index+1}.
               
-              td
+              td.small-screen
                 a(href=readBooks[index].book.url)
-                  img(src=`/images/books/${readBooks[index].book._id}.jpg`, style='float:left;width:100%;', title=`${readBooks[index].book.title}`, alt=`${readBooks[index].book.title}`)
+                  img(src=`/images/books/${readBooks[index].book._id}.jpg`, style='float:left;width:100%;', onerror="this.onerror=null;this.src='/images/books/missing_book.jpg';", title=`${readBooks[index].book.title}`, alt=`${readBooks[index].book.title}`)
               
-              td
+              td.small-screen
                 a(href=readBooks[index].book.url) #{readBooks[index].book.title}  
               
-              td
+              td.small-screen
                 a(href=readBooks[index].book.author.url) #{readBooks[index].book.author.name}  
               
               - let ratingCount = 0
@@ -88,76 +91,76 @@ block content
                   return
               //- If rating count is zero, print n/a for both the average rating and this user's rating
               if ratingCount == 0
-                td n/a
-                td n/a 
+                td.big-screen n/a
+                td.big-screen n/a 
               else
                 //- Loops through all reviews from this user to find the one for this book.
                 each val in userReview_user
                   //- If found, print the average rating and this user's rating
                   - if (val.book.equals(book))
-                    td #{(ratingSum/ratingCount).toFixed(2)} 
+                    td.big-screen #{(ratingSum/ratingCount).toFixed(2)} 
                     //- If review exists, but the user didn't rate the book, print n/a
                     if (val.rating==null)
-                      td n/a
+                      td.big-screen n/a
                     else
-                      td #{val.rating}
+                      td.big-screen #{val.rating}
                   - else 
                     return
                 else
                   //- There is no review from this user, but there are from other users
-                  td #{(ratingSum/ratingCount).toFixed(2)} 
-                  td n/a
+                  td.big-screen #{(ratingSum/ratingCount).toFixed(2)} 
+                  td.big-screen n/a
               
-              td #{readBooks[index].status}  
+              td.big-screen #{readBooks[index].status}  
               
               if readBooks[index].currentPage == null
-                td 0%
+                td.big-screen 0%
               else
-                td #{Math.floor((readBooks[index].currentPage/readBooks[index].book.pages)*100)+"%"}
+                td.big-screen #{Math.floor((readBooks[index].currentPage/readBooks[index].book.pages)*100)+"%"}
               
-              td #{readBooks[index].availability}   
+              td.big-screen #{readBooks[index].availability}   
               
               if readBooks[index].date_started == null
-                td 
+                td.big-screen 
               else
-                td #{moment(readBooks[index].date_started).format('MMM D, YYYY')}  
+                td.big-screen #{moment(readBooks[index].date_started).format('MMM D, YYYY')}  
               
               if readBooks[index].date_finished == null
-                td 
+                td.big-screen 
               else
-                td #{moment(readBooks[index].date_finished).format('MMM D, YYYY')} 
+                td.big-screen #{moment(readBooks[index].date_finished).format('MMM D, YYYY')} 
               
-              td
+              td.big-screen
                 a(href='/booklists/'+readBooks[index].book._id+'/view' title="View Book Entry") view
               |  
-              td 
+              td.big-screen 
                 a(href='/booklists/'+readBooks[index].book._id+'/edit' title="Edit Book Entry")   
                   svg.bi.bi-pencil(viewBox='0 0 16 16', fill='currentColor', xmlns='http://www.w3.org/2000/svg')
                     path(fill-rule='evenodd', d='M11.293 1.293a1 1 0 0 1 1.414 0l2 2a1 1 0 0 1 0 1.414l-9 9a1 1 0 0 1-.39.242l-3 1a1 1 0 0 1-1.266-1.265l1-3a1 1 0 0 1 .242-.391l9-9zM12 2l2 2-9 9-3 1 1-3 9-9z')
                     path(fill-rule='evenodd', d='M12.146 6.354l-2.5-2.5.708-.708 2.5 2.5-.707.708zM3 10v.5a.5.5 0 0 0 .5.5H4v.5a.5.5 0 0 0 .5.5H5v.5a.5.5 0 0 0 .5.5H6v-1.5a.5.5 0 0 0-.5-.5H5v-.5a.5.5 0 0 0-.5-.5H3z') 
               |  
-              td 
+              td.big-screen 
                 a(href='/booklists/'+readBooks[index].book._id+'/remove' title="Delete Book Entry")  
                   svg.bi.bi-x-circle-fill.text-danger(viewBox='0 0 16 16', fill='currentColor', xmlns='http://www.w3.org/2000/svg')
                     path(fill-rule='evenodd', d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.146-3.146a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z')
       else
         tr
-          th(scope='row') 
-          td
-          td There are no read books in your list yet. Add one 
+          th.small-screen(scope='row') 
+          td.small-screen
+          td.small-screen There are no read books in your list yet. Add one 
             | 
             a(href='/catalog/books') now.
-          td
-          td
-          td
-          td
-          td
-          td
-          td
-          td
-          td
-          td
-          td
+          td.big-screen
+          td.big-screen
+          td.big-screen
+          td.big-screen
+          td.big-screen
+          td.big-screen
+          td.big-screen
+          td.big-screen
+          td.big-screen
+          td.big-screen
+          td.big-screen
 
   //- Pagination component
   nav(aria-label='User read books list page')

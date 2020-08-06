@@ -6,14 +6,14 @@ block content
   table.table.table-sm.table-hover
     thead.thead-light
       tr
-        th(scope='col' width='30px') Cover
-        th(scope='col' width='250px') Title 
-        th(scope='col') Author 
-        th(scope='col') Year Published
-        th(scope='col') Avg. Rating
+        th.small-screen(scope='col' width='30px') Cover
+        th.small-screen(scope='col' width='250px') Title 
+        th.small-screen(scope='col') Author 
+        th.big-screen(scope='col') Year Published
+        th.big-screen(scope='col') Avg. Rating
         if user
-          th(scope='col') My Status
-          th(scope='col')
+          th.big-screen(scope='col') My Status
+          th.big-screen(scope='col')
     tbody
       - book_list.sort(function(a, b) {let textA = a.title.toUpperCase(); let textB = b.title.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
       - let index = 0
@@ -22,17 +22,17 @@ block content
         - index++
         tr
           
-          td(height='80px')
+          td.small-screen(height='80px')
             a(href=book.url)
-              img(src=`/images/books/${book._id}.jpg`, style='float:left;width:100%;', title=`${book.title}`, alt=`${book.title}`)
+              img(src=`/images/books/${book._id}.jpg`, style='float:left;width:100%;', onerror="this.onerror=null;this.src='/images/books/missing_book.jpg';", title=`${book.title}`, alt=`${book.title}`)
           
-          td
+          td.small-screen
             a(href=book.url) #{book.title} 
           
-          td 
+          td.small-screen 
             a(href=book.author.url) #{book.author.name} 
           
-          td(width='150px') #{book.yearFirstPublished} 
+          td.big-screen(width='150px') #{book.yearFirstPublished} 
           
           - let ratingCount = 0
           - let ratingSum = 0
@@ -47,17 +47,17 @@ block content
               return
           //- If rating count is zero, print n/a
           if ratingCount == 0
-            td n/a
+            td.big-screen n/a
           //- Else, print the average rating
           else
-            td(width='150px') #{(ratingSum/ratingCount).toFixed(2)}
+            td.big-screen(width='150px') #{(ratingSum/ratingCount).toFixed(2)}
           
           if user
             - let bookAdded = false
             each val, index in personal_list
               - if (personal_list[index].book.title == book.title)
-                td(width='150px') #{personal_list[index].status} 
-                td(width='150px')
+                td.big-screen(width='150px') #{personal_list[index].status} 
+                td.big-screen(width='150px')
                   a(href=book.booklisturl+'/view' title="View Book Entry") view 
                   a(href=book.booklisturl+'/edit' title="Edit Book Entry") 
                     svg.bi.bi-pencil(viewBox='0 0 16 16', fill='currentColor', xmlns='http://www.w3.org/2000/svg')
@@ -70,22 +70,22 @@ block content
               - else 
                 return
             if !bookAdded
-              td(width='150px') 
+              td.big-screen(width='150px') 
                 a(href=book.booklisturl+'/addtolist' title="Add Book to My List")
                   svg.bi.bi-plus-circle-fill.text-success(viewBox='0 0 16 16', fill='currentColor', xmlns='http://www.w3.org/2000/svg')
                     path(fill-rule='evenodd', d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4a.5.5 0 0 0-1 0v3.5H4a.5.5 0 0 0 0 1h3.5V12a.5.5 0 0 0 1 0V8.5H12a.5.5 0 0 0 0-1H8.5V4z')
-              td
+              td.big-screen
       else
         tr
-          td
-          td There are no books yet. Add one
+          td.small-screen
+          td.small-screen There are no books yet. Add one
             | 
             a(href='/catalog/book/create') now.
-          td
-          td
-          td
-          td
-          td
+          td.medium-screen
+          td.big-screen
+          td.big-screen
+          td.big-screen
+          td.big-screen
   
   //- Pagination component
   nav(aria-label='Book list page')

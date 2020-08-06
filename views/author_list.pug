@@ -6,11 +6,11 @@ block content
   table.table.table-sm.table-hover
     thead.thead-light
       tr
-        th(scope='col' width='80px') 
-        th(scope='col') Author 
-        th(scope='col') Born
-        th(scope='col') Died
-        th(scope='col') Country of Origin
+        th.small-screen(scope='col' width='80px') 
+        th.small-screen(scope='col') Author 
+        th.big-screen(scope='col') Born
+        th.big-screen(scope='col') Died
+        th.small-screen(scope='col') Country of Origin
     tbody 
       - let index = 0
       each author in author_list
@@ -18,29 +18,29 @@ block content
         if author._id!=DEFAULT_AUTHOR
           - index++
           tr
-            td(height='100px')
+            td.small-screen(height='100px')
               a(href=author.url)
-                img(src=`/images/authors/${author._id}.jpg`, style='float:left;width:100%;', title=`${author.name}`, alt=`${author.name}`)
-            td
+                img(src=`/images/authors/${author._id}.jpg`, style='float:left;width:100%;', onerror="this.onerror=null;this.src='/images/authors/missing_photo.svg';", title=`${author.name}`, alt=`${author.name}`)
+            td.small-screen
               a(href=author.url) #{author.name} 
             if author.date_of_birth == null
-              td 
+              td.big-screen
             else
-              td #{moment(author.date_of_birth).format('MMM D, YYYY')}
+              td.big-screen #{moment(author.date_of_birth).format('MMM D, YYYY')}
             if author.date_of_death == null
-              td 
+              td.big-screen 
             else
-              td #{moment(author.date_of_death).format('MMM D, YYYY')}
-            td #{author.country.name}
+              td.big-screen #{moment(author.date_of_death).format('MMM D, YYYY')}
+            td.small-screen #{author.country.name}
       else
         tr
-          td
-          td There are no authors yet. Add one
+          td.small-screen
+          td.small-screen There are no authors yet. Add one
             | 
             a(href='/catalog/author/create') now.
-          td
-          td
-          td
+          td.big-screen
+          td.big-screen
+          td.small-screen
         
 
   //- Pagination component

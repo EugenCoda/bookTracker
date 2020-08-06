@@ -5,7 +5,7 @@ block content
   include helpers
 
   div.media
-    img.align-self-start.mr-3(id='author_cover', src=`/images/authors/${author._id}.jpg`, title=`${author.name}`, alt=`${author.name}`)
+    img.align-self-start.mr-3(id='author_cover', src=`/images/authors/${author._id}.jpg`, onerror="this.onerror=null;this.src='/images/authors/missing_photo.svg';", title=`${author.name}`, alt=`${author.name}`)
     
     div.media-body
       h3 #{author.name}
@@ -26,7 +26,7 @@ block content
           each book in author_books
             li.media.my-4
               a(href=book.url)
-                img.mr-3(src=`/images/books/${book._id}.jpg`, style='max-width:80px;', title=`${book.title}`, alt=`${book.title}`)
+                img.mr-3(src=`/images/books/${book._id}.jpg`, style='max-width:80px;', onerror="this.onerror=null;this.src='/images/books/missing_book.jpg';", title=`${book.title}`, alt=`${book.title}`)
               div.media-body 
                 a.mt-0.mb-1(href=book.url) #{book.title} 
                 br

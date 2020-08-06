@@ -30,6 +30,15 @@ html(lang='en')
               a.dropdown-item(href='/catalog/genres') Genres
               a.dropdown-item(href='/catalog/languages') Languages
               a.dropdown-item(href='/catalog/countries') Countries
+          if user
+            li.nav-item.dropdown
+              a#dropdown01.nav-link.dropdown-toggle(href='#', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false') Add Items
+              .dropdown-menu(aria-labelledby='dropdown01')
+                a.dropdown-item(href='/catalog/author/create') Add new author
+                a.dropdown-item(href='/catalog/book/create') Add new book
+                a.dropdown-item(href='/catalog/genre/create') Add new genre
+                a.dropdown-item(href='/catalog/language/create') Add new language
+                a.dropdown-item(href='/catalog/country/create') Add new country
           li.nav-item
             a.nav-link(href='/users/help')
               | Help 
@@ -60,18 +69,6 @@ html(lang='en')
       div(class='row')
         div(class='col-sm-2')
           block sidebar
-            ul(class='sidebar-nav')
-              if user
-                li 
-                  a(href='/catalog/author/create') Add new author
-                li 
-                  a(href='/catalog/genre/create') Add new genre
-                li 
-                  a(href='/catalog/book/create') Add new book
-                li 
-                  a(href='/catalog/language/create') Add new language
-                li 
-                  a(href='/catalog/country/create') Add new country
         div(class='col-sm-10')
           br
           block content

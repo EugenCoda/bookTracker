@@ -5,7 +5,7 @@ block content
   include helpers
 
   div.media
-    img.align-self-start.mr-3(id='book_cover', src=`/images/books/${book._id}.jpg`, title=`${book.title}`, alt=`${book.title}`)
+    img.align-self-start.mr-3(id='book_cover', src=`/images/books/${book._id}.jpg`, onerror="this.onerror=null;this.src='/images/books/missing_book.jpg';", title=`${book.title}`, alt=`${book.title}`)
 
     div.media-body
       h3 #{book.title} 

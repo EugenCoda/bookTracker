@@ -87,10 +87,17 @@ Branch 11:
 - Settings for Content Security Policy (helmet)
 - Deployed app to heroku
 
+Branch 12:
+
+- Missing image avatar for authors and books
+- My books - links for All, Read, In Progress and Wishlist - styled
+- More responsive on mobile(e.g. the book lists)
+
 TODO:
 
 - social networks
-- responsive on mobile(e.g. the book lists)
+- responsive on mobile - date picking
 - sorting and filtering lists
+- charts with progress, targets etc.
 
 Problematic:
