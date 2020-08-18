@@ -92,11 +92,11 @@ Branch 12:
 - Missing image avatar for authors and books
 - My books - links for All, Read, In Progress and Wishlist - styled
 - More responsive on mobile(e.g. the book lists)
+- Added timestamps for users
 
 TODO:
 
 - social networks
-- responsive on mobile - date picking
 - sorting and filtering lists
 - charts with progress, targets etc.
 

@@ -61,10 +61,10 @@ html(lang='en')
             li.nav-item
               a.nav-link(href='/users/login') Login
     .container
-          != messages('message', locals)
-          if errors
-            each error, i in errors
-              div(class="alert alert-danger") #{error.msg}
+      != messages('message', locals)
+      if errors
+        each error, i in errors
+          div(class="alert alert-danger") #{error.msg}
     div(class='container-fluid')
       div(class='row')
         div(class='col-sm-2')
