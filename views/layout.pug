@@ -67,8 +67,8 @@ html(lang='en')
           div(class="alert alert-danger") #{error.msg}
     div(class='container-fluid')
       div(class='row')
-        div(class='col-sm-2')
-          block sidebar
+        div(class='col-sm-1')
+          block left-sidebar
         div(class='col-sm-10')
           br
           block content
@@ -76,6 +76,8 @@ html(lang='en')
           hr
           footer
             p Copyright &copy; 2020
+        div(class='col-sm-1')
+          block right-sidebar
 
     script(src='https://code.jquery.com/jquery-3.5.1.slim.min.js', integrity='sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj', crossorigin='anonymous')
     script(src='https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js', integrity='sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo', crossorigin='anonymous')

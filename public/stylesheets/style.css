@@ -76,6 +76,10 @@ body {
   text-align: center;
 }
 
+.btn {
+  margin: 2px;
+}
+
 /* show less table columns on smaller screens */
 @media only screen and (max-width: 900px) {
   .big-screen {
