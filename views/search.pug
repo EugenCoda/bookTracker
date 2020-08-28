@@ -19,7 +19,7 @@ block content
             th(scope='row') !{index}.
             td(height='80px')
               a(href=`/catalog/book/${book._id}`)
-                  img(src=`/images/books/${book._id}.jpg`, style='float:left;width:40%;', title=`${book.title}`, alt=`${book.title}`)
+                img(src=`/images/books/${book._id}.jpg`, style='float:left;width:40%;', onerror="this.onerror=null;this.src='/images/books/missing_book.jpg';", title=`${book.title}`, alt=`${book.title}`)
             td 
               a(href=`/catalog/book/${book._id}`) #{book.title} 
             td(width='300px')
@@ -30,7 +30,7 @@ block content
             th(scope='row') !{index}.
             td(height='80px')
               a(href=author.url)
-                img(src=`/images/authors/${author._id}.jpg`, style='float:left;width:40%;', title=`${author.name}`, alt=`${author.name}`)
+                img(src=`/images/authors/${author._id}.jpg`, style='float:left;width:40%;', onerror="this.onerror=null;this.src='/images/authors/missing_photo.svg';", title=`${author.name}`, alt=`${author.name}`)
             td 
               a(href=author.url) #{author.name} 
             td(width='300px')

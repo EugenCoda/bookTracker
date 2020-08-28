@@ -72,7 +72,9 @@ block content
         for genre in genres
           div(style='display: inline; padding-right:10px;')
             input.checkbox-input(type='checkbox', name='genre', id=genre._id, value=genre._id, checked=genre.checked )
-            label(for=genre._id) #{genre.name}
+            label(for=genre._id)
+            |
+            | #{genre.name}
     div.form-group
       label(for='language') Language:
       select#language.form-control(type='select' placeholder='Select language' name='language' required='true' )
