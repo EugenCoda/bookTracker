@@ -96,6 +96,10 @@ Branch 12:
 
 TODO:
 
+- CK editor
+- upload images with Multer
+- where to store the images?
+- admin approving items
 - social networks
 - sorting and filtering lists
 - charts with progress, targets etc.
