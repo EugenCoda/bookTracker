@@ -105,3 +105,7 @@ TODO:
 - charts with progress, targets etc.
 
 Problematic:
+
+Notes:
+
+- git push heroku Branch12:master
