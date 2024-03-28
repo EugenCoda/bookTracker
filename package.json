@@ -23,7 +23,7 @@
     "cors": "^2.8.5",
     "debug": "~2.6.9",
     "dotenv": "^8.2.0",
-    "express": "~4.17.3",
+    "express": "~4.19.2",
     "express-messages": "^1.0.1",
     "express-session": "^1.17.1",
     "express-validator": "^6.10.0",
